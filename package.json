@@ -78,5 +78,8 @@
     "vue-upload-component": "^3.0.50",
     "vuedraggable": "^4.0.3",
     "vuex": "^4.0.2"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "^4.60.4"
   }
 }
