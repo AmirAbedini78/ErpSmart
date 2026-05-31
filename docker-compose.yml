@@ -50,14 +50,14 @@ services:
       - erpsmart
 
   node:
-    image: node:20-alpine
+    image: node:20-bookworm-slim
     container_name: erpsmart_node
     working_dir: /var/www/html
     ports:
       - "5173:5173"
     volumes:
       - .:/var/www/html
-    command: sh -c "npm run dev -- --host 0.0.0.0"
+    command: sh -c "sleep infinity"
     networks:
       - erpsmart
 
