@@ -8,7 +8,7 @@
 
     <title>{{ $title ?? 'Concord CRM - Installation' }}</title>
 
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    {{-- <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> --}}
 
     @php
         $viteManifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);

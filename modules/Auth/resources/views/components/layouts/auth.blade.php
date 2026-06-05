@@ -24,7 +24,7 @@
         }
     </script>
 
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    {{-- <link rel="stylesheet" href="https://rsms.me/inter/inter.css"> --}}
 
     <script src="{{ \Modules\Core\Facades\Innoclapps::vueSrc() }}"></script>
 

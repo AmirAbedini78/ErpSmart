@@ -15,16 +15,28 @@ export default defineConfig({
       },
     ],
   },
-  //   css: {
-  //     preprocessorOptions: {
-  //       // https://sass-lang.com/documentation/breaking-changes/legacy-js-api/#bundlers
-  //       scss: {
-  //         api: 'modern',
-  //       },
-  //     },
-  //   },
+
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: 'localhost',
+      port: 5173,
+      protocol: 'ws',
+    },
+    watch: {
+      usePolling: true,
+      interval: 1000,
+    },
+  },
+
   plugins: [
-    laravel(['resources/js/app.js', 'resources/css/contentbuilder/theme.css']),
+    laravel({
+      input: ['resources/js/app.js', 'resources/css/contentbuilder/theme.css'],
+      refresh: true,
+    }),
+
     unfonts({
       custom: {
         families: [
@@ -36,7 +48,9 @@ export default defineConfig({
         ],
       },
     }),
+
     globalVue(),
+
     vue({
       template: {
         transformAssetUrls: {
@@ -46,9 +60,4 @@ export default defineConfig({
       },
     }),
   ],
-  //   server: {
-  //     hmr: {
-  //       host: 'localhost',
-  //     },
-  //   },
 })

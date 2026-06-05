@@ -54,12 +54,45 @@ services:
     container_name: erpsmart_node
     working_dir: /var/www/html
     ports:
-      - "5173:5173"
+        - "5173:5173"
     volumes:
-      - .:/var/www/html
-    command: sh -c "sleep infinity"
+        - .:/var/www/html
+        - erpsmart-node-modules:/var/www/html/node_modules
+    environment:
+        CHOKIDAR_USEPOLLING: "true"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    networks:
+        - erpsmart
+
+
+  scheduler:
+    image: erpsmart-app
+    container_name: erpsmart_scheduler
+    working_dir: /var/www/html
+    volumes:
+     - .:/var/www/html
+    command: sh -c "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done"
+    depends_on:
+      - app
+      - mysql
+      - redis
     networks:
       - erpsmart
+
+  queue:
+    image: erpsmart-app
+    container_name: erpsmart_queue
+    working_dir: /var/www/html
+    volumes:
+        - .:/var/www/html
+    command: sh -c "php artisan queue:work --verbose --tries=3 --timeout=120"
+    depends_on:
+        - app
+        - mysql
+        - redis
+    networks:
+        - erpsmart
+
 
 networks:
   erpsmart:
@@ -67,3 +100,8 @@ networks:
 
 volumes:
   mysql_data:
+  erpsmart-node-modules:
+
+
+
+
