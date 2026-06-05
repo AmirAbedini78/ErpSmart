@@ -15,6 +15,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "kub-at/php-simple-html-dom-parser": "^1.9",
         "laravel/framework": "^11.9",
+        "laravel/pulse": "^1.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.0",
@@ -52,6 +53,7 @@
         "fakerphp/faker": "^1.23",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
+        "laravel/telescope": "^5.20",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",
         "phpunit/phpunit": "^11.0.1"
