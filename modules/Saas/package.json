@@ -1,0 +1,33 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "build-isolated": "vite build --outDir ./public/build"
+    },
+    "devDependencies": {
+        "@concordcrm/vite-plugin-module": "^1.0.9",
+        "@vitejs/plugin-vue": "^5.0.0",
+        "autoprefixer": "^10.4.16",
+        "dotenv": "^16.3.1",
+        "dotenv-expand": "^10.0.0",
+        "laravel-vite-plugin": "^1.0.0",
+        "lodash": "^4.17.21",
+        "postcss": "^8.4.4",
+        "vite": "^5.3.3"
+    },
+    "dependencies": {
+        "@grapesjs/studio-sdk": "^1.0.30",
+        "grapesjs": "^0.22.5",
+        "grapesjs-blocks-basic": "^1.0.2",
+        "grapesjs-component-code-editor": "^1.0.20",
+        "grapesjs-plugin-export": "^1.0.12",
+        "grapesjs-plugin-forms": "^2.0.6",
+        "grapesjs-preset-webpage": "^1.0.3",
+        "js-cookie": "^3.0.5",
+        "jszip": "^3.10.1",
+        "vue": "^3.4.35",
+        "vuex": "^4.1.0"
+    }
+}
