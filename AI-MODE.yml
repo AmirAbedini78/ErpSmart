@@ -1,0 +1,4 @@
+active_profile: local
+profiles:
+  local: Continue + Ollama/Qwen small model
+  cursor: Cursor/Codex strong model

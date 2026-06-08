@@ -1,0 +1,13 @@
+---
+description: ErpSmart SmartDocs RAG rules
+alwaysApply: true
+---
+
+Before coding:
+1. Read `docs/ai/00-START-HERE.md`.
+2. Resolve feature/module through `docs/ai/02-domains/INDEX.yml`.
+3. Read only relevant domain docs and `touches_code`.
+4. Validate with code before editing.
+5. After change, update the related domain History and ADR if needed.
+
+For local small models: prefer small patches and ask for missing context instead of rewriting large files.

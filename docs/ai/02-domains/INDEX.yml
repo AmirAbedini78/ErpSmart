@@ -1,0 +1,74 @@
+# ErpSmart SmartDocs Domain Index
+modules:
+  activities:
+    title: Activities
+    doc: docs/ai/02-domains/activities.md
+    aliases: ["activities", "فعالیت", "task", "call", "calendar", "activities"]
+  auth:
+    title: Auth
+    doc: docs/ai/02-domains/auth.md
+    aliases: ["auth"]
+  billable:
+    title: Billable
+    doc: docs/ai/02-domains/billable.md
+    aliases: ["billable"]
+  brands:
+    title: Brands
+    doc: docs/ai/02-domains/brands.md
+    aliases: ["brands"]
+  calls:
+    title: Calls
+    doc: docs/ai/02-domains/calls.md
+    aliases: ["calls"]
+  comments:
+    title: Comments
+    doc: docs/ai/02-domains/comments.md
+    aliases: ["comments"]
+  contacts:
+    title: Contacts
+    doc: docs/ai/02-domains/contacts.md
+    aliases: ["contacts", "مخاطبین", "contacts", "companies", "people"]
+  core:
+    title: Core
+    doc: docs/ai/02-domains/core.md
+    aliases: ["core", "هسته", "core", "fields", "resources", "workflow engine", "settings"]
+  deals:
+    title: Deals
+    doc: docs/ai/02-domains/deals.md
+    aliases: ["deals", "معاملات", "deals", "pipeline", "stage"]
+  documents:
+    title: Documents
+    doc: docs/ai/02-domains/documents.md
+    aliases: ["documents"]
+  installer:
+    title: Installer
+    doc: docs/ai/02-domains/installer.md
+    aliases: ["installer"]
+  mailclient:
+    title: MailClient
+    doc: docs/ai/02-domains/mailclient.md
+    aliases: ["mailclient"]
+  notes:
+    title: Notes
+    doc: docs/ai/02-domains/notes.md
+    aliases: ["notes"]
+  themestyle:
+    title: ThemeStyle
+    doc: docs/ai/02-domains/themestyle.md
+    aliases: ["themestyle"]
+  translator:
+    title: Translator
+    doc: docs/ai/02-domains/translator.md
+    aliases: ["translator"]
+  updater:
+    title: Updater
+    doc: docs/ai/02-domains/updater.md
+    aliases: ["updater"]
+  users:
+    title: Users
+    doc: docs/ai/02-domains/users.md
+    aliases: ["users"]
+  webforms:
+    title: WebForms
+    doc: docs/ai/02-domains/webforms.md
+    aliases: ["webforms"]
