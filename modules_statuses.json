@@ -16,5 +16,6 @@
     "ThemeStyle": true,
     "Installer": true,
     "Auth": true,
-    "Updater": true
+    "Updater": true,
+    "Saas": true
 }

@@ -11,8 +11,39 @@ class TenantMigrationService
 {
     private string $tablePrefix;
 
-    private array $excludedTables = ['migrations', 'tenants', 'password_resets', 'packages', 'quotas', 'tenant_databases', 'tenant_modules', 'countries', 'dashboards', 'jobs', 'failed_jobs', 'job_batches', 'subscription_histories', 'tenant_usages', 'pages'];
+private array $excludedTables = [
+    'migrations',
+    'tenants',
+    'password_resets',
+    'packages',
+    'quotas',
+    'tenant_databases',
+    'tenant_modules',
+    'countries',
+    'dashboards',
+    'jobs',
+    'failed_jobs',
+    'job_batches',
+    'subscription_histories',
+    'tenant_usages',
+    'pages',
 
+    // Laravel / Sanctum / system tables
+    'cache',
+    'cache_locks',
+    'sessions',
+    'personal_access_tokens',
+
+    // Telescope tables
+    'telescope_entries',
+    'telescope_entries_tags',
+    'telescope_monitoring',
+
+    // Pulse tables
+    'pulse_values',
+    'pulse_entries',
+    'pulse_aggregates',
+];
     public function __construct()
     {
         $this->tablePrefix = DB::getTablePrefix();
