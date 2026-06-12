@@ -1,0 +1,9 @@
+# Add these entries under `modules:` in docs/ai/02-domains/INDEX.yml
+  entity_lifecycle:
+    title: Entity Lifecycle
+    doc: docs/ai/02-domains/entity-lifecycle.md
+    aliases: ["entity", "entity lifecycle", "resource lifecycle", "module generation", "builder pattern", "چرخه موجودیت", "ساخت موجودیت", "ساخت ماژول"]
+  warehouse:
+    title: Warehouse
+    doc: docs/ai/02-domains/warehouse.md
+    aliases: ["warehouse", "warehouses", "انبار", "ماژول انبار", "inventory", "stock"]

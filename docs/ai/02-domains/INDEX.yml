@@ -72,3 +72,12 @@ modules:
     title: WebForms
     doc: docs/ai/02-domains/webforms.md
     aliases: ["webforms"]
+  entity_lifecycle:
+    title: Entity Lifecycle
+    doc: docs/ai/02-domains/entity-lifecycle.md
+    aliases: ["entity", "entity lifecycle", "resource lifecycle", "module generation", "builder pattern", "چرخه موجودیت", "ساخت موجودیت", "ساخت ماژول"]
+  warehouse:
+    title: Warehouse
+    doc: docs/ai/02-domains/warehouse.md
+    aliases: ["warehouse", "warehouses", "انبار", "ماژول انبار", "inventory", "stock"]
+

@@ -17,5 +17,6 @@
     "Installer": true,
     "Auth": true,
     "Updater": true,
-    "Saas": true
+    "Saas": true,
+    "Warehouse": true
 }
