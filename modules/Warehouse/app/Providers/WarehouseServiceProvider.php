@@ -4,17 +4,22 @@ namespace Modules\Warehouse\Providers;
 
 use Closure;
 use Illuminate\Console\Scheduling\Schedule;
-use Modules\Core\Facades\Innoclapps;
 use Modules\Core\Support\ModuleServiceProvider;
 
 class WarehouseServiceProvider extends ModuleServiceProvider
 {
+
+
+    protected array $resources = [
+        \Modules\Warehouse\Resources\Warehouse::class,
+    ];
+
     /**
      * Bootstrap any module services.
      */
     public function boot(): void
-    {
-        $this->registerCommands();
+    { 
+       $this->registerCommands();
     }
 
     /**
@@ -22,6 +27,7 @@ class WarehouseServiceProvider extends ModuleServiceProvider
      */
     public function register(): void
     {
+        $this->registerResources();
         $this->app->register(RouteServiceProvider::class);
     }
 
@@ -30,10 +36,8 @@ class WarehouseServiceProvider extends ModuleServiceProvider
      */
     protected function setup(): void
     {
-        Innoclapps::vite('resources/js/app.js', [
-            'buildDirectory' => 'modules/'.$this->moduleNameLower().'/build',
-            'hotFile' => storage_path('hot-'. $this->moduleNameLower())
-        ]);
+        // Warehouse frontend is currently bundled through the root resources/js/app.js file.
+        // Do not register a separate module Vite entry until the module build pipeline is finalized.
     }
 
     /**

@@ -3,6 +3,38 @@
 ## Purpose
 This is the human execution guide for building Warehouse MVP manually. After it works, the steps can become an Artisan generator command and later a UI Builder flow.
 
+
+## 2026-06-17 correction — avoid frontend SPA 404
+
+The Warehouse backend Resource can be registered correctly while `/warehouses` still shows 404.
+
+Reason: Vue routes are not automatically discovered from `modules/Warehouse/resources/js/routes.js`. For the current MVP, Warehouse must be imported into the root frontend entry.
+
+Add this line to `resources/js/app.js` near the other module imports:
+
+```js
+import '@/Warehouse/app.js'
+```
+
+Current MVP strategy: use the root app build. Do not rely on `modules/Warehouse/vite.config.js` or `Innoclapps::vite()` until the separate module packaging/build pipeline is finalized.
+
+After the import:
+
+```bash
+docker compose exec app php artisan optimize:clear
+sudo rm -f public/hot
+docker compose exec node npm run build
+docker compose restart app nginx
+```
+
+Then open:
+
+```text
+http://localhost:8080/warehouses
+```
+
+Expected smoke result: `Warehouses Index`.
+
 ## Safety rules
 - Work on Git branch, not main.
 - Keep `Saas` disabled while building this module.

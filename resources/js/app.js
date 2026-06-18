@@ -38,6 +38,7 @@ import '@/Notes/app.js'
 import '@/Translator/app.js'
 import '@/WebForms/app.js'
 import '@/ThemeStyle/app.js'
+import '@/Warehouse/app.js'
 
 import 'unfonts.css'
 import '../css/app.css'

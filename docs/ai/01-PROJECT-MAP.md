@@ -49,9 +49,11 @@
 | Updater | 0 | 0 | yes | 2 |
 | Users | 0 | 1 | yes | 3 |
 | WebForms | 0 | 0 | yes | 2 |
+| Warehouse | 0 | 1 | yes | 2 |
 
 ## Known local-development traps
 - `public/hot` means Laravel uses Vite dev server. If node is stopped, remove `public/hot` and run `npm run build`.
+- New entity frontend routes must be imported into `resources/js/app.js` unless the module has a separately built manifest loaded via `Innoclapps::viteOutput()`. Missing this import causes SPA 404 even when the backend Resource exists.
 - `bootstrap/cache/*.php` can keep old enabled modules. If module boot breaks, delete module/config cache manually.
 - `storage`, `bootstrap/cache`, and `public` must be writable by container web user.
 - Saas module currently performs tenant schema mutation on boot; exclude `telescope_*` and `pulse_*` from tenant migration before enabling.
