@@ -162,7 +162,6 @@ Rules:
 - `routes.js` returns Vue router entries.
 - For settings pages, route is usually added under router name `settings` inside module `app.js`.
 - Build/dev asset status matters: if `public/hot` exists, Laravel loads Vite dev assets from port 5173. If node is stopped, remove `public/hot` and build.
-- For built-in/root-bundled modules, also import the module app file from `resources/js/app.js`, for example `import '@/Warehouse/app.js'`. If this is missed, Vue Router will not know the route and `/module-path` will show SPA 404 even when the backend Resource exists.
 
 ### 7. Translations
 Required path:
@@ -253,4 +252,30 @@ Never ask a small LLM to scan all modules at once.
 - SaaS module can mutate indexes during provider boot; keep it disabled until fixed.
 - Telescope/Pulse tables must be excluded from tenant schema mutation.
 - Missing seed data can break workflow APIs. Example: missing `activity_types.task` caused Workflow screen server error.
-- Missing frontend import can break new entity pages. Example: Warehouse backend Resource existed as `warehouses`, but `/warehouses` still showed 404 until `resources/js/app.js` imported `@/Warehouse/app.js`.
+
+## Warehouse Resource UI lifecycle update — 2026-06-18
+
+Warehouse exposed a key lifecycle rule for Builder-generated modules: the entity lifecycle has two registrations, backend and frontend.
+
+Backend registration:
+
+```text
+module.json -> ModuleServiceProvider -> protected array $resources -> registerResources() -> Resource API/routes/menu/table/fields
+```
+
+Frontend registration:
+
+```text
+resources/js/app.js -> modules/<Module>/resources/js/app.js -> routes.js -> Vue router routes -> Resource UI views
+```
+
+A generated module is incomplete if either side is missing. The failure mode is subtle: `Innoclapps::resourceByName('warehouses')` can pass, while `/warehouses` still fails inside the SPA when the module app entry is not in the root bundle.
+
+Minimum generated frontend views for a Resource module:
+
+```text
+<Entity>Index.vue  -> ResourceTable + ResourceExport + RouterView
+<Entity>Create.vue -> getCreateFields + createResource
+<Entity>Edit.vue   -> retrieveResource + getUpdateFields + updateResource
+<Entity>View.vue   -> useResource + getDetailFields + DetailFields
+```

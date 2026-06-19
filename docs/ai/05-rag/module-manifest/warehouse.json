@@ -1,0 +1,52 @@
+{
+  "module": "Warehouse",
+  "status": "mvp_resource_ui",
+  "purpose": "First builder-aware business entity module and template for future Module Builder generation.",
+  "resource_name": "warehouses",
+  "singular_resource_lookup": "warehouse is not expected to resolve; use warehouses",
+  "backend": {
+    "module_json": "modules/Warehouse/module.json",
+    "provider": "modules/Warehouse/app/Providers/WarehouseServiceProvider.php",
+    "route_provider": "modules/Warehouse/app/Providers/RouteServiceProvider.php",
+    "model": "modules/Warehouse/app/Models/Warehouse.php",
+    "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php",
+    "resource": "modules/Warehouse/app/Resources/Warehouse.php",
+    "table": "modules/Warehouse/app/Resources/WarehouseTable.php",
+    "migration": "modules/Warehouse/database/migrations/2026_06_12_184218_create_warehouses_table.php",
+    "translation": "modules/Warehouse/lang/en/warehouse.php"
+  },
+  "frontend": {
+    "module_entry": "modules/Warehouse/resources/js/app.js",
+    "routes": "modules/Warehouse/resources/js/routes.js",
+    "index_view": "modules/Warehouse/resources/js/views/WarehousesIndex.vue",
+    "create_view": "modules/Warehouse/resources/js/views/WarehousesCreate.vue",
+    "edit_view": "modules/Warehouse/resources/js/views/WarehousesEdit.vue",
+    "detail_view": "modules/Warehouse/resources/js/views/WarehousesView.vue",
+    "root_registration": "resources/js/app.js"
+  },
+  "database": {
+    "logical_table": "warehouses",
+    "runtime_prefixed_example": "tbl_warehouses",
+    "primary_display_field": "name",
+    "unique_candidate": "code"
+  },
+  "routes": {
+    "index": "/warehouses",
+    "create": "/warehouses/create",
+    "view": "/warehouses/{id}",
+    "edit": "/warehouses/{id}/edit"
+  },
+  "builder_requirements_learned": [
+    "Register backend Resource in provider protected array $resources.",
+    "Call registerResources() during module provider registration.",
+    "Generate frontend app.js and routes.js.",
+    "Import module app.js into resources/js/app.js or implement a dynamic module entry registry.",
+    "Generate SmartDocs and RAG manifest with each module change."
+  ],
+  "validation": [
+    "Innoclapps::resourceByName('warehouses') returns Modules\\Warehouse\\Resources\\Warehouse",
+    "resources/js/app.js contains import '@/Warehouse/app.js'",
+    "npm run build completes",
+    "/warehouses loads ResourceTable instead of smoke text"
+  ]
+}

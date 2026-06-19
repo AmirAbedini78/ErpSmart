@@ -1,5 +1,15 @@
 {
-  "active_task": "warehouse-mvp-route-registration",
-  "last_verified_issue": "Warehouse backend resource was registered, but /warehouses returned SPA 404 because modules/Warehouse/resources/js/app.js was not imported into resources/js/app.js.",
-  "next_step": "Apply the root frontend import, rebuild assets, clear caches, and smoke-test http://localhost:8080/warehouses."
+  "active_task": "warehouse-resource-ui",
+  "module": "Warehouse",
+  "status": "patch_ready",
+  "last_completed_step": "Converted Warehouse smoke views to Resource UI pattern and updated SmartDocs/RAG manifest.",
+  "next_validation": [
+    "build frontend",
+    "open /warehouses",
+    "open /warehouses/create",
+    "create a warehouse record",
+    "open /warehouses/{id}",
+    "open /warehouses/{id}/edit",
+    "verify ResourceTable reload after create/edit"
+  ]
 }

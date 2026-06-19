@@ -53,7 +53,6 @@
 
 ## Known local-development traps
 - `public/hot` means Laravel uses Vite dev server. If node is stopped, remove `public/hot` and run `npm run build`.
-- New entity frontend routes must be imported into `resources/js/app.js` unless the module has a separately built manifest loaded via `Innoclapps::viteOutput()`. Missing this import causes SPA 404 even when the backend Resource exists.
 - `bootstrap/cache/*.php` can keep old enabled modules. If module boot breaks, delete module/config cache manually.
 - `storage`, `bootstrap/cache`, and `public` must be writable by container web user.
 - Saas module currently performs tenant schema mutation on boot; exclude `telescope_*` and `pulse_*` from tenant migration before enabling.
@@ -66,3 +65,20 @@ Small local models must not ingest the whole repository blindly. Always resolve:
 3. key files in `touches_code`
 4. validation queries
 5. only then inspect additional references.
+
+
+## Warehouse builder-template status
+Warehouse is the first manually created Builder-aware module. It must be used as the reference path for future Module Builder generation because it now covers backend Resource registration and frontend SPA registration.
+
+Critical files:
+
+```text
+modules/Warehouse/app/Providers/WarehouseServiceProvider.php
+modules/Warehouse/app/Resources/Warehouse.php
+modules/Warehouse/resources/js/app.js
+modules/Warehouse/resources/js/routes.js
+resources/js/app.js
+docs/ai/05-rag/module-manifest/warehouse.json
+```
+
+Critical learned rule: backend Resource registration alone is not enough; the module frontend entry must also be imported into `resources/js/app.js` or the SPA will show 404.
