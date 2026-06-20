@@ -3,6 +3,10 @@
 namespace Modules\Warehouse\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Core\Contracts\Resources\AcceptsCustomFields;
+use Modules\Core\Contracts\Resources\AcceptsUniqueCustomFields;
+use Modules\Core\Contracts\Resources\Exportable;
+use Modules\Core\Contracts\Resources\Importable;
 use Modules\Core\Contracts\Resources\Tableable;
 use Modules\Core\Contracts\Resources\WithResourceRoutes;
 use Modules\Core\Facades\Fields;
@@ -22,7 +26,7 @@ use Modules\Core\Table\Column;
 use Modules\Core\Table\Table;
 use Modules\Warehouse\Models\Warehouse as WarehouseModel;
 
-class Warehouse extends Resource implements Tableable, WithResourceRoutes
+class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Exportable, Importable, Tableable, WithResourceRoutes
 {
     public static string $orderBy = 'name';
 
@@ -135,3 +139,4 @@ class Warehouse extends Resource implements Tableable, WithResourceRoutes
         $this->registerCommonPermissions();
     }
 }
+

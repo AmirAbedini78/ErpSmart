@@ -1,21 +1,21 @@
 {
   "active_task": "warehouse-module-completion",
   "module": "Warehouse",
-  "status": "boolean_field_fix_ready",
-  "last_completed_step": "Fixed Warehouse is_active field mapping from Text to Boolean and documented schema-aware field generation rule.",
+  "status": "resource_capability_contracts_ready",
+  "last_completed_step": "Create/edit/table work; boolean field fixed; Resource now opts into custom fields, unique custom fields, import, export, table, and resource routes with import_id tracking migration.",
   "current_validation": [
-    "build frontend",
-    "clear Laravel cache",
-    "open /warehouses/create",
-    "confirm Active renders as boolean/toggle field",
-    "create a warehouse record",
-    "confirm SQL payload no longer sends arbitrary text for is_active"
+    "run php artisan migrate --force",
+    "confirm warehouses.import_id exists",
+    "confirm Warehouse Resource instanceof Exportable, Importable, AcceptsCustomFields, AcceptsUniqueCustomFields",
+    "confirm /api/warehouses/export-fields no longer returns 404",
+    "confirm /api/warehouses/import/sample no longer returns 404",
+    "confirm /warehouses still lists created records after migration"
   ],
   "next_steps": [
-    "verify Resource API endpoints",
-    "complete permission behavior",
-    "confirm custom fields compatibility",
-    "confirm import/export behavior",
-    "plan notes/documents/activities integration"
+    "tighten Warehouse permission behavior",
+    "validate custom field creation for warehouses through UI/API",
+    "validate CSV import/export end-to-end",
+    "plan notes/documents/activities/audit integration",
+    "then introduce Warehouse Locations as child entity"
   ]
 }

@@ -1,6 +1,6 @@
 {
   "module": "Warehouse",
-  "status": "mvp_resource_ui_boolean_fixed",
+  "status": "resource_capability_contracts_ready",
   "purpose": "First builder-aware business entity module and template for future Module Builder generation.",
   "resource_name": "warehouses",
   "singular_resource_lookup": "warehouse is not expected to resolve; use warehouses",
@@ -13,7 +13,8 @@
     "resource": "modules/Warehouse/app/Resources/Warehouse.php",
     "table": "modules/Warehouse/app/Resources/WarehouseTable.php",
     "migration": "modules/Warehouse/database/migrations/2026_06_12_184218_create_warehouses_table.php",
-    "translation": "modules/Warehouse/lang/en/warehouse.php"
+    "translation": "modules/Warehouse/lang/en/warehouse.php",
+    "import_tracking_migration": "modules/Warehouse/database/migrations/2026_06_19_160500_add_import_id_to_warehouses_table.php"
   },
   "frontend": {
     "module_entry": "modules/Warehouse/resources/js/app.js",
@@ -28,7 +29,9 @@
     "logical_table": "warehouses",
     "runtime_prefixed_example": "tbl_warehouses",
     "primary_display_field": "name",
-    "unique_candidate": "code"
+    "unique_candidate": "code",
+    "import_tracking_column": "import_id",
+    "runtime_prefixed_import_column_example": "tbl_warehouses.import_id"
   },
   "routes": {
     "index": "/warehouses",
@@ -42,14 +45,22 @@
     "Generate frontend app.js and routes.js.",
     "Import module app.js into resources/js/app.js or implement a dynamic module entry registry.",
     "Generate SmartDocs and RAG manifest with each module change.",
-    "Map database column type, model cast/default, Resource field class, validation, and UI control as one atomic field definition."
+    "Map database column type, model cast/default, Resource field class, validation, and UI control as one atomic field definition.",
+    "Resource capability contracts must be generated with their prerequisites, not added as isolated interface names.",
+    "Importable resources require import_id tracking support on the model/table for safe revert behavior.",
+    "AcceptsCustomFields makes the resource eligible for the Custom Field builder workflow."
   ],
   "validation": [
     "Innoclapps::resourceByName('warehouses') returns Modules\\Warehouse\\Resources\\Warehouse",
     "resources/js/app.js contains import '@/Warehouse/app.js'",
     "npm run build completes",
     "/warehouses loads ResourceTable instead of smoke text",
-    "Creating a warehouse must not send arbitrary text for is_active; Resource field must be Boolean."
+    "Creating a warehouse must not send arbitrary text for is_active; Resource field must be Boolean.",
+    "Warehouse Resource implements Exportable and Importable.",
+    "Warehouse Resource implements AcceptsCustomFields and AcceptsUniqueCustomFields.",
+    "warehouses table has nullable indexed import_id after migration.",
+    "GET /api/warehouses/export-fields should no longer 404 because Resource is Exportable.",
+    "GET /api/warehouses/import/sample should no longer 404 because Resource is Importable."
   ],
   "field_map": {
     "name": {
@@ -90,7 +101,28 @@
         "boolean"
       ],
       "ui_control": "boolean/toggle"
+    },
+    "import_id": {
+      "db_type": "unsignedBigInteger nullable indexed",
+      "model_cast": "integer",
+      "resource_field": null,
+      "ui_control": "hidden/internal",
+      "purpose": "Tracks rows created by Core import flow so imports can be inspected and reverted."
     }
   },
-  "last_fix": "2026-06-19 warehouse is_active changed from Text Resource field to Boolean Resource field."
+  "last_fix": "2026-06-19 warehouse Resource capability contracts enabled: custom fields, import, export, and import_id tracking.",
+  "capability_contracts": {
+    "custom_fields": [
+      "AcceptsCustomFields",
+      "AcceptsUniqueCustomFields"
+    ],
+    "import_export": [
+      "Importable",
+      "Exportable"
+    ],
+    "resource_runtime": [
+      "Tableable",
+      "WithResourceRoutes"
+    ]
+  }
 }

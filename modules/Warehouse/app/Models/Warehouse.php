@@ -18,10 +18,11 @@ class Warehouse extends Model
         'code',
         'description',
         'is_active',
+        'import_id',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'import_id' => 'integer',
     ];
 }
-

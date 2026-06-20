@@ -82,3 +82,14 @@ docs/ai/05-rag/module-manifest/warehouse.json
 ```
 
 Critical learned rule: backend Resource registration alone is not enough; the module frontend entry must also be imported into `resources/js/app.js` or the SPA will show 404.
+
+## Warehouse Resource capability milestone — 2026-06-19
+Warehouse now acts as the first Builder-aware module that covers more than CRUD smoke testing. It has Resource UI, boolean schema-aware field mapping, and Core capability contracts for custom fields, import, and export.
+
+New critical rule for the Builder:
+
+```text
+Resource capability contracts must be generated with database/model/API prerequisites.
+```
+
+Example: `Importable` is not only an interface. It requires `warehouses.import_id`, model fillable/cast support, import API smoke tests, and SmartDocs/RAG updates.

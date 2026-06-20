@@ -30,8 +30,10 @@ Resource index table via ResourceTable
 Create slideover via create-fields endpoint
 Edit slideover via update-fields endpoint
 Detail page via DetailFields
-Resource export modal hook
-Import route hook, if resource authorization enables it
+Resource export capability via Exportable contract
+Import capability via Importable contract
+Custom Fields capability via AcceptsCustomFields and AcceptsUniqueCustomFields contracts
+Import tracking column: import_id nullable indexed
 Translations
 Build validation
 ```
@@ -61,6 +63,7 @@ description nullable
 is_active boolean default true
 created_at
 updated_at
+import_id nullable indexed // import/revert tracking; hidden from forms
 ```
 
 Future warehouse master fields:
@@ -104,6 +107,7 @@ modules/Warehouse/app/Policies/WarehousePolicy.php
 modules/Warehouse/app/Resources/Warehouse.php
 modules/Warehouse/app/Resources/WarehouseTable.php
 modules/Warehouse/database/migrations/2026_06_12_184218_create_warehouses_table.php
+modules/Warehouse/database/migrations/2026_06_19_160500_add_import_id_to_warehouses_table.php
 modules/Warehouse/lang/en/warehouse.php
 modules/Warehouse/resources/js/app.js
 modules/Warehouse/resources/js/routes.js
@@ -120,8 +124,9 @@ resources/js/app.js
 2. `module.json` registers `Modules\\Warehouse\\Providers\\WarehouseServiceProvider`.
 3. `WarehouseServiceProvider` registers `Warehouse` in `protected array $resources`.
 4. `register()` calls `$this->registerResources()` and registers `RouteServiceProvider`.
-5. `Warehouse` implements `Tableable` and `WithResourceRoutes`.
-6. Core Resource API exposes table, fields, create, update, retrieve, delete, actions, import/export where available.
+5. `Warehouse` implements `Tableable`, `WithResourceRoutes`, `Exportable`, `Importable`, `AcceptsCustomFields`, and `AcceptsUniqueCustomFields`.
+6. Core Resource API exposes table, fields, create, update, retrieve, delete, actions, import/export, and custom field registration where available.
+7. `import_id` exists on `warehouses` so Core import/revert can track imported rows safely.
 
 Critical check:
 
@@ -196,6 +201,41 @@ Text::make('is_active') allowed arbitrary values like `rt`, producing MySQL erro
 
 Builder implication: field generation must be schema-aware. The Builder must not generate UI field types independently from DB column metadata.
 
+
+## 2026-06-19 Resource capability contracts enabled
+
+Warehouse is now moving from basic Resource CRUD to first-class Core Resource behavior. The Resource implements these capability contracts:
+
+```text
+AcceptsCustomFields
+AcceptsUniqueCustomFields
+Exportable
+Importable
+Tableable
+WithResourceRoutes
+```
+
+Why this matters:
+
+```text
+AcceptsCustomFields        -> Warehouse appears in the Custom Field resource selector.
+AcceptsUniqueCustomFields  -> generated custom fields can opt into unique validation when field type supports it.
+Exportable                 -> /api/warehouses/export and export-fields are valid.
+Importable                 -> /api/warehouses/import/* endpoints are valid.
+Tableable                  -> /api/warehouses/table uses WarehouseTable.
+WithResourceRoutes         -> Core Resource CRUD endpoints are generated/allowed for warehouses.
+```
+
+Import requires schema support. The Core ImportController uses `import_id` to track and revert imported rows, so Warehouse must have:
+
+```text
+warehouses.import_id nullable indexed
+model fillable: import_id
+model cast: import_id => integer
+```
+
+Builder implication: resource capability contracts are not just UI switches. They may require database columns, model casts, policies, docs, and smoke tests. The Module Builder must generate capability-specific prerequisites atomically.
+
 ## Builder implications
 The future Module Builder must generate all of these layers atomically:
 
@@ -256,13 +296,15 @@ http://localhost:8080/warehouses/{id}/edit
 ```text
 1. Verify ResourceTable, create, edit, detail view in browser.
 2. Verify API endpoints for warehouses, table, create-fields, update-fields, detail-fields.
-3. Replace temporary permissive policy with real permission behavior if needed.
-4. Confirm custom fields compatibility.
-5. Confirm import/export behavior.
-6. Add notes/documents/activities/audit only after master data resource is stable.
-7. Add Warehouse Locations as the next child entity.
-8. Add Products/Items.
-9. Add Stock Movements and Balances.
+3. Run database migration for import_id.
+4. Confirm export-fields/export endpoint.
+5. Confirm import sample/upload endpoint.
+6. Confirm Warehouse appears in Custom Fields resource selector.
+7. Replace temporary permissive policy with real permission behavior if needed.
+8. Add notes/documents/activities/audit only after master data resource is stable.
+9. Add Warehouse Locations as the next child entity.
+10. Add Products/Items.
+11. Add Stock Movements and Balances.
 ```
 
 ## Validation addendum — boolean field
