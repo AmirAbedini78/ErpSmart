@@ -1,6 +1,6 @@
 {
   "module": "Warehouse",
-  "status": "mvp_resource_ui",
+  "status": "mvp_resource_ui_boolean_fixed",
   "purpose": "First builder-aware business entity module and template for future Module Builder generation.",
   "resource_name": "warehouses",
   "singular_resource_lookup": "warehouse is not expected to resolve; use warehouses",
@@ -41,12 +41,56 @@
     "Call registerResources() during module provider registration.",
     "Generate frontend app.js and routes.js.",
     "Import module app.js into resources/js/app.js or implement a dynamic module entry registry.",
-    "Generate SmartDocs and RAG manifest with each module change."
+    "Generate SmartDocs and RAG manifest with each module change.",
+    "Map database column type, model cast/default, Resource field class, validation, and UI control as one atomic field definition."
   ],
   "validation": [
     "Innoclapps::resourceByName('warehouses') returns Modules\\Warehouse\\Resources\\Warehouse",
     "resources/js/app.js contains import '@/Warehouse/app.js'",
     "npm run build completes",
-    "/warehouses loads ResourceTable instead of smoke text"
-  ]
+    "/warehouses loads ResourceTable instead of smoke text",
+    "Creating a warehouse must not send arbitrary text for is_active; Resource field must be Boolean."
+  ],
+  "field_map": {
+    "name": {
+      "db_type": "string",
+      "model_cast": null,
+      "resource_field": "Text",
+      "validation": [
+        "required",
+        "string"
+      ]
+    },
+    "code": {
+      "db_type": "string nullable unique",
+      "model_cast": null,
+      "resource_field": "Text",
+      "validation": [
+        "nullable",
+        "string",
+        "unique:warehouses,code"
+      ]
+    },
+    "description": {
+      "db_type": "text nullable",
+      "model_cast": null,
+      "resource_field": "Text",
+      "validation": [
+        "nullable",
+        "string"
+      ]
+    },
+    "is_active": {
+      "db_type": "boolean default true",
+      "model_cast": "boolean",
+      "model_default": true,
+      "resource_field": "Boolean",
+      "validation": [
+        "nullable",
+        "boolean"
+      ],
+      "ui_control": "boolean/toggle"
+    }
+  },
+  "last_fix": "2026-06-19 warehouse is_active changed from Text Resource field to Boolean Resource field."
 }

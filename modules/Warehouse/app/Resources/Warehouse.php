@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Modules\Core\Contracts\Resources\Tableable;
 use Modules\Core\Contracts\Resources\WithResourceRoutes;
 use Modules\Core\Facades\Fields;
+use Modules\Core\Fields\Boolean;
 use Modules\Core\Fields\CreatedAt;
 use Modules\Core\Fields\ID;
 use Modules\Core\Fields\Text;
@@ -93,9 +94,10 @@ class Warehouse extends Resource implements Tableable, WithResourceRoutes
                 ->rules(['nullable', StringRule::make()])
                 ->hideFromIndex(),
 
-            Text::make('is_active', __('warehouse::warehouse.fields.is_active'))
-                ->rules(['nullable'])
-                ->hideFromDetail(),
+            Boolean::make('is_active', __('warehouse::warehouse.fields.is_active'))
+                ->rules(['nullable', 'boolean'])
+                ->creationRules('nullable', 'boolean')
+                ->updateRules('nullable', 'boolean'),
 
             CreatedAt::make()->hidden(),
 

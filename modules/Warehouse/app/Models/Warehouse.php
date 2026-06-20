@@ -8,6 +8,11 @@ class Warehouse extends Model
 {
     protected $table = 'warehouses';
 
+
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
     protected $fillable = [
         'name',
         'code',
@@ -19,3 +24,4 @@ class Warehouse extends Model
         'is_active' => 'boolean',
     ];
 }
+

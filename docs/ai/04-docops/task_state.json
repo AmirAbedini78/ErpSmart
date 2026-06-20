@@ -1,15 +1,21 @@
 {
-  "active_task": "warehouse-resource-ui",
+  "active_task": "warehouse-module-completion",
   "module": "Warehouse",
-  "status": "patch_ready",
-  "last_completed_step": "Converted Warehouse smoke views to Resource UI pattern and updated SmartDocs/RAG manifest.",
-  "next_validation": [
+  "status": "boolean_field_fix_ready",
+  "last_completed_step": "Fixed Warehouse is_active field mapping from Text to Boolean and documented schema-aware field generation rule.",
+  "current_validation": [
     "build frontend",
-    "open /warehouses",
+    "clear Laravel cache",
     "open /warehouses/create",
+    "confirm Active renders as boolean/toggle field",
     "create a warehouse record",
-    "open /warehouses/{id}",
-    "open /warehouses/{id}/edit",
-    "verify ResourceTable reload after create/edit"
+    "confirm SQL payload no longer sends arbitrary text for is_active"
+  ],
+  "next_steps": [
+    "verify Resource API endpoints",
+    "complete permission behavior",
+    "confirm custom fields compatibility",
+    "confirm import/export behavior",
+    "plan notes/documents/activities integration"
   ]
 }
