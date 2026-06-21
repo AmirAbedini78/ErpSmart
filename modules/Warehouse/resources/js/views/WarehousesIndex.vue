@@ -34,6 +34,16 @@
           />
 
           <IDropdownItem
+            v-if="$gate.isSuperAdmin()"
+            icon="Cog"
+            :to="{
+              name: 'resource-fields',
+              params: { resourceName },
+            }"
+            :text="$t('warehouse::warehouse.actions.customize_fields')"
+          />
+
+          <IDropdownItem
             v-if="resourceInformation.usesSoftDeletes"
             icon="Trash"
             :to="{
@@ -121,4 +131,3 @@ function handleTableLoaded(e) {
   tableLoaded.value = true
 }
 </script>
-

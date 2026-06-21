@@ -376,3 +376,39 @@ Important Builder rule: when a generated module is `master_data_global`, do not 
 
 A table-level guard was also added. If the logged-in user lacks `view all warehouses`, the Warehouse table query is forced to return zero rows. This prevents rows from being visible through ResourceTable even when a frontend route/menu is reachable.
 
+
+
+## 2026-06-20 Custom Fields and language stabilization step
+
+Warehouse is ready for Core Custom Fields:
+
+```text
+Resource contract: AcceptsCustomFields
+Unique custom fields: AcceptsUniqueCustomFields
+Settings route: /settings/fields/warehouses
+Frontend shortcut: Warehouses index dropdown -> Customize fields
+```
+
+The Warehouse index action menu now includes a super-admin-only shortcut to the Core field customization screen. This does not create a separate custom field system; it uses the existing Core `CustomFieldController`, Settings Fields UI, field manager, field visibility settings, and Resource field hydration pipeline.
+
+Expected manual test:
+
+```text
+1. Login as super admin.
+2. Open /warehouses.
+3. Use the actions dropdown -> Customize fields.
+4. Add a custom text field such as Storage Zone.
+5. Save create/update/detail field settings.
+6. Open /warehouses/create and confirm the custom field appears.
+7. Create a Warehouse with the custom field value.
+8. Open detail/edit and confirm value persists.
+```
+
+Language correction rule:
+
+```text
+Never bind a translation key that resolves to an array/object into a label/text prop.
+Use leaf keys only, e.g. warehouse::warehouse.actions.customize_fields, not warehouse::warehouse.actions.
+```
+
+Warehouse permission labels were also made more explicit for `bulk_delete`, `export`, and `import` role UI views so the role screen has stable display strings.

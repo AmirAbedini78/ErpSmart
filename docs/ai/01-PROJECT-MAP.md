@@ -134,3 +134,10 @@ import warehouses
 
 The Warehouse table query is protected as well: a user without `view all warehouses` receives no table rows even if the route is reachable.
 
+
+
+## Warehouse custom fields step — 2026-06-20
+
+Warehouse is now treated as a first-class custom-field-capable Resource. It already implements `AcceptsCustomFields` and `AcceptsUniqueCustomFields`; this step adds a direct admin shortcut from the Warehouse table action menu to `Settings -> Fields -> warehouses`.
+
+Language stability note: permission/action labels must use concrete string translation keys. Do not pass a whole nested language array to Vue/i18n or role UI metadata, because the UI may render the JSON object instead of a display label.

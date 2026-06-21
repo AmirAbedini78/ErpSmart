@@ -177,18 +177,21 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
                 ]);
 
                 $manager->view('bulk_delete', [
+                    'as' => __('warehouse::warehouse.permissions.bulk_delete'),
                     'permissions' => [
-                        'bulk delete '.$resource->name() => __('core::role.capabilities.bulk_delete'),
+                        'bulk delete '.$resource->name() => __('warehouse::warehouse.permissions.bulk_delete'),
                     ],
                 ]);
 
                 $manager->view('export', [
+                    'as' => __('warehouse::warehouse.permissions.export'),
                     'permissions' => [
                         'export '.$resource->name() => __('warehouse::warehouse.permissions.export'),
                     ],
                 ]);
 
                 $manager->view('import', [
+                    'as' => __('warehouse::warehouse.permissions.import'),
                     'permissions' => [
                         'import '.$resource->name() => __('warehouse::warehouse.permissions.import'),
                     ],

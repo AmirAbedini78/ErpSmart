@@ -1,158 +1,78 @@
 {
   "module": "Warehouse",
-  "status": "permission_policy_ready",
-  "purpose": "First builder-aware business entity module and template for future Module Builder generation.",
   "resource_name": "warehouses",
-  "singular_resource_lookup": "warehouse is not expected to resolve; use warehouses",
+  "status": "custom_fields_validation_ready",
+  "policy_mode": "master_data_global",
+  "ownership_columns": [],
   "backend": {
-    "module_json": "modules/Warehouse/module.json",
     "provider": "modules/Warehouse/app/Providers/WarehouseServiceProvider.php",
-    "route_provider": "modules/Warehouse/app/Providers/RouteServiceProvider.php",
     "model": "modules/Warehouse/app/Models/Warehouse.php",
-    "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php",
     "resource": "modules/Warehouse/app/Resources/Warehouse.php",
     "table": "modules/Warehouse/app/Resources/WarehouseTable.php",
-    "migration": "modules/Warehouse/database/migrations/2026_06_12_184218_create_warehouses_table.php",
-    "translation": "modules/Warehouse/lang/en/warehouse.php",
-    "import_tracking_migration": "modules/Warehouse/database/migrations/2026_06_19_160500_add_import_id_to_warehouses_table.php"
+    "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php"
   },
   "frontend": {
-    "module_entry": "modules/Warehouse/resources/js/app.js",
+    "entry": "modules/Warehouse/resources/js/app.js",
     "routes": "modules/Warehouse/resources/js/routes.js",
-    "index_view": "modules/Warehouse/resources/js/views/WarehousesIndex.vue",
-    "create_view": "modules/Warehouse/resources/js/views/WarehousesCreate.vue",
-    "edit_view": "modules/Warehouse/resources/js/views/WarehousesEdit.vue",
-    "detail_view": "modules/Warehouse/resources/js/views/WarehousesView.vue",
-    "root_registration": "resources/js/app.js"
+    "registered_in": "resources/js/app.js",
+    "views": [
+      "modules/Warehouse/resources/js/views/WarehousesIndex.vue",
+      "modules/Warehouse/resources/js/views/WarehousesCreate.vue",
+      "modules/Warehouse/resources/js/views/WarehousesEdit.vue",
+      "modules/Warehouse/resources/js/views/WarehousesView.vue"
+    ],
+    "custom_fields_shortcut": "modules/Warehouse/resources/js/views/WarehousesIndex.vue -> resource-fields route"
   },
   "database": {
     "logical_table": "warehouses",
-    "runtime_prefixed_example": "tbl_warehouses",
-    "primary_display_field": "name",
-    "unique_candidate": "code",
-    "import_tracking_column": "import_id",
-    "runtime_prefixed_import_column_example": "tbl_warehouses.import_id"
-  },
-  "routes": {
-    "index": "/warehouses",
-    "create": "/warehouses/create",
-    "view": "/warehouses/{id}",
-    "edit": "/warehouses/{id}/edit"
-  },
-  "builder_requirements_learned": [
-    "Register backend Resource in provider protected array $resources.",
-    "Call registerResources() during module provider registration.",
-    "Generate frontend app.js and routes.js.",
-    "Import module app.js into resources/js/app.js or implement a dynamic module entry registry.",
-    "Generate SmartDocs and RAG manifest with each module change.",
-    "Map database column type, model cast/default, Resource field class, validation, and UI control as one atomic field definition.",
-    "Resource capability contracts must be generated with their prerequisites, not added as isolated interface names.",
-    "Importable resources require import_id tracking support on the model/table for safe revert behavior.",
-    "AcceptsCustomFields makes the resource eligible for the Custom Field builder workflow.",
-    "Every generated Resource must declare a policy mode before policy code is generated.",
-    "Global master-data resources must not grant own/team permissions unless ownership/team schema and query scopes exist.",
-    "Permission policy code is part of the generated module contract and must be reflected in SmartDocs/RAG manifests."
-  ],
-  "validation": [
-    "Innoclapps::resourceByName('warehouses') returns Modules\\Warehouse\\Resources\\Warehouse",
-    "resources/js/app.js contains import '@/Warehouse/app.js'",
-    "npm run build completes",
-    "/warehouses loads ResourceTable instead of smoke text",
-    "Creating a warehouse must not send arbitrary text for is_active; Resource field must be Boolean.",
-    "Warehouse Resource implements Exportable and Importable.",
-    "Warehouse Resource implements AcceptsCustomFields and AcceptsUniqueCustomFields.",
-    "warehouses table has nullable indexed import_id after migration.",
-    "GET /api/warehouses/export-fields should no longer 404 because Resource is Exportable.",
-    "GET /api/warehouses/import/sample should no longer 404 because Resource is Importable.",
-    "WarehousePolicy no longer returns true for every action.",
-    "Super admin can still perform Warehouse actions.",
-    "Non-super-admin without Warehouse permissions should receive 403 for protected actions.",
-    "Role-based Warehouse permissions should be tested through the Resource API and UI."
-  ],
-  "field_map": {
-    "name": {
-      "db_type": "string",
-      "model_cast": null,
-      "resource_field": "Text",
-      "validation": [
-        "required",
-        "string"
-      ]
-    },
-    "code": {
-      "db_type": "string nullable unique",
-      "model_cast": null,
-      "resource_field": "Text",
-      "validation": [
-        "nullable",
-        "string",
-        "unique:warehouses,code"
-      ]
-    },
-    "description": {
-      "db_type": "text nullable",
-      "model_cast": null,
-      "resource_field": "Text",
-      "validation": [
-        "nullable",
-        "string"
-      ]
-    },
-    "is_active": {
-      "db_type": "boolean default true",
-      "model_cast": "boolean",
-      "model_default": true,
-      "resource_field": "Boolean",
-      "validation": [
-        "nullable",
-        "boolean"
-      ],
-      "ui_control": "boolean/toggle"
-    },
-    "import_id": {
-      "db_type": "unsignedBigInteger nullable indexed",
-      "model_cast": "integer",
-      "resource_field": null,
-      "ui_control": "hidden/internal",
-      "purpose": "Tracks rows created by Core import flow so imports can be inspected and reverted."
-    }
-  },
-  "last_fix": "2026-06-19 warehouse policy tightened: moved from always-true MVP policy to permission-based master_data_global policy mode.",
-  "capability_contracts": {
-    "custom_fields": [
-      "AcceptsCustomFields",
-      "AcceptsUniqueCustomFields"
-    ],
-    "import_export": [
-      "Importable",
-      "Exportable"
-    ],
-    "resource_runtime": [
-      "Tableable",
-      "WithResourceRoutes"
+    "runtime_prefixed_table": "tbl_warehouses",
+    "required_columns": [
+      "id",
+      "name",
+      "code",
+      "description",
+      "is_active",
+      "import_id",
+      "created_at",
+      "updated_at"
     ]
   },
-  "permissions": {
-    "policy_file": "modules/Warehouse/app/Policies/WarehousePolicy.php",
-    "policy_mode": "master_data_global",
-    "ownership_columns": [],
-    "super_admin_bypass": "Handled by UsersServiceProvider Gate::before and also accepted by WarehousePolicy helper.",
-    "supported_permissions": [
-      "view all warehouses",
-      "create warehouses",
-      "edit all warehouses",
-      "delete any warehouse",
-      "bulk delete warehouses",
-      "export warehouses",
-      "import warehouses"
-    ],
-    "unsupported_until_schema_exists": [
-      "view own warehouses",
-      "view team warehouses",
-      "edit own warehouses",
-      "edit team warehouses",
-      "delete own warehouses",
-      "delete team warehouses"
-    ]
+  "capabilities": [
+    "WithResourceRoutes",
+    "Tableable",
+    "AcceptsCustomFields",
+    "AcceptsUniqueCustomFields",
+    "Importable",
+    "Exportable"
+  ],
+  "permissions": [
+    "view all warehouses",
+    "create warehouses",
+    "edit all warehouses",
+    "delete any warehouse",
+    "bulk delete warehouses",
+    "export warehouses",
+    "import warehouses"
+  ],
+  "authorization_guards": {
+    "policy": "WarehousePolicy",
+    "table_query_guard": "Warehouse::authorizedToViewWarehouses() returns no rows without view all warehouses",
+    "import_visibility_note": "Core Resource JSON currently exposes import for Importable resources when create is allowed. import warehouses is reserved for explicit future hooks."
+  },
+  "builder_notes": [
+    "master_data_global resources must register explicit global permission UI entries",
+    "do not generate own/team permissions without ownership/team schema",
+    "Resourceable trait is required on the model for first-class Resource behavior",
+    "permission changes require optimize:clear and permission:cache-reset",
+    "Language labels must use leaf translation keys to avoid JSON object rendering in UI",
+    "Custom-field-capable resources should expose /settings/fields/{resourceName} through the Core Settings Fields UI"
+  ],
+  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-custom-fields-step.md",
+  "custom_fields": {
+    "enabled": true,
+    "accepts_unique_custom_fields": true,
+    "settings_route": "/settings/fields/warehouses",
+    "frontend_shortcut": "Warehouses index dropdown: Customize fields",
+    "validation_status": "manual_validation_required"
   }
 }
