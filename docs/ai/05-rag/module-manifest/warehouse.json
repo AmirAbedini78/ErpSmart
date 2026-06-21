@@ -1,6 +1,6 @@
 {
   "module": "Warehouse",
-  "status": "resource_capability_contracts_ready",
+  "status": "permission_policy_ready",
   "purpose": "First builder-aware business entity module and template for future Module Builder generation.",
   "resource_name": "warehouses",
   "singular_resource_lookup": "warehouse is not expected to resolve; use warehouses",
@@ -48,7 +48,10 @@
     "Map database column type, model cast/default, Resource field class, validation, and UI control as one atomic field definition.",
     "Resource capability contracts must be generated with their prerequisites, not added as isolated interface names.",
     "Importable resources require import_id tracking support on the model/table for safe revert behavior.",
-    "AcceptsCustomFields makes the resource eligible for the Custom Field builder workflow."
+    "AcceptsCustomFields makes the resource eligible for the Custom Field builder workflow.",
+    "Every generated Resource must declare a policy mode before policy code is generated.",
+    "Global master-data resources must not grant own/team permissions unless ownership/team schema and query scopes exist.",
+    "Permission policy code is part of the generated module contract and must be reflected in SmartDocs/RAG manifests."
   ],
   "validation": [
     "Innoclapps::resourceByName('warehouses') returns Modules\\Warehouse\\Resources\\Warehouse",
@@ -60,7 +63,11 @@
     "Warehouse Resource implements AcceptsCustomFields and AcceptsUniqueCustomFields.",
     "warehouses table has nullable indexed import_id after migration.",
     "GET /api/warehouses/export-fields should no longer 404 because Resource is Exportable.",
-    "GET /api/warehouses/import/sample should no longer 404 because Resource is Importable."
+    "GET /api/warehouses/import/sample should no longer 404 because Resource is Importable.",
+    "WarehousePolicy no longer returns true for every action.",
+    "Super admin can still perform Warehouse actions.",
+    "Non-super-admin without Warehouse permissions should receive 403 for protected actions.",
+    "Role-based Warehouse permissions should be tested through the Resource API and UI."
   ],
   "field_map": {
     "name": {
@@ -110,7 +117,7 @@
       "purpose": "Tracks rows created by Core import flow so imports can be inspected and reverted."
     }
   },
-  "last_fix": "2026-06-19 warehouse Resource capability contracts enabled: custom fields, import, export, and import_id tracking.",
+  "last_fix": "2026-06-19 warehouse policy tightened: moved from always-true MVP policy to permission-based master_data_global policy mode.",
   "capability_contracts": {
     "custom_fields": [
       "AcceptsCustomFields",
@@ -123,6 +130,29 @@
     "resource_runtime": [
       "Tableable",
       "WithResourceRoutes"
+    ]
+  },
+  "permissions": {
+    "policy_file": "modules/Warehouse/app/Policies/WarehousePolicy.php",
+    "policy_mode": "master_data_global",
+    "ownership_columns": [],
+    "super_admin_bypass": "Handled by UsersServiceProvider Gate::before and also accepted by WarehousePolicy helper.",
+    "supported_permissions": [
+      "view all warehouses",
+      "create warehouses",
+      "edit all warehouses",
+      "delete any warehouse",
+      "bulk delete warehouses",
+      "export warehouses",
+      "import warehouses"
+    ],
+    "unsupported_until_schema_exists": [
+      "view own warehouses",
+      "view team warehouses",
+      "edit own warehouses",
+      "edit team warehouses",
+      "delete own warehouses",
+      "delete team warehouses"
     ]
   }
 }

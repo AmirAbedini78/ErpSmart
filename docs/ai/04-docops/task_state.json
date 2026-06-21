@@ -1,21 +1,23 @@
 {
   "active_task": "warehouse-module-completion",
   "module": "Warehouse",
-  "status": "resource_capability_contracts_ready",
-  "last_completed_step": "Create/edit/table work; boolean field fixed; Resource now opts into custom fields, unique custom fields, import, export, table, and resource routes with import_id tracking migration.",
+  "status": "permission_policy_ready",
+  "last_completed_step": "Warehouse create/edit/table works, boolean field fixed, capability contracts enabled, import_id tracking added, and WarehousePolicy tightened from always-true MVP authorization to permission-based master_data_global policy mode.",
   "current_validation": [
-    "run php artisan migrate --force",
-    "confirm warehouses.import_id exists",
-    "confirm Warehouse Resource instanceof Exportable, Importable, AcceptsCustomFields, AcceptsUniqueCustomFields",
-    "confirm /api/warehouses/export-fields no longer returns 404",
-    "confirm /api/warehouses/import/sample no longer returns 404",
-    "confirm /warehouses still lists created records after migration"
+    "run php artisan optimize:clear",
+    "confirm super admin can still list/create/edit/delete warehouses",
+    "confirm GET /api/permissions or role UI contains Warehouse permissions after permissions sync/create-missing if needed",
+    "test non-super-admin without Warehouse permissions receives 403",
+    "test role with Warehouse view/create/edit permissions can perform only assigned actions",
+    "confirm /warehouses table and create/edit flows still work after policy change"
   ],
   "next_steps": [
-    "tighten Warehouse permission behavior",
     "validate custom field creation for warehouses through UI/API",
     "validate CSV import/export end-to-end",
-    "plan notes/documents/activities/audit integration",
+    "add notes/documents/activities/audit integration plan",
     "then introduce Warehouse Locations as child entity"
-  ]
+  ],
+  "current_focus": "Warehouse permission UI and table visibility fix completed",
+  "warehouse_status": "resource_ui_create_edit_table_import_export_permissions_fixed",
+  "next_step": "Validate role UI with a non-super-admin role, then continue to Custom Fields compatibility"
 }

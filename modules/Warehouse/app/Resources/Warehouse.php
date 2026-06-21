@@ -10,6 +10,7 @@ use Modules\Core\Contracts\Resources\Importable;
 use Modules\Core\Contracts\Resources\Tableable;
 use Modules\Core\Contracts\Resources\WithResourceRoutes;
 use Modules\Core\Facades\Fields;
+use Modules\Core\Facades\Innoclapps;
 use Modules\Core\Fields\Boolean;
 use Modules\Core\Fields\CreatedAt;
 use Modules\Core\Fields\ID;
@@ -61,6 +62,10 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 
     public function table(Builder $query, ResourceRequest $request, string $identifier): Table
     {
+        if (! $this->authorizedToViewWarehouses($request)) {
+            $query->whereRaw('1 = 0');
+        }
+
         return WarehouseTable::make($query, $request, $identifier)
             ->withDefaultView(
                 name: 'warehouse::warehouse.warehouses',
@@ -136,7 +141,66 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 
     public function registerPermissions(): void
     {
-        $this->registerCommonPermissions();
+        $resource = $this;
+
+        Innoclapps::permissions(function ($manager) use ($resource) {
+            $group = ['name' => $resource->name(), 'as' => $resource->label()];
+
+            $manager->group($group, function ($manager) use ($resource) {
+                $manager->view('view', [
+                    'as' => __('core::role.capabilities.view'),
+                    'permissions' => [
+                        'view all '.$resource->name() => __('warehouse::warehouse.permissions.view_all'),
+                    ],
+                ]);
+
+                $manager->view('create', [
+                    'as' => __('warehouse::warehouse.permissions.create'),
+                    'permissions' => [
+                        'create '.$resource->name() => __('warehouse::warehouse.permissions.create'),
+                    ],
+                ]);
+
+                $manager->view('edit', [
+                    'as' => __('core::role.capabilities.edit'),
+                    'permissions' => [
+                        'edit all '.$resource->name() => __('warehouse::warehouse.permissions.edit_all'),
+                    ],
+                ]);
+
+                $manager->view('delete', [
+                    'as' => __('core::role.capabilities.delete'),
+                    'revokeable' => true,
+                    'permissions' => [
+                        'delete any '.$resource->singularName() => __('warehouse::warehouse.permissions.delete_any'),
+                    ],
+                ]);
+
+                $manager->view('bulk_delete', [
+                    'permissions' => [
+                        'bulk delete '.$resource->name() => __('core::role.capabilities.bulk_delete'),
+                    ],
+                ]);
+
+                $manager->view('export', [
+                    'permissions' => [
+                        'export '.$resource->name() => __('warehouse::warehouse.permissions.export'),
+                    ],
+                ]);
+
+                $manager->view('import', [
+                    'permissions' => [
+                        'import '.$resource->name() => __('warehouse::warehouse.permissions.import'),
+                    ],
+                ]);
+            });
+        });
+    }
+
+    protected function authorizedToViewWarehouses(ResourceRequest $request): bool
+    {
+        $user = $request->user();
+
+        return (bool) ($user?->isSuperAdmin() || $user?->can('view all warehouses'));
     }
 }
-

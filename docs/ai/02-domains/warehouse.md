@@ -236,6 +236,33 @@ model cast: import_id => integer
 
 Builder implication: resource capability contracts are not just UI switches. They may require database columns, model casts, policies, docs, and smoke tests. The Module Builder must generate capability-specific prerequisites atomically.
 
+
+## 2026-06-19 Permission policy tightened
+
+Warehouse is no longer using the permissive MVP policy where all authorization methods returned `true`. The policy now checks Core/Spatie permission names while still allowing super admins through the project-wide super-admin bypass.
+
+Current policy mode:
+
+```text
+master_data_global
+```
+
+Supported Warehouse permission names:
+
+```text
+view all warehouses
+create warehouses
+edit all warehouses
+delete any warehouse
+bulk delete warehouses
+export warehouses
+import warehouses
+```
+
+Important rule: Warehouse currently has no owner/team column, so `own` and `team` permission variants are not considered sufficient. If a future version adds `owner_id`, `user_id`, `team_id`, or visibility groups, the Builder must generate schema, query scopes, and policy branches together.
+
+Builder implication: authorization is a generated architecture layer, not a manual afterthought. The Builder must ask/select a policy mode for each generated Resource, for example `master_data_global`, `owned_by_user`, `team_visible`, or `visibility_group_based`.
+
 ## Builder implications
 The future Module Builder must generate all of these layers atomically:
 
@@ -314,3 +341,38 @@ When testing create/update, inspect the browser payload. It must not contain fre
 ```text
 Create Warehouse validation must send `is_active` as boolean, not arbitrary text.
 ```
+
+## 2026-06-20 Permission UI and data-exposure fix
+
+The first strict Warehouse policy revealed two integration issues:
+
+1. `create warehouses` was checked by the policy but was not registered in the role permission UI.
+2. A non-super-admin user could still open the Warehouse table and see rows because the table query was not filtered when the user lacked `view all warehouses`.
+
+Fix applied:
+
+```text
+modules/Warehouse/app/Resources/Warehouse.php
+modules/Warehouse/app/Policies/WarehousePolicy.php
+modules/Warehouse/app/Models/Warehouse.php
+modules/Warehouse/lang/en/warehouse.php
+```
+
+Warehouse now registers its own master-data permission group instead of using only `registerCommonPermissions()`. This avoids misleading `own/team` permissions for a model that has no owner/team columns yet.
+
+Current permission matrix:
+
+```text
+view all warehouses       -> can list/view Warehouse records
+create warehouses         -> can create Warehouse records; also controls Core import visibility for Importable resources
+edit all warehouses       -> can update Warehouse records
+delete any warehouse      -> can delete one Warehouse record
+bulk delete warehouses    -> can run bulk delete when also allowed to delete each selected record
+export warehouses         -> can export Warehouse records
+import warehouses         -> reserved explicit capability for future Warehouse-specific import authorization
+```
+
+Important Builder rule: when a generated module is `master_data_global`, do not blindly generate `own/team` role UI entries unless the Builder also generates ownership/team columns, criteria classes, filters, and policy branches.
+
+A table-level guard was also added. If the logged-in user lacks `view all warehouses`, the Warehouse table query is forced to return zero rows. This prevents rows from being visible through ResourceTable even when a frontend route/menu is reachable.
+

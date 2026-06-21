@@ -3,9 +3,12 @@
 namespace Modules\Warehouse\Models;
 
 use Modules\Core\Models\Model;
+use Modules\Core\Resource\Resourceable;
 
 class Warehouse extends Model
 {
+    use Resourceable;
+
     protected $table = 'warehouses';
 
 

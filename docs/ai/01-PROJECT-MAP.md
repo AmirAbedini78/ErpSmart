@@ -93,3 +93,44 @@ Resource capability contracts must be generated with database/model/API prerequi
 ```
 
 Example: `Importable` is not only an interface. It requires `warehouses.import_id`, model fillable/cast support, import API smoke tests, and SmartDocs/RAG updates.
+
+
+## Warehouse permission milestone — 2026-06-19
+Warehouse now has a real policy layer instead of always-true MVP authorization. It is documented as a `master_data_global` Resource, meaning permissions are global and not owner/team-scoped yet.
+
+Builder rule:
+
+```text
+Every generated Resource must declare a policy mode before policy code is generated.
+```
+
+For Warehouse the active permission names are:
+
+```text
+view all warehouses
+create warehouses
+edit all warehouses
+delete any warehouse
+bulk delete warehouses
+export warehouses
+import warehouses
+```
+
+## Warehouse permission UI correction — 2026-06-20
+
+Warehouse permissions are now explicitly registered as a master-data permission group. The module no longer depends only on the generic common permission provider because the generic provider exposes `own/team` choices that are invalid until Warehouse has ownership/team schema.
+
+Registered Warehouse permissions:
+
+```text
+view all warehouses
+create warehouses
+edit all warehouses
+delete any warehouse
+bulk delete warehouses
+export warehouses
+import warehouses
+```
+
+The Warehouse table query is protected as well: a user without `view all warehouses` receives no table rows even if the route is reachable.
+
