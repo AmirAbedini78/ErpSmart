@@ -1,9 +1,27 @@
 {
-  "active_task": null,
-  "last_platform_fix": "offline_vue_runtime",
-  "offline_frontend_assets": {
-    "vue_runtime": "public/vendor/vue",
-    "sync_script": "scripts/sync-local-vue-assets.mjs",
-    "status": "required"
-  }
+  "active_task": "warehouse-module-completion",
+  "module": "Warehouse",
+  "status": "import_export_validation_ready",
+  "last_completed_step": "Warehouse permissions/actions/custom fields are functional; offline Vue runtime fixed; Warehouse model now normalizes boolean values for CSV import.",
+  "current_validation": [
+    "run php artisan optimize:clear",
+    "run php artisan permission:cache-reset",
+    "confirm Warehouse role has View/Create/Export/Import permissions granted",
+    "test GET /api/warehouses/export-fields",
+    "test CSV export from /warehouses UI",
+    "test sample download from Warehouse import UI",
+    "upload docs/ai/04-docops/samples/warehouses-import-sample.csv",
+    "confirm Active values yes/no import correctly into is_active",
+    "confirm imported records have import_id",
+    "capture Permissions::groups()['warehouses']['views'] if duplicate Export labels still appear"
+  ],
+  "next_steps": [
+    "resolve duplicate Export role UI labels after inspecting runtime permission group views",
+    "validate import revert behavior",
+    "add Notes/Documents/Activities/Audit integration plan",
+    "then introduce Warehouse Locations as child entity"
+  ],
+  "current_focus": "Validate Warehouse import/export through Core Resource API and UI without adding custom controllers.",
+  "warehouse_status": "resource_ui_create_edit_table_permissions_custom_fields_actions_import_export_validation_ready",
+  "next_step": "Run import/export manual validation and inspect duplicate export permission views if still present."
 }

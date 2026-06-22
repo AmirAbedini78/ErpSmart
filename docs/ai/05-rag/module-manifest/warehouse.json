@@ -1,7 +1,7 @@
 {
   "module": "Warehouse",
   "resource_name": "warehouses",
-  "status": "permission_action_cleanup_ready",
+  "status": "import_export_validation_ready",
   "policy_mode": "master_data_global",
   "ownership_columns": [],
   "backend": {
@@ -70,9 +70,12 @@
     "Custom-field-capable resources should expose /settings/fields/{resourceName} through the Core Settings Fields UI",
     "stale generated permissions must be cleaned from database, not only removed from code",
     "Cloneable resources must provide both the Cloneable contract and clone(Model, userId) implementation",
-    "row/bulk actions must be explicitly registered in Resource::actions() and authorized with policy gates"
+    "row/bulk actions must be explicitly registered in Resource::actions() and authorized with policy gates",
+    "boolean import fields require model-level normalization, not only Resource validation",
+    "import/export should use Core Resource endpoints unless domain-specific processing requires custom controllers",
+    "duplicate role UI labels must be debugged from Permissions::groups() views before deleting persisted permission records"
   ],
-  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-permission-action-cleanup.md",
+  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-import-export-validation.md",
   "custom_fields": {
     "enabled": true,
     "accepts_unique_custom_fields": true,
@@ -124,5 +127,23 @@
       "updated_at"
     ],
     "note": "description is now index-visible so normal role users see the useful master-data columns without needing column customization rights."
+  },
+  "import_export": {
+    "enabled": true,
+    "core_endpoints": [
+      "GET /api/warehouses/export-fields",
+      "POST /api/warehouses/export",
+      "GET /api/warehouses/import",
+      "GET /api/warehouses/import/sample",
+      "POST /api/warehouses/import/upload",
+      "POST /api/warehouses/import/{id}",
+      "DELETE /api/warehouses/import/{id}",
+      "DELETE /api/warehouses/import/{id}/revert"
+    ],
+    "required_database_column": "import_id",
+    "boolean_normalization": "modules/Warehouse/app/Models/Warehouse.php::setIsActiveAttribute",
+    "sample_csv": "docs/ai/04-docops/samples/warehouses-import-sample.csv",
+    "validation_status": "manual_validation_required",
+    "known_issue": "Role UI can show multiple generic Export rows until Core permission group views are inspected."
   }
 }

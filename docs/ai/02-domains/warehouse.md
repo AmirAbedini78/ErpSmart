@@ -453,3 +453,34 @@ import warehouses
 Important Builder rule: when an AI Builder changes permission names during iteration, it must also generate a cleanup/sync migration. Removing stale permission code is not enough because Spatie permission records remain persisted in the database.
 
 Column visibility adjustment: `description` is now visible on index/table by default. The hidden-by-design default columns remain `id`, `created_at`, and `updated_at`.
+
+
+## 2026-06-20 Import/Export validation and boolean import normalization
+
+Warehouse import/export is now treated as a Core Resource capability, not as a custom controller. The expected Core endpoints are:
+
+```text
+GET  /api/warehouses/export-fields
+POST /api/warehouses/export
+GET  /api/warehouses/import
+GET  /api/warehouses/import/sample
+POST /api/warehouses/import/upload
+POST /api/warehouses/import/{id}
+DELETE /api/warehouses/import/{id}
+DELETE /api/warehouses/import/{id}/revert
+```
+
+The Warehouse model now normalizes `is_active` values in `setIsActiveAttribute()`. This protects create/update/import flows from raw CSV strings such as `yes`, `no`, `true`, `false`, `1`, `0`, `on`, and `off`.
+
+Known validation item: the role UI can still show multiple generic `Export` rows. This should be investigated through the permission group registry before deleting records. The diagnostic command for runtime inspection is:
+
+```php
+collect(\Modules\Core\Facades\Permissions::groups()['warehouses']['views'] ?? [])->map(fn ($view) => [
+    'view' => $view['view'],
+    'as' => $view['as'],
+    'keys' => $view['keys'],
+    'permissions' => $view['permissions'],
+]);
+```
+
+Do not treat this as a blocking issue for Import/Export functional testing unless it creates authorization failure.
