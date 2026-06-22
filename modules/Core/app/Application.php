@@ -384,13 +384,15 @@ class Application
      */
     public static function vueSrc(): string
     {
-        $version = config('app.vue_version');
-
+        // ERPSMART: keep the application fully offline-capable.
+        // The global Vue build is required by @concordcrm/vite-plugin-global-vue.
+        // Loading it from unpkg makes the whole UI fail when internet/CDN access is unavailable.
+        // See docs/ai/03-architecture/offline-frontend-assets.md.
         if (app()->isProduction() || ! static::isRunningViteHot()) {
-            return "https://unpkg.com/vue@$version/dist/vue.global.prod.js";
+            return asset('vendor/vue/vue.global.prod.js');
         }
 
-        return "https://unpkg.com/vue@$version/dist/vue.global.js";
+        return asset('vendor/vue/vue.global.js');
     }
 
     /**
