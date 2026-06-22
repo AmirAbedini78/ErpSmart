@@ -141,3 +141,16 @@ The Warehouse table query is protected as well: a user without `view all warehou
 Warehouse is now treated as a first-class custom-field-capable Resource. It already implements `AcceptsCustomFields` and `AcceptsUniqueCustomFields`; this step adds a direct admin shortcut from the Warehouse table action menu to `Settings -> Fields -> warehouses`.
 
 Language stability note: permission/action labels must use concrete string translation keys. Do not pass a whole nested language array to Vue/i18n or role UI metadata, because the UI may render the JSON object instead of a display label.
+
+## Warehouse permission/action cleanup checkpoint — 2026-06-20
+
+Warehouse now includes canonical permission cleanup and row action support:
+
+```text
+Resource: modules/Warehouse/app/Resources/Warehouse.php
+Cleanup migration: modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php
+History: docs/ai/04-docops/history/2026-06-20-warehouse-permission-action-cleanup.md
+RAG manifest: docs/ai/05-rag/module-manifest/warehouse.json
+```
+
+Builder implication: generated modules must treat permissions as persisted state, not only PHP registration code. A permission rename requires database cleanup/sync.

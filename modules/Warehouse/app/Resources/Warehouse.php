@@ -5,6 +5,9 @@ namespace Modules\Warehouse\Resources;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Core\Contracts\Resources\AcceptsCustomFields;
 use Modules\Core\Contracts\Resources\AcceptsUniqueCustomFields;
+use Modules\Core\Actions\CloneAction;
+use Modules\Core\Actions\DeleteAction;
+use Modules\Core\Contracts\Resources\Cloneable;
 use Modules\Core\Contracts\Resources\Exportable;
 use Modules\Core\Contracts\Resources\Importable;
 use Modules\Core\Contracts\Resources\Tableable;
@@ -19,7 +22,9 @@ use Modules\Core\Fields\UpdatedAt;
 use Modules\Core\Filters\CreatedAt as CreatedAtFilter;
 use Modules\Core\Filters\Text as TextFilter;
 use Modules\Core\Filters\UpdatedAt as UpdatedAtFilter;
+use Modules\Core\Http\Requests\ActionRequest;
 use Modules\Core\Http\Requests\ResourceRequest;
+use Modules\Core\Models\Model;
 use Modules\Core\Menu\MenuItem;
 use Modules\Core\Resource\Resource;
 use Modules\Core\Rules\StringRule;
@@ -27,7 +32,7 @@ use Modules\Core\Table\Column;
 use Modules\Core\Table\Table;
 use Modules\Warehouse\Models\Warehouse as WarehouseModel;
 
-class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Exportable, Importable, Tableable, WithResourceRoutes
+class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Tableable, WithResourceRoutes
 {
     public static string $orderBy = 'name';
 
@@ -101,7 +106,10 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 
             Text::make('description', __('warehouse::warehouse.fields.description'))
                 ->rules(['nullable', StringRule::make()])
-                ->hideFromIndex(),
+                ->tapIndexColumn(fn (Column $column) => $column
+                    ->width('320px')
+                    ->minWidth('220px')
+                ),
 
             Boolean::make('is_active', __('warehouse::warehouse.fields.is_active'))
                 ->rules(['nullable', 'boolean'])
@@ -137,6 +145,37 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
     public static function singularLabel(): string
     {
         return __('warehouse::warehouse.warehouse');
+    }
+
+    public function actions(ResourceRequest $request): array
+    {
+        return [
+            (new CloneAction)
+                ->showInline()
+                ->canRun(fn (ActionRequest $request, WarehouseModel $model) => $request->user()->can('create', $model)),
+
+            (new DeleteAction)
+                ->showInline()
+                ->canRun(fn (ActionRequest $request, WarehouseModel $model) => $request->user()->can('delete', $model)),
+        ];
+    }
+
+    public function clone(Model $model, int $userId): Model
+    {
+        /** @var WarehouseModel $model */
+        $clone = $model->replicate([
+            'code',
+            'import_id',
+            'created_at',
+            'updated_at',
+        ]);
+
+        $clone->name = $this->uniqueCloneName($model->name);
+        $clone->code = $this->uniqueCloneCode($model->code);
+        $clone->import_id = null;
+        $clone->save();
+
+        return $clone;
     }
 
     public function registerPermissions(): void
@@ -198,6 +237,38 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
                 ]);
             });
         });
+    }
+
+    protected function uniqueCloneName(string $name): string
+    {
+        $base = trim($name) !== '' ? $name.' Copy' : __('warehouse::warehouse.clone.name_fallback');
+        $candidate = $base;
+        $counter = 2;
+
+        while (WarehouseModel::query()->where('name', $candidate)->exists()) {
+            $candidate = $base.' '.$counter;
+            $counter++;
+        }
+
+        return $candidate;
+    }
+
+    protected function uniqueCloneCode(?string $code): ?string
+    {
+        if (! $code) {
+            return null;
+        }
+
+        $base = $code.'-copy';
+        $candidate = $base;
+        $counter = 2;
+
+        while (WarehouseModel::query()->where('code', $candidate)->exists()) {
+            $candidate = $base.'-'.$counter;
+            $counter++;
+        }
+
+        return $candidate;
     }
 
     protected function authorizedToViewWarehouses(ResourceRequest $request): bool

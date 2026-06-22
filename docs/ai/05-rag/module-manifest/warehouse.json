@@ -1,7 +1,7 @@
 {
   "module": "Warehouse",
   "resource_name": "warehouses",
-  "status": "custom_fields_validation_ready",
+  "status": "permission_action_cleanup_ready",
   "policy_mode": "master_data_global",
   "ownership_columns": [],
   "backend": {
@@ -9,7 +9,8 @@
     "model": "modules/Warehouse/app/Models/Warehouse.php",
     "resource": "modules/Warehouse/app/Resources/Warehouse.php",
     "table": "modules/Warehouse/app/Resources/WarehouseTable.php",
-    "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php"
+    "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php",
+    "permission_cleanup_migration": "modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php"
   },
   "frontend": {
     "entry": "modules/Warehouse/resources/js/app.js",
@@ -43,7 +44,8 @@
     "AcceptsCustomFields",
     "AcceptsUniqueCustomFields",
     "Importable",
-    "Exportable"
+    "Exportable",
+    "Cloneable"
   ],
   "permissions": [
     "view all warehouses",
@@ -65,14 +67,62 @@
     "Resourceable trait is required on the model for first-class Resource behavior",
     "permission changes require optimize:clear and permission:cache-reset",
     "Language labels must use leaf translation keys to avoid JSON object rendering in UI",
-    "Custom-field-capable resources should expose /settings/fields/{resourceName} through the Core Settings Fields UI"
+    "Custom-field-capable resources should expose /settings/fields/{resourceName} through the Core Settings Fields UI",
+    "stale generated permissions must be cleaned from database, not only removed from code",
+    "Cloneable resources must provide both the Cloneable contract and clone(Model, userId) implementation",
+    "row/bulk actions must be explicitly registered in Resource::actions() and authorized with policy gates"
   ],
-  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-custom-fields-step.md",
+  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-permission-action-cleanup.md",
   "custom_fields": {
     "enabled": true,
     "accepts_unique_custom_fields": true,
     "settings_route": "/settings/fields/warehouses",
     "frontend_shortcut": "Warehouses index dropdown: Customize fields",
     "validation_status": "manual_validation_required"
+  },
+  "resource_actions": {
+    "clone": {
+      "enabled": true,
+      "requires_contract": "Cloneable",
+      "authorization": "create warehouses via Gate create",
+      "route": "POST /api/warehouses/{id}/clone",
+      "inline_action": true
+    },
+    "delete": {
+      "enabled": true,
+      "authorization": "delete any warehouse via Gate delete",
+      "inline_action": true,
+      "bulk_action_requires": [
+        "bulk delete warehouses",
+        "delete any warehouse"
+      ]
+    }
+  },
+  "permissions_cleanup": {
+    "canonical": [
+      "view all warehouses",
+      "create warehouses",
+      "edit all warehouses",
+      "delete any warehouse",
+      "bulk delete warehouses",
+      "export warehouses",
+      "import warehouses"
+    ],
+    "stale_cleanup_migration": "2026_06_20_180000_cleanup_warehouse_permissions.php",
+    "reason": "Remove stale Warehouse-related permissions generated during early MVP iterations, including generic duplicate export labels."
+  },
+  "table_columns": {
+    "default_visible_fields": [
+      "name",
+      "code",
+      "description",
+      "is_active"
+    ],
+    "hidden_by_design": [
+      "id",
+      "created_at",
+      "updated_at"
+    ],
+    "note": "description is now index-visible so normal role users see the useful master-data columns without needing column customization rights."
   }
 }

@@ -1,25 +1,27 @@
 {
   "active_task": "warehouse-module-completion",
   "module": "Warehouse",
-  "status": "custom_fields_validation_ready",
-  "last_completed_step": "Warehouse permission UI/data visibility fixed; Warehouse custom fields shortcut and language-stability fixes added.",
+  "status": "permission_action_cleanup_ready",
+  "last_completed_step": "Warehouse role UI permissions were cleaned; stale Warehouse permissions are removed by migration; row clone/delete actions added; description column is visible by default.",
   "current_validation": [
+    "run php artisan migrate --force",
     "run php artisan optimize:clear",
-    "run npm run build because WarehousesIndex.vue changed",
-    "login as super admin",
-    "open /warehouses and click Customize fields",
-    "confirm /settings/fields/warehouses opens",
-    "create a Warehouse custom text field and enable it for create/update/detail",
-    "create/edit a Warehouse and confirm custom field persists",
-    "check role UI Warehouse labels render as normal strings, not JSON objects"
+    "run php artisan permission:cache-reset",
+    "login as super admin and open Settings -> Users -> Roles",
+    "confirm Warehouse group has only the canonical permission views and no duplicate generic Export entries",
+    "grant a normal user View/Create/Edit/Delete/Bulk Delete/Export/Import as needed",
+    "login as normal user and confirm table shows name/code/description/active columns",
+    "confirm clone action is visible when create permission exists",
+    "confirm delete action is visible when delete permission exists",
+    "confirm user without view permission cannot see Warehouse rows"
   ],
   "next_steps": [
-    "validate custom field creation and persistence for warehouses through UI/API",
+    "validate Warehouse action and permission cleanup",
     "validate CSV import/export end-to-end",
     "add notes/documents/activities/audit integration plan",
     "then introduce Warehouse Locations as child entity"
   ],
-  "current_focus": "Validate Warehouse custom fields through Core Settings Fields UI and confirm language labels render as strings.",
-  "warehouse_status": "resource_ui_create_edit_table_import_export_permissions_custom_fields_ready",
-  "next_step": "Manual custom-field validation, then CSV import/export end-to-end validation."
+  "current_focus": "Validate Warehouse permission UI cleanup, data-table columns, clone action, delete action, and role-based action visibility.",
+  "warehouse_status": "resource_ui_create_edit_table_permissions_custom_fields_actions_ready",
+  "next_step": "Validate clone/delete/role UI cleanup, then proceed to Import/Export end-to-end."
 }

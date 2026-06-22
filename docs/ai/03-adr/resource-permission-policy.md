@@ -148,3 +148,56 @@ Important Builder rule: when a generated module is `master_data_global`, do not 
 
 A table-level guard was also added. If the logged-in user lacks `view all warehouses`, the Warehouse table query is forced to return zero rows. This prevents rows from being visible through ResourceTable even when a frontend route/menu is reachable.
 
+
+## Permission cleanup and stale permission records
+
+Resource permission groups are registered dynamically, but actual permissions are persisted by Spatie. This creates an important Builder rule:
+
+```text
+If a generated module changes permission names, views, or capability contracts, the Builder must generate a permission cleanup/sync migration or command.
+```
+
+Otherwise, role screens can continue to show stale entries that no longer represent the current source code. Warehouse exposed this during MVP validation: duplicate generic `Export` labels appeared after multiple early permission iterations.
+
+Canonical cleanup pattern:
+
+```text
+1. Define canonical permission names for the module.
+2. Delete only stale permissions whose names explicitly reference the module/resource.
+3. Remove stale pivot rows from role_has_permissions/model_has_permissions.
+4. Ensure canonical permissions exist for guard sanctum.
+5. Reset Spatie permission cache.
+```
+
+Do not globally delete permissions by label. Labels are translated UI text and are not stable identifiers. Always match by internal permission `name`.
+
+## Resource row actions
+
+A Resource data table does not automatically show clone/delete row actions just because the policy allows the action. The Resource must expose actions through `actions(ResourceRequest $request)` or the table must expose table actions.
+
+Warehouse uses:
+
+```text
+Modules\Core\Actions\CloneAction
+Modules\Core\Actions\DeleteAction
+```
+
+Builder requirement for clone support:
+
+```text
+Cloneable contract
+clone(Model $model, int $userId): Model implementation
+unique-field handling for copied records
+policy gate for create
+row action registration
+RAG manifest update
+```
+
+Builder requirement for delete support:
+
+```text
+policy gate for delete
+DeleteAction registration with canRun callback
+optional bulk delete permission
+safe table/action visibility validation
+```

@@ -412,3 +412,44 @@ Use leaf keys only, e.g. warehouse::warehouse.actions.customize_fields, not ware
 ```
 
 Warehouse permission labels were also made more explicit for `bulk_delete`, `export`, and `import` role UI views so the role screen has stable display strings.
+
+## 2026-06-20 Permission cleanup, table columns, and row actions
+
+User validation after the permission UI step found three practical issues:
+
+1. Some stale/generic `Export` permission rows were still visible in the role UI.
+2. A normal user could not easily see the full useful Warehouse table columns.
+3. Row actions such as delete and clone were not visible in the data table.
+
+Fix applied:
+
+```text
+modules/Warehouse/app/Resources/Warehouse.php
+modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php
+docs/ai/05-rag/module-manifest/warehouse.json
+```
+
+Warehouse now has explicit row/bulk actions:
+
+```text
+CloneAction -> visible when the user can create warehouses
+DeleteAction -> visible when the user can delete the current warehouse
+```
+
+Warehouse also implements `Cloneable` and provides a `clone(Model $model, int $userId)` method. Cloning generates safe copied names/codes to avoid the unique `code` constraint.
+
+A cleanup migration removes stale Warehouse-related permission records that are not part of the canonical matrix:
+
+```text
+view all warehouses
+create warehouses
+edit all warehouses
+delete any warehouse
+bulk delete warehouses
+export warehouses
+import warehouses
+```
+
+Important Builder rule: when an AI Builder changes permission names during iteration, it must also generate a cleanup/sync migration. Removing stale permission code is not enough because Spatie permission records remain persisted in the database.
+
+Column visibility adjustment: `description` is now visible on index/table by default. The hidden-by-design default columns remain `id`, `created_at`, and `updated_at`.
