@@ -200,13 +200,13 @@ class Quota extends Resource implements Importable, Tableable, WithResourceRoute
         $this->registerCommonPermissions();
 
         Innoclapps::permissions(function ($manager) {
-            $manager->group($this->name(), function ($manager) {
-                $manager->view('export', [
-                    'permissions' => [
-                        'export products' => __('core::app.export.export'),
-                    ],
-                ]);
-            });
+            // $manager->group($this->name(), function ($manager) {
+            //     $manager->view('export', [
+            //         'permissions' => [
+            //             'export products' => __('core::app.export.export'),
+            //         ],
+            //     ]);
+            // });
         });
     }
 
