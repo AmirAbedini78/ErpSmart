@@ -26,6 +26,7 @@ use Modules\Core\Http\Requests\ActionRequest;
 use Modules\Core\Http\Requests\ResourceRequest;
 use Modules\Core\Models\Model;
 use Modules\Core\Menu\MenuItem;
+use Modules\Core\Resource\AssociatesResources;
 use Modules\Core\Resource\Resource;
 use Modules\Core\Rules\StringRule;
 use Modules\Core\Table\Column;
@@ -34,6 +35,8 @@ use Modules\Warehouse\Models\Warehouse as WarehouseModel;
 
 class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Tableable, WithResourceRoutes
 {
+    use AssociatesResources;
+
     public static string $orderBy = 'name';
 
     public static bool $hasDetailView = true;

@@ -2,12 +2,16 @@
 
 namespace Modules\Warehouse\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Modules\Core\Common\Timeline\HasTimeline;
 use Modules\Core\Models\Model;
 use Modules\Core\Resource\Resourceable;
+use Modules\Notes\Models\Note;
 
 class Warehouse extends Model
 {
-    use Resourceable;
+    use HasTimeline,
+        Resourceable;
 
     protected $table = 'warehouses';
 
@@ -27,6 +31,18 @@ class Warehouse extends Model
         'is_active' => 'boolean',
         'import_id' => 'integer',
     ];
+
+    /**
+     * Notes attached to this warehouse.
+     *
+     * Concord/ErpSmart stores note relations through the shared "noteables"
+     * morph pivot. Keeping the relationship on the domain model makes the
+     * generic resource timeline endpoint able to serve /api/warehouses/{id}/notes.
+     */
+    public function notes(): MorphToMany
+    {
+        return $this->morphToMany(Note::class, 'noteable')->withTimestamps();
+    }
 
     /**
      * Normalize boolean values coming from Resource forms, API requests, and CSV imports.

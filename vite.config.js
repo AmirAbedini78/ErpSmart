@@ -1,4 +1,4 @@
-import globalVue from '@concordcrm/vite-plugin-global-vue'
+import offlineGlobalVue from './vite-plugins/offline-global-vue.mjs'
 import vue from '@vitejs/plugin-vue'
 import laravel from 'laravel-vite-plugin'
 import unfonts from 'unplugin-fonts/vite'
@@ -49,7 +49,7 @@ export default defineConfig({
       },
     }),
 
-    globalVue(),
+    offlineGlobalVue(),
 
     vue({
       template: {

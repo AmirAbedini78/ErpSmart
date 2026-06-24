@@ -12,7 +12,7 @@
         />
 
         <IButton
-          v-if="resource.authorizations?.update"
+          v-if="safeResource.authorizations.update"
           variant="primary"
           icon="PencilSquareSolid"
           :to="{ name: 'edit-warehouse', params: { id: warehouseId } }"
@@ -26,20 +26,20 @@
         <ICardBody>
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <ITextDisplay :text="resource.display_name || resource.name" />
+              <ITextDisplay :text="safeResource.display_name || safeResource.name" />
 
               <IText
-                v-if="resource.code"
+                v-if="safeResource.code"
                 class="mt-1"
-                :text="resource.code"
+                :text="safeResource.code"
               />
             </div>
 
             <IBadge
-              v-if="Object.hasOwn(resource, 'is_active')"
-              :variant="resource.is_active ? 'success' : 'neutral'"
+              v-if="hasIsActiveStatus"
+              :variant="safeResource.is_active ? 'success' : 'neutral'"
               :text="
-                resource.is_active
+                safeResource.is_active
                   ? $t('warehouse::warehouse.active')
                   : $t('warehouse::warehouse.inactive')
               "
@@ -48,24 +48,58 @@
         </ICardBody>
       </ICard>
 
-      <ICard>
-        <ICardHeader>
-          <ICardHeading :text="$t('core::app.record_view.sections.details')" />
-        </ICardHeader>
+      <ITabGroup>
+        <ICard
+          class="has-[[data-headlessui-state=selected]:not(:first-child)]:rounded-b-none"
+        >
+          <ITabList
+            class="has-[[data-headlessui-state=selected]:not(:first-child)]:pb-2.5 has-[[data-headlessui-state=selected]:not(:first-child)]:sm:pb-0"
+            centered
+          >
+            <ITab>
+              <Icon icon="ViewGrid" />
+              {{ $t('core::app.record_view.sections.details') }}
+            </ITab>
 
-        <ICardBody>
-          <FieldsPlaceholder v-if="!hasFields" />
+            <RecordTabNote
+              :resource-name="resourceName"
+              :resource-id="safeResource.id"
+              :resource="safeResource"
+            />
+          </ITabList>
+        </ICard>
 
-          <DetailFields
-            v-else
-            :fields="fields"
+        <ITabPanels class="[&_[data-slot=panel]]:-mt-[18px]">
+          <ITabPanel>
+            <ICard class="rounded-t-none">
+              <ICardHeader>
+                <ICardHeading :text="$t('core::app.record_view.sections.details')" />
+              </ICardHeader>
+
+              <ICardBody>
+                <FieldsPlaceholder v-if="!hasFields" />
+
+                <DetailFields
+                  v-else
+                  :fields="fields"
+                  :resource-name="resourceName"
+                  :resource-id="Number(warehouseId)"
+                  :resource="safeResource"
+                  @updated="synchronizeResource($event, true)"
+                />
+              </ICardBody>
+            </ICard>
+          </ITabPanel>
+
+          <RecordTabNotePanel
+            id="tabPanel-notes"
+            scroll-element="#main"
             :resource-name="resourceName"
-            :resource-id="Number(warehouseId)"
-            :resource="resource"
-            @updated="synchronizeResource($event, true)"
+            :resource-id="safeResource.id"
+            :resource="safeResource"
           />
-        </ICardBody>
-      </ICard>
+        </ITabPanels>
+      </ITabGroup>
     </div>
 
     <RouterView @updated="fetchResource" />
@@ -73,22 +107,29 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, provide, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
 
+import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
+import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
+
 const route = useRoute()
 
 const resourceName = Innoclapps.resourceName('warehouses')
 const warehouseId = computed(() => route.params.id)
+const resourcePath = computed(() => `/${resourceName}/${warehouseId.value}`)
 
 const {
   resource,
   fetchResource,
   synchronizeResource,
+  incrementResourceCount,
+  decrementResourceCount,
+  detachResourceAssociations,
   resourceReady,
 } = useResource(resourceName, warehouseId)
 
@@ -97,14 +138,82 @@ const { fields, hasFields, getDetailFields, setResource } =
 
 const componentReady = computed(() => resourceReady.value && hasFields.value)
 
-usePageTitle(computed(() => resource.value.display_name || resource.value.name))
+const safeResource = computed(() => normalizeResource(resource.value || {}))
+
+const hasIsActiveStatus = computed(() =>
+  Object.prototype.hasOwnProperty.call(safeResource.value, 'is_active')
+)
+
+provide('fetchResource', fetchResource)
+provide('synchronizeResource', synchronizeResource)
+provide('detachResourceAssociations', detachResourceAssociations)
+provide('incrementResourceCount', incrementResourceCount)
+provide('decrementResourceCount', decrementResourceCount)
+
+usePageTitle(
+  computed(() => safeResource.value.display_name || safeResource.value.name)
+)
+
+let prepareRequestId = 0
 
 async function prepareComponent() {
+  const requestId = ++prepareRequestId
+
   await fetchResource()
-  fields.value = await getDetailFields(resourceName, warehouseId.value)
+
+  if (requestId !== prepareRequestId) {
+    return
+  }
+
+  normalizeCurrentResource()
+
+  const detailFields = await getDetailFields(resourceName, warehouseId.value)
+
+  if (requestId !== prepareRequestId) {
+    return
+  }
+
+  fields.value = normalizeDetailFields(detailFields)
   setResource(resource)
+}
+
+function normalizeCurrentResource() {
+  resource.value = normalizeResource(resource.value || {})
+}
+
+function normalizeResource(value) {
+  return {
+    ...value,
+
+    // Core record-tab components, including Notes, build their URL from
+    // resource.path. Some custom resource responses do not include this key,
+    // so Warehouse must provide it explicitly to avoid /api/undefined/notes.
+    path: value.path || resourcePath.value,
+
+    notes: Array.isArray(value.notes) ? value.notes : [],
+    notes_count: Number(value.notes_count || 0),
+
+    authorizations: {
+      view: true,
+      update: false,
+      delete: false,
+      ...(value.authorizations || {}),
+    },
+    _edit_disabled: value._edit_disabled || {},
+    _sync_timestamp: value._sync_timestamp || Date.now(),
+  }
+}
+
+function normalizeDetailFields(detailFields) {
+  return detailFields.map(field => ({
+    ...field,
+
+    // Warehouse detail is edited through the dedicated edit page for now.
+    // Disabling inline editing prevents Core's FieldInlineEdit from crashing
+    // when a custom module response does not yet contain the full edit contract.
+    inlineEditDisabled: true,
+  }))
 }
 
 watch(warehouseId, prepareComponent, { immediate: true })
 </script>
-

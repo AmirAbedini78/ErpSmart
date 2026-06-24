@@ -4,7 +4,12 @@ namespace Modules\Warehouse\Providers;
 
 use Closure;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Validation\Rule;
+use Modules\Core\Http\Requests\CreateResourceRequest;
 use Modules\Core\Support\ModuleServiceProvider;
+use Modules\Notes\Models\Note;
+use Modules\Warehouse\Models\Warehouse;
 
 class WarehouseServiceProvider extends ModuleServiceProvider
 {
@@ -18,8 +23,10 @@ class WarehouseServiceProvider extends ModuleServiceProvider
      * Bootstrap any module services.
      */
     public function boot(): void
-    { 
-       $this->registerCommands();
+    {
+        $this->registerCommands();
+        $this->registerNoteAssociations();
+        $this->registerNotesViaResourceValidation();
     }
 
     /**
@@ -29,6 +36,55 @@ class WarehouseServiceProvider extends ModuleServiceProvider
     {
         $this->registerResources();
         $this->app->register(RouteServiceProvider::class);
+    }
+
+
+    /**
+     * Register inverse relations required by Core resource association endpoints.
+     *
+     * Notes are stored through the shared noteables morph pivot. The Warehouse model
+     * already exposes notes(), but the Notes resource also needs the inverse
+     * warehouses() relation when Core loads /api/warehouses/{id}/notes and when a
+     * new note is posted with via_resource=warehouses.
+     */
+    protected function registerNoteAssociations(): void
+    {
+        if (! class_exists(Note::class)) {
+            return;
+        }
+
+        Note::resolveRelationUsing('warehouses', function (Note $note): MorphToMany {
+            return $note->morphedByMany(Warehouse::class, 'noteable')->withTimestamps();
+        });
+    }
+
+
+    /**
+     * Allow the Core Notes resource to accept Warehouse as via_resource.
+     *
+     * NotesCreate posts to /api/notes?via_resource=warehouses&via_resource_id={id}.
+     * The stock Notes resource validates via_resource against the built-in CRM
+     * resources. This hook keeps the stock Notes module untouched while allowing
+     * Warehouse notes to pass validation.
+     */
+    protected function registerNotesViaResourceValidation(): void
+    {
+        if (! function_exists('add_filter')) {
+            return;
+        }
+
+        add_filter('http.request.create_resource_request.notes.rules', function (array $rules, CreateResourceRequest $request) {
+            $viaResource = $request->query('via_resource', $request->input('via_resource'));
+
+            if ($viaResource !== 'warehouses') {
+                return $rules;
+            }
+
+            $rules['via_resource'] = ['required_with:via_resource_id', Rule::in(['warehouses'])];
+            $rules['via_resource_id'] = ['required_with:via_resource', 'integer', Rule::exists('warehouses', 'id')];
+
+            return $rules;
+        }, 50, 2);
     }
 
     /**

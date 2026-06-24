@@ -1,7 +1,7 @@
 {
   "module": "Warehouse",
   "resource_name": "warehouses",
-  "status": "import_export_validation_ready",
+  "status": "notes_404_fix_ready",
   "policy_mode": "master_data_global",
   "ownership_columns": [],
   "backend": {
@@ -10,7 +10,9 @@
     "resource": "modules/Warehouse/app/Resources/Warehouse.php",
     "table": "modules/Warehouse/app/Resources/WarehouseTable.php",
     "policy": "modules/Warehouse/app/Policies/WarehousePolicy.php",
-    "permission_cleanup_migration": "modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php"
+    "permission_cleanup_migration": "modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php",
+    "notes_relation": "modules/Warehouse/app/Models/Warehouse.php::notes",
+    "timeline_trait": "modules/Warehouse/app/Models/Warehouse.php::HasTimeline"
   },
   "frontend": {
     "entry": "modules/Warehouse/resources/js/app.js",
@@ -22,7 +24,8 @@
       "modules/Warehouse/resources/js/views/WarehousesEdit.vue",
       "modules/Warehouse/resources/js/views/WarehousesView.vue"
     ],
-    "custom_fields_shortcut": "modules/Warehouse/resources/js/views/WarehousesIndex.vue -> resource-fields route"
+    "custom_fields_shortcut": "modules/Warehouse/resources/js/views/WarehousesIndex.vue -> resource-fields route",
+    "notes_tab": "modules/Warehouse/resources/js/views/WarehousesView.vue -> RecordTabNote/RecordTabNotePanel"
   },
   "database": {
     "logical_table": "warehouses",
@@ -45,7 +48,9 @@
     "AcceptsUniqueCustomFields",
     "Importable",
     "Exportable",
-    "Cloneable"
+    "Cloneable",
+    "Notes",
+    "HasTimeline"
   ],
   "permissions": [
     "view all warehouses",
@@ -73,9 +78,12 @@
     "row/bulk actions must be explicitly registered in Resource::actions() and authorized with policy gates",
     "boolean import fields require model-level normalization, not only Resource validation",
     "import/export should use Core Resource endpoints unless domain-specific processing requires custom controllers",
-    "duplicate role UI labels must be debugged from Permissions::groups() views before deleting persisted permission records"
+    "duplicate role UI labels must be debugged from Permissions::groups() views before deleting persisted permission records",
+    "Notes-enabled resources must define a model notes() morphToMany relation using the shared noteables pivot.",
+    "Notes-enabled detail views must provide resource synchronization callbacks for RecordTabNotePanel and NotesCreate.",
+    "The Builder should treat notes as a reusable platform capability, not a warehouse-specific table."
   ],
-  "last_history_entry": "docs/ai/04-docops/history/2026-06-20-warehouse-import-export-validation.md",
+  "last_history_entry": "docs/ai/04-docops/history/2026-06-23-warehouse-notes-404-fix.md",
   "custom_fields": {
     "enabled": true,
     "accepts_unique_custom_fields": true,
@@ -145,5 +153,53 @@
     "sample_csv": "docs/ai/04-docops/samples/warehouses-import-sample.csv",
     "validation_status": "manual_validation_required",
     "known_issue": "Role UI can show multiple generic Export rows until Core permission group views are inspected."
+  },
+  "relations": {
+    "notes": {
+      "type": "morphToMany",
+      "related_model": "Modules\\Notes\\Models\\Note",
+      "morph_name": "noteable",
+      "pivot_table": "noteables",
+      "frontend_components": [
+        "RecordTabNote",
+        "RecordTabNotePanel"
+      ],
+      "expected_runtime_endpoint": "{resource.path}/notes"
+    }
+  },
+  "notes_validation": {
+    "checklist": "docs/ai/04-docops/checklists/warehouse-notes-validation.md",
+    "status": "404_fix_ready_for_manual_validation"
+  },
+  "builder_rules": [
+    "Notes-enabled resources must use the HasTimeline trait; otherwise timeline association requests such as /api/{resource}/{id}/notes?timeline=1 return 404."
+  ],
+  "notes": {
+    "enabled": true,
+    "requires_timeline": true,
+    "detail_view_inline_edit": "disabled_for_stability",
+    "resource_normalization": [
+      "authorizations",
+      "_edit_disabled",
+      "_sync_timestamp"
+    ],
+    "resource_path_contract": "required",
+    "path_fallback": "/{resourceName}/{id}"
+  },
+  "last_update": "2026-06-24-warehouse-notes-post-and-offline-build-fix",
+  "notes_integration": {
+    "forward_relation": "Warehouse::notes",
+    "inverse_relation": "Note::warehouses",
+    "inverse_relation_registration": "WarehouseServiceProvider::registerNoteAssociations",
+    "pivot_table": "noteables",
+    "status": "backend_contract_fixed",
+    "resource_association_trait": "AssociatesResources",
+    "create_validation_hook": "http.request.create_resource_request.notes.rules",
+    "post_status": "via_resource_validation_fixed"
+  },
+  "offline_build": {
+    "global_vue_plugin": "vite-plugins/offline-global-vue.mjs",
+    "remote_fetch": "disabled",
+    "source": "node_modules/vue/dist/vue.global.js"
   }
 }
