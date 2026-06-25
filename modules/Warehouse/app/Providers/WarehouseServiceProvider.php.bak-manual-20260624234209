@@ -7,6 +7,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Validation\Rule;
 use Modules\Core\Http\Requests\CreateResourceRequest;
 use Modules\Core\Support\ModuleServiceProvider;
+use Modules\Warehouse\Models\Warehouse;
 
 class WarehouseServiceProvider extends ModuleServiceProvider
 {
@@ -31,11 +32,18 @@ class WarehouseServiceProvider extends ModuleServiceProvider
         $this->registerResources();
         $this->app->register(RouteServiceProvider::class);
     }
+        Note::resolveRelationUsing('warehouses', function (Note $note): MorphToMany {
+            return $note->morphedByMany(Warehouse::class, 'noteable');
+        });
+    }
 
     /**
      * Allow the Core Notes resource to accept Warehouse as via_resource.
      *
      * NotesCreate posts to /api/notes?via_resource=warehouses&via_resource_id={id}.
+     * The stock Notes resource validates via_resource against the built-in CRM
+     * resources. This hook keeps the stock Notes module untouched while allowing
+     * Warehouse notes to pass validation.
      */
     protected function registerNotesViaResourceValidation(): void
     {

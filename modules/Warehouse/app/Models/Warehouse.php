@@ -36,12 +36,12 @@ class Warehouse extends Model
      * Notes attached to this warehouse.
      *
      * Concord/ErpSmart stores note relations through the shared "noteables"
-     * morph pivot. Keeping the relationship on the domain model makes the
-     * generic resource timeline endpoint able to serve /api/warehouses/{id}/notes.
+     * morph pivot. The pivot contains note_id, noteable_type, noteable_id,
+     * and tenant_id only, so do not enable pivot timestamps here.
      */
     public function notes(): MorphToMany
     {
-        return $this->morphToMany(Note::class, 'noteable')->withTimestamps();
+        return $this->morphToMany(Note::class, 'noteable');
     }
 
     /**

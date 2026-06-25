@@ -4,9 +4,12 @@ namespace Modules\Warehouse\Providers;
 
 use Closure;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Validation\Rule;
 use Modules\Core\Http\Requests\CreateResourceRequest;
 use Modules\Core\Support\ModuleServiceProvider;
+use Modules\Notes\Models\Note;
+use Modules\Warehouse\Models\Warehouse;
 
 class WarehouseServiceProvider extends ModuleServiceProvider
 {
@@ -20,6 +23,7 @@ class WarehouseServiceProvider extends ModuleServiceProvider
     public function boot(): void
     {
         $this->registerCommands();
+        $this->registerNoteAssociations();
         $this->registerNotesViaResourceValidation();
     }
 
@@ -33,9 +37,34 @@ class WarehouseServiceProvider extends ModuleServiceProvider
     }
 
     /**
+     * Register inverse relations required by Core resource association endpoints.
+     *
+     * Notes are stored through the shared noteables morph pivot. The Warehouse model
+     * already exposes notes(), but the Notes resource also needs the inverse
+     * warehouses() relation when Core loads /api/warehouses/{id}/notes and when a
+     * new note is posted with via_resource=warehouses.
+     *
+     * The noteables pivot in this project has no created_at/updated_at columns, so
+     * enabling withTimestamps() causes insert failures while attaching a note.
+     */
+    protected function registerNoteAssociations(): void
+    {
+        if (! class_exists(Note::class)) {
+            return;
+        }
+
+        Note::resolveRelationUsing('warehouses', function (Note $note): MorphToMany {
+            return $note->morphedByMany(Warehouse::class, 'noteable');
+        });
+    }
+
+    /**
      * Allow the Core Notes resource to accept Warehouse as via_resource.
      *
      * NotesCreate posts to /api/notes?via_resource=warehouses&via_resource_id={id}.
+     * The stock Notes resource validates via_resource against the built-in CRM
+     * resources. This hook keeps the stock Notes module untouched while allowing
+     * Warehouse notes to pass validation.
      */
     protected function registerNotesViaResourceValidation(): void
     {

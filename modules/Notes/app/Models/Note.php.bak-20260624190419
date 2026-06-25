@@ -13,7 +13,6 @@
 namespace Modules\Notes\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Warehouse\Models\Warehouse;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -147,18 +146,5 @@ class Note extends Model implements ResourceableContract
     protected static function newFactory(): NoteFactory
     {
         return NoteFactory::new();
-    }
-
-    /**
-     * Warehouses associated with this note.
-     *
-     * This must be a concrete model method instead of resolveRelationUsing(), because
-     * the Core pivot touch system and laravel-pivot-events expect a stable relation
-     * method name during sync(). Dynamic relation closures can be reported as the
-     * relation name and cause BadMethodCallException.
-     */
-    public function warehouses(): MorphToMany
-    {
-        return $this->morphedByMany(Warehouse::class, 'noteable');
     }
 }
