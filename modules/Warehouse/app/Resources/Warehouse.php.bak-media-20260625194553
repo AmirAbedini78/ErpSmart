@@ -10,7 +10,6 @@ use Modules\Core\Actions\DeleteAction;
 use Modules\Core\Contracts\Resources\Cloneable;
 use Modules\Core\Contracts\Resources\Exportable;
 use Modules\Core\Contracts\Resources\Importable;
-use Modules\Core\Contracts\Resources\Mediable;
 use Modules\Core\Contracts\Resources\Tableable;
 use Modules\Core\Contracts\Resources\WithResourceRoutes;
 use Modules\Core\Facades\Fields;
@@ -27,7 +26,6 @@ use Modules\Core\Http\Requests\ActionRequest;
 use Modules\Core\Http\Requests\ResourceRequest;
 use Modules\Core\Models\Model;
 use Modules\Core\Menu\MenuItem;
-use Modules\Core\Panel;
 use Modules\Core\Resource\AssociatesResources;
 use Modules\Core\Resource\Resource;
 use Modules\Core\Rules\StringRule;
@@ -35,7 +33,7 @@ use Modules\Core\Table\Column;
 use Modules\Core\Table\Table;
 use Modules\Warehouse\Models\Warehouse as WarehouseModel;
 
-class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Mediable, Tableable, WithResourceRoutes
+class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Tableable, WithResourceRoutes
 {
     use AssociatesResources;
 
@@ -82,15 +80,6 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
                 flag: 'all-warehouses',
             )
             ->orderBy('created_at', 'desc');
-    }
-
-
-    public function panels(ResourceRequest $request): array
-    {
-        return [
-            Panel::make('media', 'resource-media-panel')
-                ->heading(__('core::app.attachments')),
-        ];
     }
 
     public function fields(ResourceRequest $request): array

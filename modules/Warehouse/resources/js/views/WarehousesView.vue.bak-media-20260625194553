@@ -66,11 +66,6 @@
               :resource-id="safeResource.id"
               :resource="safeResource"
             />
-
-            <ITab>
-              <Icon icon="PaperClip" />
-              {{ $t('core::app.attachments') }}
-            </ITab>
           </ITabList>
         </ICard>
 
@@ -103,16 +98,6 @@
             :resource-id="safeResource.id"
             :resource="safeResource"
           />
-
-          <ITabPanel>
-            <ResourceMediaPanel
-              v-if="safeResource.id"
-              :panel="attachmentsPanel"
-              :resource-name="resourceName"
-              :resource-id="safeResource.id"
-              :resource="safeResource"
-            />
-          </ITabPanel>
         </ITabPanels>
       </ITabGroup>
     </div>
@@ -131,7 +116,6 @@ import { useResourceFields } from '@/Core/composables/useResourceFields'
 
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
-import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
 
 const route = useRoute()
 
@@ -159,22 +143,12 @@ const safeResource = computed(() => normalizeResource(resource.value || {}))
 const hasIsActiveStatus = computed(() =>
   Object.prototype.hasOwnProperty.call(safeResource.value, 'is_active')
 )
-const attachmentsPanel = computed(() => ({
-  id: 'warehouse-media',
-  component: 'resource-media-panel',
-  name: 'media',
-  heading: Innoclapps.t ? Innoclapps.t('core::app.attachments') : 'Attachments',
-}))
 
 provide('fetchResource', fetchResource)
 provide('synchronizeResource', synchronizeResource)
 provide('detachResourceAssociations', detachResourceAssociations)
 provide('incrementResourceCount', incrementResourceCount)
 provide('decrementResourceCount', decrementResourceCount)
-provide('record', safeResource)
-provide('resource', safeResource)
-provide('resourceName', resourceName)
-provide('resourceId', warehouseId)
 
 usePageTitle(
   computed(() => safeResource.value.display_name || safeResource.value.name)
@@ -218,9 +192,6 @@ function normalizeResource(value) {
 
     notes: Array.isArray(value.notes) ? value.notes : [],
     notes_count: Number(value.notes_count || 0),
-
-    media: Array.isArray(value.media) ? value.media : [],
-    media_count: Number(value.media_count || (Array.isArray(value.media) ? value.media.length : 0)),
 
     authorizations: {
       view: true,

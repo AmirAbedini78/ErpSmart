@@ -1,16 +1,13 @@
 {
-  "active_task": null,
-  "last_platform_fix": "offline_vue_runtime",
-  "offline_frontend_assets": {
-    "vue_runtime": "public/vendor/vue",
-    "sync_script": "scripts/sync-local-vue-assets.mjs",
-    "status": "required"
-  },
-  "current_focus": "Warehouse notes POST validation and offline build fix",
-  "last_completed_step": "warehouse_notes_backend_contract_fix",
-  "latest_change": "Warehouse now uses AssociatesResources, Notes create validation accepts via_resource=warehouses, and Vite global Vue alias generation is offline-safe",
-  "next_step": "Validate Warehouse note creation then continue to Documents/Attachments integration",
-  "last_history_entry": "docs/ai/04-docops/history/2026-06-24-warehouse-notes-post-and-offline-build-fix.md",
-  "current_step": "warehouse_notes_post_offline_build_fix",
-  "updated_at": "2026-06-24"
+  "date": "2026-06-25",
+  "active_module": "Warehouse",
+  "last_completed": "Notes integration confirmed by user; Add Note works.",
+  "current_step": "Generic Media / Attachments integration",
+  "next_step": "Validate upload UI and backend media route, then move to Activities / Timeline or Documents CRM association depending on product decision.",
+  "do_not_revert": [
+    "Concrete Note::warehouses relation",
+    "No withTimestamps on noteables pivot",
+    "Warehouse resource.path normalization",
+    "Offline Vue runtime/build fix"
+  ]
 }

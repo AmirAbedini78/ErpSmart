@@ -1,18 +1,41 @@
 {
   "module": "Warehouse",
-  "resource": "warehouses",
-  "notes": {
-    "enabled": true,
-    "domain_relation": "Warehouse::notes()",
-    "inverse_relation": "Note::warehouses() registered in WarehouseServiceProvider",
-    "timeline": true,
-    "pivot_table": "noteables",
-    "pivot_columns": ["note_id", "noteable_type", "noteable_id", "tenant_id"],
-    "pivot_timestamps": false
+  "resource_name": "warehouses",
+  "status": "in_progress",
+  "canonical_template_module": true,
+  "implemented_capabilities": [
+    "crud",
+    "resource_ui",
+    "permissions",
+    "boolean_field_normalization",
+    "custom_fields_entry",
+    "import_export",
+    "clone_delete_actions",
+    "notes",
+    "media_attachments_step"
+  ],
+  "media_attachments_contract": {
+    "resource_contract": "Modules\\Core\\Contracts\\Resources\\Mediable",
+    "model_trait": "Modules\\Core\\Common\\Media\\HasMedia",
+    "core_panel": "resource-media-panel",
+    "frontend_component": "Modules/Core/resources/js/components/Resource/ResourceMediaPanel.vue",
+    "decision": "Use generic Core media/attachments for Warehouse files. Do not use CRM Documents unless business document generation/signing/tracking is required."
   },
-  "builder_rules": [
-    "For note-enabled resources, add both model-side and inverse note relations.",
-    "Do not call withTimestamps() on morph pivots unless the pivot has created_at and updated_at.",
-    "via_resource validation must explicitly accept custom resources such as warehouses."
+  "notes_contract_checkpoint": {
+    "requires_resource_path": true,
+    "requires_has_timeline": true,
+    "noteables_has_timestamps": false,
+    "inverse_relation_must_be_concrete": "Modules\\Notes\\Models\\Note::warehouses"
+  },
+  "rag_keywords": [
+    "warehouse",
+    "mediable",
+    "attachments",
+    "media",
+    "HasMedia",
+    "ResourceMediaPanel",
+    "notes",
+    "HasTimeline",
+    "resource.path"
   ]
 }

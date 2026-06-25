@@ -106,8 +106,6 @@
 
           <ITabPanel>
             <ResourceMediaPanel
-              v-if="safeResource.id"
-              :panel="attachmentsPanel"
               :resource-name="resourceName"
               :resource-id="safeResource.id"
               :resource="safeResource"
@@ -159,22 +157,12 @@ const safeResource = computed(() => normalizeResource(resource.value || {}))
 const hasIsActiveStatus = computed(() =>
   Object.prototype.hasOwnProperty.call(safeResource.value, 'is_active')
 )
-const attachmentsPanel = computed(() => ({
-  id: 'warehouse-media',
-  component: 'resource-media-panel',
-  name: 'media',
-  heading: Innoclapps.t ? Innoclapps.t('core::app.attachments') : 'Attachments',
-}))
 
 provide('fetchResource', fetchResource)
 provide('synchronizeResource', synchronizeResource)
 provide('detachResourceAssociations', detachResourceAssociations)
 provide('incrementResourceCount', incrementResourceCount)
 provide('decrementResourceCount', decrementResourceCount)
-provide('record', safeResource)
-provide('resource', safeResource)
-provide('resourceName', resourceName)
-provide('resourceId', warehouseId)
 
 usePageTitle(
   computed(() => safeResource.value.display_name || safeResource.value.name)
