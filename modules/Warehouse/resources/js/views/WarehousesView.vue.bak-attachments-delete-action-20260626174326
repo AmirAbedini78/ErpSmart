@@ -22,13 +22,6 @@
     </template>
 
     <div v-if="componentReady" class="mx-auto max-w-5xl">
-        <IButton
-          class="mb-3"
-          variant="primary"
-          @click.prevent="goToEdit"
-        >
-          {{ $t('core::app.edit') }}
-        </IButton>
       <ICard class="mb-6">
         <ICardBody>
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -130,7 +123,7 @@
 
 <script setup>
 import { computed, provide, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
@@ -142,22 +135,10 @@ import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vu
 
 const route = useRoute()
 
-
-const router = useRouter()
 const resourceName = Innoclapps.resourceName('warehouses')
 const warehouseId = computed(() => route.params.id)
 const resourcePath = computed(() => `/${resourceName}/${warehouseId.value}`)
 
-
-const editPath = computed(() => `/${resourceName}/${warehouseId.value}/edit`)
-
-function goToEdit() {
-  if (!warehouseId.value) {
-    return
-  }
-
-  router.push(editPath.value)
-}
 const {
   resource,
   fetchResource,
@@ -238,20 +219,12 @@ function normalizeResource(value) {
     notes: Array.isArray(value.notes) ? value.notes : [],
     notes_count: Number(value.notes_count || 0),
 
-    media: Array.isArray(value.media)
-      ? value.media.map(media => ({
-          ...media,
-          authorizations: {
-            delete: true,
-            ...(media.authorizations || {}),
-          },
-        }))
-      : [],
+    media: Array.isArray(value.media) ? value.media : [],
     media_count: Number(value.media_count || (Array.isArray(value.media) ? value.media.length : 0)),
 
     authorizations: {
       view: true,
-      update: true,
+      update: false,
       delete: false,
       ...(value.authorizations || {}),
     },

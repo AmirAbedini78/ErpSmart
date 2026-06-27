@@ -17,14 +17,6 @@ class Warehouse extends Model implements ResourceableContract
         Resourceable;
 
     protected $table = 'warehouses';
-    /**
-     * The custom Warehouse detail page renders Core's ResourceMediaPanel directly.
-     * Keep media eager loaded so attachments remain visible after navigating away
-     * and returning to /warehouses/{id}.
-     */
-    protected $with = [
-        'media',
-    ];
 
     protected $attributes = [
         'is_active' => true,

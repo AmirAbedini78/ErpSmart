@@ -1,1 +1,0 @@
-"# hesabsmart_v8" 

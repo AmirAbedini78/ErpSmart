@@ -1,41 +1,29 @@
 {
   "module": "Warehouse",
-  "resource_name": "warehouses",
-  "status": "in_progress",
-  "canonical_template_module": true,
+  "canonical_resource": "warehouses",
+  "status": "in_progress_template_module",
+  "base_routes": {
+    "index": "/warehouses",
+    "create": "/warehouses/create",
+    "view": "/warehouses/{id}",
+    "edit": "/warehouses/{id}/edit"
+  },
   "implemented_capabilities": [
     "crud",
     "resource_ui",
     "permissions",
-    "boolean_field_normalization",
-    "custom_fields_entry",
+    "boolean_field_contract",
+    "custom_fields",
     "import_export",
     "clone_delete_actions",
     "notes",
-    "media_attachments_step"
+    "media_attachments",
+    "media_attachment_delete",
+    "detail_edit_navigation_contract"
   ],
-  "media_attachments_contract": {
-    "resource_contract": "Modules\\Core\\Contracts\\Resources\\Mediable",
-    "model_trait": "Modules\\Core\\Common\\Media\\HasMedia",
-    "core_panel": "resource-media-panel",
-    "frontend_component": "Modules/Core/resources/js/components/Resource/ResourceMediaPanel.vue",
-    "decision": "Use generic Core media/attachments for Warehouse files. Do not use CRM Documents unless business document generation/signing/tracking is required."
-  },
-  "notes_contract_checkpoint": {
-    "requires_resource_path": true,
-    "requires_has_timeline": true,
-    "noteables_has_timestamps": false,
-    "inverse_relation_must_be_concrete": "Modules\\Notes\\Models\\Note::warehouses"
-  },
-  "rag_keywords": [
-    "warehouse",
-    "mediable",
-    "attachments",
-    "media",
-    "HasMedia",
-    "ResourceMediaPanel",
-    "notes",
-    "HasTimeline",
-    "resource.path"
-  ]
+  "builder_rules": {
+    "detail_edit_navigation": "Use canonical path /{resource}/{id}/edit from custom detail pages unless the actual route name is discovered from router registration.",
+    "notes": "Use concrete inverse relation methods, not dynamic resolveRelationUsing, when pivot events/timeline/changelog are involved.",
+    "media": "Resource must implement Mediable; model must use HasMedia and implement Resourceable contract for pivot changelog compatibility. Detail response must include media relation for persistence."
+  }
 }

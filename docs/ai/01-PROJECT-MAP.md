@@ -1,27 +1,29 @@
-# ERPSMART AI Project Map
+# ERPSMART Project Map — Warehouse Template Module Update
 
-## Warehouse module canonical path
+## Warehouse Template Module
 
-Warehouse is the current canonical template module for future ERP module generation.
+Warehouse is being used as a canonical module for the future AI/local-RAG Module Builder.
 
-Capability sequence:
+Implemented capabilities now include:
 
-1. CRUD
-2. Resource UI
-3. Permissions
-4. Boolean fields and model normalization
-5. Custom fields
-6. Import / Export
-7. Clone / Delete actions
-8. Notes integration
-9. Generic Media / Attachments integration
-10. Activities / Timeline integration
-11. Audit / History
-12. Inventory-specific features such as locations and stock movements
+- CRUD and Resource UI
+- Permission policy and permission registration
+- Boolean field contract
+- Custom fields
+- Import / Export
+- Clone and delete actions
+- Notes integration
+- Attachments/media integration
+- Attachment delete action
+- Detail edit route stability
 
-## Important architecture notes
+## Current Architecture Focus
 
-- Concord/ErpSmart resources expose reusable capabilities through contracts such as `WithResourceRoutes`, `Tableable`, `Importable`, `Exportable`, `Mediable`.
-- Do not implement module features ad-hoc when Core already provides a contract.
-- For record-tab features, inspect Core backend and frontend contracts before coding.
-- Notes and media integration lessons must be included in RAG context for future module generation.
+The project is moving from single-feature implementation toward a capability matrix that can power a builder. Each feature must be documented as:
+
+- backend contract;
+- frontend component contract;
+- database/pivot contract;
+- route contract;
+- verification commands;
+- failure modes and fixes.

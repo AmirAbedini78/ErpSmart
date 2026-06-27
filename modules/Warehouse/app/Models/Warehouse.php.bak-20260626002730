@@ -6,25 +6,16 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Modules\Core\Common\Media\HasMedia;
 use Modules\Core\Common\Timeline\HasTimeline;
 use Modules\Core\Models\Model;
-use Modules\Core\Contracts\Resources\Resourceable as ResourceableContract;
 use Modules\Core\Resource\Resourceable;
 use Modules\Notes\Models\Note;
 
-class Warehouse extends Model implements ResourceableContract
+class Warehouse extends Model
 {
     use HasMedia,
         HasTimeline,
         Resourceable;
 
     protected $table = 'warehouses';
-    /**
-     * The custom Warehouse detail page renders Core's ResourceMediaPanel directly.
-     * Keep media eager loaded so attachments remain visible after navigating away
-     * and returning to /warehouses/{id}.
-     */
-    protected $with = [
-        'media',
-    ];
 
     protected $attributes = [
         'is_active' => true,
