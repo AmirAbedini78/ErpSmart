@@ -2,27 +2,31 @@
   <MainLayout :overlay="!componentReady">
     <template #actions>
       <NavbarSeparator class="hidden lg:block" />
-
       <NavbarItems>
-        <IButton
-          basic
-          icon="ChevronLeft"
-          :text="backButtonText"
-          @click="goBackToIndex"
-        />
+        <button
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          @click.stop.prevent="goBackToIndex"
+        >
+          <Icon icon="ChevronLeft" class="size-4" />
+          <span>{{ backButtonText }}</span>
+        </button>
 
-        <IButton
+        <button
           v-if="safeResource.authorizations.update"
-          variant="primary"
-          icon="PencilSquareSolid"
-          :text="editButtonText"
-          @click="openEditFloatingModal"
-        />
+          type="button"
+          class="inline-flex items-center gap-1.5 rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+          @mousedown.stop.prevent
+          @click.stop.prevent="openInlineEditForm"
+        >
+          <Icon icon="PencilSquareSolid" class="size-4" />
+          <span>{{ editButtonText }}</span>
+        </button>
       </NavbarItems>
     </template>
 
     <div v-if="componentReady" class="mx-auto max-w-5xl">
-      <ICard class="mb-6">
+<ICard class="mb-6">
         <ICardBody>
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -116,19 +120,30 @@
         </ITabPanels>
       </ITabGroup>
     </div>
-<RouterView @updated="fetchResource" />
+    <Teleport to="body">
+      <WarehousesEdit
+        v-if="showInlineEditForm"
+        :key="`warehouse-inline-edit-${warehouseId}`"
+        :record-id="warehouseId"
+        :redirect-on-close="false"
+        @updated="handleInlineEditUpdated"
+        @closed="showInlineEditForm = false"
+      />
+    </Teleport>
+
+    <RouterView @updated="fetchResource" />
   </MainLayout>
 </template>
 
 <script setup>
-import { computed, provide, watch } from 'vue'
+import WarehousesEdit from './WarehousesEdit.vue'
+import { computed, provide, watch, ref, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
-import { useFloatingResourceModal } from '@/Core/composables/useFloatingResourceModal'
-import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListener'
+
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
 import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
@@ -142,68 +157,40 @@ const warehouseId = computed(() => route.params.id)
 const resourcePath = computed(() => `/${resourceName}/${warehouseId.value}`)
 
 
-function translateText(key, fallback) {
-  const translated = Innoclapps.t ? Innoclapps.t(key) : null
 
-  return typeof translated === 'string' ? translated : fallback
-}
 
-const backButtonText = computed(() =>
-  translateText('warehouse::warehouse.back_to_warehouses', 'Back to warehouses')
-)
+const backButtonText = computed(() => {
+  const translated = Innoclapps.t
+    ? Innoclapps.t('warehouse::warehouse.back_to_warehouses')
+    : null
 
-const editButtonText = computed(() => translateText('core::app.edit', 'Edit'))
+  return typeof translated === 'string' ? translated : 'Back to warehouses'
+})
+
+const editButtonText = computed(() => {
+  const translated = Innoclapps.t ? Innoclapps.t('core::app.edit') : null
+
+  return typeof translated === 'string' ? translated : 'Edit'
+})
 
 function goBackToIndex() {
-  router.push({ name: 'warehouse-index' })
+  router.push(`/${resourceName}`)
 }
+const showInlineEditForm = ref(false)
 
-const { floatResourceInEditMode } = useFloatingResourceModal()
+function openInlineEditForm() {
+  showInlineEditForm.value = false
 
-function openEditFloatingModal() {
-  floatResourceInEditMode({
-    resourceName,
-    resourceId: Number(warehouseId.value) || warehouseId.value,
+  nextTick(() => {
+    showInlineEditForm.value = true
   })
 }
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
-  return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
-  )
+
+async function handleInlineEditUpdated(updatedWarehouse) {
+  synchronizeResource(updatedWarehouse, true)
+  showInlineEditForm.value = false
+  await fetchResource()
 }
-
-async function refreshWarehouseDetailAfterFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-  resource: updatedResource,
-} = {}) {
-  if (updatedResourceName !== resourceName) {
-    return
-  }
-
-  if (String(resourceId) !== String(warehouseId.value)) {
-    return
-  }
-
-  if (updatedResource) {
-    synchronizeResource(normalizeResource(updatedResource), true)
-    setResource(resource)
-  }
-
-  try {
-    await fetchResource()
-    normalizeCurrentResource()
-    setResource(resource)
-  } catch (error) {
-    console.error('Failed to refresh warehouse detail after floating edit.', error)
-  }
-}
-
-useGlobalEventListener('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
 const {
   resource,
   fetchResource,

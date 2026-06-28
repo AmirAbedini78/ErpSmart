@@ -166,31 +166,20 @@ function openEditFloatingModal() {
     resourceId: Number(warehouseId.value) || warehouseId.value,
   })
 }
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
+function isSameWarehouseFloatingUpdate(payload = {}) {
   return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
+    payload.resourceName === resourceName &&
+    String(payload.resourceId) === String(warehouseId.value)
   )
 }
 
-async function refreshWarehouseDetailAfterFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-  resource: updatedResource,
-} = {}) {
-  if (updatedResourceName !== resourceName) {
+async function refreshWarehouseDetailAfterFloatingUpdate(payload = {}) {
+  if (!isSameWarehouseFloatingUpdate(payload)) {
     return
   }
 
-  if (String(resourceId) !== String(warehouseId.value)) {
-    return
-  }
-
-  if (updatedResource) {
-    synchronizeResource(normalizeResource(updatedResource), true)
+  if (payload.resource) {
+    synchronizeResource(normalizeResource(payload.resource), true)
     setResource(resource)
   }
 

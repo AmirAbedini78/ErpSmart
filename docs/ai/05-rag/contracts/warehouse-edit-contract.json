@@ -1,0 +1,20 @@
+{
+    "module": "Warehouse",
+    "feature": "floating_edit_modal",
+    "status": "canonical",
+    "date": "2026-06-28",
+    "use": [
+        "Action::make()->floatResourceInEditMode()",
+        "useFloatingResourceModal().floatResourceInEditMode({ resourceName, resourceId })",
+        "Global component name: WarehouseFloatingModal",
+        "Core props: visible, floatingReady, resource, fields, mode, updateHandler",
+        "Listen to floating-resource-updated in detail views for no-refresh synchronization"
+    ],
+    "do_not_use": [
+        "detail_inline_edit",
+        "teleport_inline_edit",
+        "hard_edit_route",
+        "window.location edit navigation",
+        "floating modal component requiring resourceId prop"
+    ]
+}

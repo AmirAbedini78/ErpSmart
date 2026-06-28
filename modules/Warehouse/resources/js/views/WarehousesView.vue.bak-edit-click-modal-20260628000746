@@ -4,24 +4,28 @@
       <NavbarSeparator class="hidden lg:block" />
 
       <NavbarItems>
-        <IButton
+        <IButton @click.prevent="openInlineEditForm"
           basic
           icon="ChevronLeft"
-          :text="backButtonText"
-          @click="goBackToIndex"
+          :text="$t('warehouse::warehouse.back_to_warehouses')"
         />
 
         <IButton
           v-if="safeResource.authorizations.update"
           variant="primary"
           icon="PencilSquareSolid"
-          :text="editButtonText"
-          @click="openEditFloatingModal"
+          :text="$t('core::app.edit')"
         />
       </NavbarItems>
     </template>
 
     <div v-if="componentReady" class="mx-auto max-w-5xl">
+        <IButton
+          class="mb-3"
+          variant="primary"
+        >
+          {{ $t('core::app.edit') }}
+        </IButton>
       <ICard class="mb-6">
         <ICardBody>
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -116,19 +120,27 @@
         </ITabPanels>
       </ITabGroup>
     </div>
-<RouterView @updated="fetchResource" />
+    <WarehousesEdit
+      v-if="showInlineEditForm"
+      :record-id="warehouseId"
+      :redirect-on-close="false"
+      @updated="handleInlineEditUpdated"
+      @closed="showInlineEditForm = false"
+    />
+
+    <RouterView @updated="fetchResource" />
   </MainLayout>
 </template>
 
 <script setup>
-import { computed, provide, watch } from 'vue'
+import WarehousesEdit from './WarehousesEdit.vue'
+import { computed, provide, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
-import { useFloatingResourceModal } from '@/Core/composables/useFloatingResourceModal'
-import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListener'
+
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
 import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
@@ -142,68 +154,19 @@ const warehouseId = computed(() => route.params.id)
 const resourcePath = computed(() => `/${resourceName}/${warehouseId.value}`)
 
 
-function translateText(key, fallback) {
-  const translated = Innoclapps.t ? Innoclapps.t(key) : null
 
-  return typeof translated === 'string' ? translated : fallback
+
+const showInlineEditForm = ref(false)
+
+function openInlineEditForm() {
+  showInlineEditForm.value = true
 }
 
-const backButtonText = computed(() =>
-  translateText('warehouse::warehouse.back_to_warehouses', 'Back to warehouses')
-)
-
-const editButtonText = computed(() => translateText('core::app.edit', 'Edit'))
-
-function goBackToIndex() {
-  router.push({ name: 'warehouse-index' })
+async function handleInlineEditUpdated(updatedWarehouse) {
+  synchronizeResource(updatedWarehouse, true)
+  showInlineEditForm.value = false
+  await fetchResource()
 }
-
-const { floatResourceInEditMode } = useFloatingResourceModal()
-
-function openEditFloatingModal() {
-  floatResourceInEditMode({
-    resourceName,
-    resourceId: Number(warehouseId.value) || warehouseId.value,
-  })
-}
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
-  return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
-  )
-}
-
-async function refreshWarehouseDetailAfterFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-  resource: updatedResource,
-} = {}) {
-  if (updatedResourceName !== resourceName) {
-    return
-  }
-
-  if (String(resourceId) !== String(warehouseId.value)) {
-    return
-  }
-
-  if (updatedResource) {
-    synchronizeResource(normalizeResource(updatedResource), true)
-    setResource(resource)
-  }
-
-  try {
-    await fetchResource()
-    normalizeCurrentResource()
-    setResource(resource)
-  } catch (error) {
-    console.error('Failed to refresh warehouse detail after floating edit.', error)
-  }
-}
-
-useGlobalEventListener('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
 const {
   resource,
   fetchResource,

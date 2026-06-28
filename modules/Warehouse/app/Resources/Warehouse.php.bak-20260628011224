@@ -3,7 +3,6 @@
 namespace Modules\Warehouse\Resources;
 
 use Illuminate\Database\Eloquent\Builder;
-use Modules\Core\Actions\Action;
 use Modules\Core\Contracts\Resources\AcceptsCustomFields;
 use Modules\Core\Contracts\Resources\AcceptsUniqueCustomFields;
 use Modules\Core\Actions\CloneAction;
@@ -165,8 +164,6 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
     public function actions(ResourceRequest $request): array
     {
         return [
-            Action::make()->floatResourceInEditMode(),
-
             (new CloneAction)
                 ->showInline()
                 ->canRun(fn (ActionRequest $request, WarehouseModel $model) => $request->user()->can('create', $model)),

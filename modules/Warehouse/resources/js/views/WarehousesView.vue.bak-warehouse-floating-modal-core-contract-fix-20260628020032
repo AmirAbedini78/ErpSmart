@@ -22,7 +22,7 @@
     </template>
 
     <div v-if="componentReady" class="mx-auto max-w-5xl">
-      <ICard class="mb-6">
+<ICard class="mb-6">
         <ICardBody>
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -128,7 +128,7 @@ import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
 import { useFloatingResourceModal } from '@/Core/composables/useFloatingResourceModal'
-import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListener'
+
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
 import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
@@ -166,44 +166,6 @@ function openEditFloatingModal() {
     resourceId: Number(warehouseId.value) || warehouseId.value,
   })
 }
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
-  return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
-  )
-}
-
-async function refreshWarehouseDetailAfterFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-  resource: updatedResource,
-} = {}) {
-  if (updatedResourceName !== resourceName) {
-    return
-  }
-
-  if (String(resourceId) !== String(warehouseId.value)) {
-    return
-  }
-
-  if (updatedResource) {
-    synchronizeResource(normalizeResource(updatedResource), true)
-    setResource(resource)
-  }
-
-  try {
-    await fetchResource()
-    normalizeCurrentResource()
-    setResource(resource)
-  } catch (error) {
-    console.error('Failed to refresh warehouse detail after floating edit.', error)
-  }
-}
-
-useGlobalEventListener('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
 const {
   resource,
   fetchResource,

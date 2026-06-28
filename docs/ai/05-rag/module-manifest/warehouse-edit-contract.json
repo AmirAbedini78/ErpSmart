@@ -1,0 +1,27 @@
+{
+  "module": "warehouse",
+  "feature": "floating_edit_modal",
+  "status": "canonical",
+  "updated_at": "2026-06-28",
+  "contract": {
+    "detail_route": "/warehouses/:id",
+    "edit_trigger": "useFloatingResourceModal().floatResourceInEditMode",
+    "php_resource_action": "Action::make()->floatResourceInEditMode()",
+    "floating_component": "WarehouseFloatingModal",
+    "core_props": [
+      "visible",
+      "floatingReady",
+      "resource",
+      "fields",
+      "mode",
+      "updateHandler"
+    ],
+    "post_update_sync_event": "floating-resource-updated"
+  },
+  "do_not_use": [
+    "detail_inline_edit_mount",
+    "manual_teleport_edit_modal",
+    "window_location_hard_edit_route",
+    "floating_modal_resource_id_prop_contract"
+  ]
+}

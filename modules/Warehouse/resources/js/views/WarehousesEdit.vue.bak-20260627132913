@@ -7,7 +7,7 @@
     :title="$t('warehouse::warehouse.edit')"
     visible
     form
-    @hidden="handleHidden"
+    @hidden="$router.back"
     @submit="update"
   >
     <FieldsPlaceholder v-if="!hasFields" />
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -34,13 +34,8 @@ import { useForm } from '@/Core/composables/useForm'
 import { useResourceable } from '@/Core/composables/useResourceable'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
 
-const emit = defineEmits(['updated', 'closed'])
+const emit = defineEmits(['updated'])
 
-
-const props = defineProps({
-  recordId: { type: [String, Number], default: null },
-  redirectOnClose: { type: Boolean, default: true },
-})
 const resourceName = Innoclapps.resourceName('warehouses')
 
 const { t } = useI18n()
@@ -54,35 +49,19 @@ const { retrieveResource, updateResource } = useResourceable(resourceName)
 
 const warehouse = ref({})
 
-
-const currentWarehouseId = computed(() => props.recordId || route.params.id)
-
-function handleHidden() {
-  if (props.redirectOnClose) {
-    router.back()
-    return
-  }
-
-  emit('closed')
-}
 async function update() {
-  let updatedWarehouse = await updateResource(form, currentWarehouseId.value)
+  let updatedWarehouse = await updateResource(form, route.params.id)
 
   emit('updated', updatedWarehouse)
 
   Innoclapps.success(t('warehouse::warehouse.updated'))
-
-  if (props.redirectOnClose) {
-    router.back()
-  } else {
-    emit('closed')
-  }
+  router.back()
 }
 
 async function prepareComponent() {
   const [_warehouse, _fields] = await Promise.all([
-    retrieveResource(currentWarehouseId.value),
-    getUpdateFields(resourceName, currentWarehouseId.value),
+    retrieveResource(route.params.id),
+    getUpdateFields(resourceName, route.params.id),
   ])
 
   fields.value = _fields

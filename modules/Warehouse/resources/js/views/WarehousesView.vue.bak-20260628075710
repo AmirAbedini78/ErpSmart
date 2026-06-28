@@ -128,7 +128,8 @@ import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
 import { useFloatingResourceModal } from '@/Core/composables/useFloatingResourceModal'
-import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListener'
+import { onGlobal } from '@/Core/composables/useGlobalEventListener'
+
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
 import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
@@ -166,31 +167,20 @@ function openEditFloatingModal() {
     resourceId: Number(warehouseId.value) || warehouseId.value,
   })
 }
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
+function isSameWarehouseFloatingUpdate(payload = {}) {
   return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
+    payload.resourceName === resourceName &&
+    String(payload.resourceId) === String(warehouseId.value)
   )
 }
 
-async function refreshWarehouseDetailAfterFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-  resource: updatedResource,
-} = {}) {
-  if (updatedResourceName !== resourceName) {
+async function refreshWarehouseDetailAfterFloatingUpdate(payload = {}) {
+  if (!isSameWarehouseFloatingUpdate(payload)) {
     return
   }
 
-  if (String(resourceId) !== String(warehouseId.value)) {
-    return
-  }
-
-  if (updatedResource) {
-    synchronizeResource(normalizeResource(updatedResource), true)
+  if (payload.resource) {
+    synchronizeResource(normalizeResource(payload.resource), true)
     setResource(resource)
   }
 
@@ -203,7 +193,7 @@ async function refreshWarehouseDetailAfterFloatingUpdate({
   }
 }
 
-useGlobalEventListener('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
+onGlobal('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
 const {
   resource,
   fetchResource,

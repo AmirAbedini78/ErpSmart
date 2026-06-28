@@ -1,10 +1,10 @@
 <template>
   <ISlideover
-    id="editWarehouseModal"
-    :ok-disabled="form.busy || (hasFields && !warehouse.authorizations.update)"
+    id="warehouseFloatingModal"
+    :ok-disabled="form.busy || (hasFields && !warehouse.authorizations?.update)"
     :ok-loading="form.busy"
     :ok-text="$t('core::app.save')"
-    :title="$t('warehouse::warehouse.edit')"
+    :title="modalTitle"
     visible
     form
     @hidden="handleHidden"
@@ -17,7 +17,7 @@
       :fields="fields"
       :form="form"
       :resource-name="resourceName"
-      :resource-id="$route.params.id"
+      :resource-id="currentWarehouseId"
       is-floating
       @update-field-value="form.fill($event.attribute, $event.value)"
       @set-initial-value="form.set($event.attribute, $event.value)"
@@ -26,57 +26,54 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
 
 import { useForm } from '@/Core/composables/useForm'
 import { useResourceable } from '@/Core/composables/useResourceable'
 import { useResourceFields } from '@/Core/composables/useResourceFields'
 
-const emit = defineEmits(['updated', 'closed'])
+defineOptions({ name: 'WarehouseFloatingModal' })
 
+const emit = defineEmits(['hidden', 'closed', 'updated'])
 
 const props = defineProps({
-  recordId: { type: [String, Number], default: null },
-  redirectOnClose: { type: Boolean, default: true },
+  mode: { type: String, default: 'edit' },
+  resourceId: { type: [String, Number], required: true },
 })
+
 const resourceName = Innoclapps.resourceName('warehouses')
 
 const { t } = useI18n()
-const router = useRouter()
-const route = useRoute()
-
-const { fields, hasFields, getUpdateFields, hydrateFields } =
-  useResourceFields()
+const { fields, hasFields, getUpdateFields, hydrateFields } = useResourceFields()
 const { form } = useForm()
 const { retrieveResource, updateResource } = useResourceable(resourceName)
 
-const warehouse = ref({})
+const warehouse = ref({ authorizations: { update: true } })
 
+const currentWarehouseId = computed(() => props.resourceId)
 
-const currentWarehouseId = computed(() => props.recordId || route.params.id)
+const modalTitle = computed(() => {
+  const label = warehouse.value?.display_name || warehouse.value?.name || ''
+
+  return label
+    ? `${t('core::app.edit')} ${label}`
+    : t('warehouse::warehouse.edit')
+})
 
 function handleHidden() {
-  if (props.redirectOnClose) {
-    router.back()
-    return
-  }
-
+  emit('hidden')
   emit('closed')
 }
+
 async function update() {
-  let updatedWarehouse = await updateResource(form, currentWarehouseId.value)
+  const updatedWarehouse = await updateResource(form, currentWarehouseId.value)
 
   emit('updated', updatedWarehouse)
 
   Innoclapps.success(t('warehouse::warehouse.updated'))
 
-  if (props.redirectOnClose) {
-    router.back()
-  } else {
-    emit('closed')
-  }
+  handleHidden()
 }
 
 async function prepareComponent() {
@@ -85,10 +82,17 @@ async function prepareComponent() {
     getUpdateFields(resourceName, currentWarehouseId.value),
   ])
 
+  warehouse.value = {
+    ..._warehouse,
+    authorizations: {
+      update: true,
+      ...(_warehouse.authorizations || {}),
+    },
+  }
+
   fields.value = _fields
   hydrateFields(_warehouse)
-  warehouse.value = _warehouse
 }
 
-prepareComponent()
+watch(currentWarehouseId, prepareComponent, { immediate: true })
 </script>

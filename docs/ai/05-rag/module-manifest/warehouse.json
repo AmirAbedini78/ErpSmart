@@ -1,29 +1,17 @@
 {
   "module": "Warehouse",
-  "canonical_resource": "warehouses",
-  "status": "in_progress_template_module",
-  "base_routes": {
-    "index": "/warehouses",
-    "create": "/warehouses/create",
-    "view": "/warehouses/{id}",
-    "edit": "/warehouses/{id}/edit"
+  "capabilities": {
+    "crud": true,
+    "permissions": true,
+    "custom_fields": true,
+    "import_export": true,
+    "notes": true,
+    "attachments": true,
+    "attachment_delete": true,
+    "detail_inline_edit": true
   },
-  "implemented_capabilities": [
-    "crud",
-    "resource_ui",
-    "permissions",
-    "boolean_field_contract",
-    "custom_fields",
-    "import_export",
-    "clone_delete_actions",
-    "notes",
-    "media_attachments",
-    "media_attachment_delete",
-    "detail_edit_navigation_contract"
-  ],
   "builder_rules": {
-    "detail_edit_navigation": "Use canonical path /{resource}/{id}/edit from custom detail pages unless the actual route name is discovered from router registration.",
-    "notes": "Use concrete inverse relation methods, not dynamic resolveRelationUsing, when pivot events/timeline/changelog are involved.",
-    "media": "Resource must implement Mediable; model must use HasMedia and implement Resourceable contract for pivot changelog compatibility. Detail response must include media relation for persistence."
+    "detail_edit_action": "Prefer inline modal edit for custom detail pages unless route-child overlay contract is verified.",
+    "edit_form_reuse": "Reusable edit components should support explicit recordId and configurable close behavior."
   }
 }
