@@ -1,0 +1,80 @@
+{
+  "name": "warehouse-canonical-template-exclusions",
+  "version": 1,
+  "purpose": "Prevent RAG, AI Agent, and Module Builder workflows from using stale backups, generated noise, dependencies, build output, caches, and superseded attempts as canonical Warehouse template evidence.",
+  "exclusion_patterns": [
+    "*.bak-*",
+    "**/*.bak-*",
+    "modules/Warehouse/**/*.bak-*",
+    "public/build/**",
+    "node_modules/**",
+    "vendor/**",
+    "storage/framework/**",
+    "storage/logs/**",
+    "storage/app/**",
+    "resources/**/*.min.*",
+    "public/**/*.map",
+    "public/**/*.min.*",
+    "**/.cache/**",
+    "**/cache/**",
+    "bootstrap/cache/**",
+    "docs/ai/04-docops/superseded/**",
+    "composer.lock",
+    "package-lock.json"
+  ],
+  "conditional_exclusions": [
+    {
+      "pattern": "storage/app/**",
+      "exception": "Only explicitly curated discovery/readiness reports may be cited by name in a task; do not bulk-index storage/app."
+    },
+    {
+      "pattern": "composer.lock",
+      "exception": "Use only for dependency audit tasks, not semantic module generation."
+    },
+    {
+      "pattern": "package-lock.json",
+      "exception": "Use only for dependency audit tasks, not semantic module generation."
+    }
+  ],
+  "canonical_evidence": [
+    "modules/Warehouse/app/Resources/Warehouse.php",
+    "modules/Warehouse/app/Resources/WarehouseTable.php",
+    "modules/Warehouse/app/Models/Warehouse.php",
+    "modules/Warehouse/app/Http/Resources/WarehouseResource.php",
+    "modules/Warehouse/app/Providers/WarehouseServiceProvider.php",
+    "modules/Warehouse/app/Providers/RouteServiceProvider.php",
+    "modules/Warehouse/app/Policies/WarehousePolicy.php",
+    "modules/Warehouse/resources/js/views/WarehousesView.vue",
+    "modules/Warehouse/resources/js/views/WarehousesIndex.vue",
+    "modules/Warehouse/resources/js/views/WarehousesCreate.vue",
+    "modules/Warehouse/resources/js/views/WarehousesEdit.vue",
+    "modules/Warehouse/resources/js/components/WarehouseFloatingModal.vue",
+    "modules/Warehouse/resources/js/routes.js",
+    "modules/Warehouse/resources/js/app.js",
+    "modules/Warehouse/lang/en/warehouse.php",
+    "modules/Warehouse/database/migrations/2026_06_12_184218_create_warehouses_table.php",
+    "modules/Warehouse/database/migrations/2026_06_19_160500_add_import_id_to_warehouses_table.php",
+    "modules/Warehouse/database/migrations/2026_06_20_180000_cleanup_warehouse_permissions.php",
+    "patches/verify_warehouse_standard_detail_page_contract.php",
+    "docs/ai/02-domains/warehouse.md",
+    "docs/ai/03-architecture/resource-detail-capability-matrix.md",
+    "docs/ai/03-architecture/module-builder-activities-contract.md",
+    "docs/ai/03-architecture/module-builder-edit-contract.md",
+    "docs/ai/05-rag/module-manifest/warehouse.json",
+    "docs/ai/05-rag/contracts/warehouse-edit-contract.json",
+    "docs/ai/04-docops/history/2026-06-29-warehouse-standard-detail-page-verifier.md",
+    "docs/ai/04-docops/history/2026-06-29-warehouse-standard-detail-page-backend-metadata.md",
+    "docs/ai/04-docops/history/2026-06-29-warehouse-standard-detail-page-frontend-conversion.md"
+  ],
+  "curated_storage_reports": [
+    "storage/app/warehouse-canonical-template-readiness-report.md",
+    "storage/app/warehouse-standard-detail-page-contract-discovery-report.md",
+    "storage/app/warehouse-standard-detail-page-conversion-plan.md"
+  ],
+  "notes": [
+    "Do not use modules/Warehouse backup files as source evidence.",
+    "Do not bulk-index storage/app; cite curated reports explicitly by task.",
+    "Do not use dependency locks for semantic code generation unless the task is a dependency audit.",
+    "Prefer current source files and docs/ai manifests over historical failed attempts."
+  ]
+}
