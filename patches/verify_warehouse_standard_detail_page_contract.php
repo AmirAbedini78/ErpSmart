@@ -125,21 +125,19 @@ $required = [
             'PipesComments',
         ]),
     '09_warehouses_view_exists' => is_file(path_join($root, $paths['warehouse_view'])),
-    '10_warehouses_view_renders_notes_tab_and_panel' => has_all($files['warehouse_view'], [
-        'RecordTabNote',
-        'RecordTabNotePanel',
-        '<RecordTabNote',
-        '<RecordTabNotePanel',
+    '10_warehouses_view_imports_and_uses_panels' => has_all($files['warehouse_view'], [
+        "import Panels from '@/Core/components/Panels.vue'",
+        '<Panels',
     ]),
-    '11_warehouses_view_renders_activities_tab_and_panel' => has_all($files['warehouse_view'], [
-        'ActivitiesTab',
-        'ActivitiesTabPanel',
-        '<ActivitiesTab',
-        '<ActivitiesTabPanel',
+    '11_warehouses_view_defines_page_from_detail_page' => has_all($files['warehouse_view'], [
+        'resourceInformation',
+        'const page = ref(resourceInformation.value.detailPage)',
     ]),
-    '12_warehouses_view_renders_resource_media_panel' => has_all($files['warehouse_view'], [
-        'ResourceMediaPanel',
-        '<ResourceMediaPanel',
+    '12_warehouses_view_renders_page_panels' => has_all($files['warehouse_view'], [
+        'v-model:panels="page.panels"',
+        ':identifier="resourceName"',
+        ':is="panel.component"',
+        ':panel="panel"',
     ]),
     '13_warehouses_view_has_floating_edit_integration' => has_all($files['warehouse_view'], [
         'useFloatingResourceModal',
@@ -150,6 +148,28 @@ $required = [
         'useResource(resourceName, warehouseId)',
         "const resourceName = Innoclapps.resourceName('warehouses')",
     ]),
+    '14b_warehouses_view_renders_page_tabs' => has_all($files['warehouse_view'], [
+        'v-for="tab in page.tabs"',
+        ':is="tabComponents[tab.component] || tab.component"',
+        ':key="tab.id"',
+    ]),
+    '14c_warehouses_view_renders_tab_panel_component' => has_all($files['warehouse_view'], [
+        ':is="tabComponents[tab.panelComponent] || tab.panelComponent"',
+        ':id="\'tabPanel-\' + tab.id"',
+        'scroll-element="#main"',
+    ]),
+    '14d_warehouses_view_maps_activities_and_notes_tabs' => has_all($files['warehouse_view'], [
+        'const tabComponents = {',
+        "'activities-tab': ActivitiesTab",
+        "'activities-tab-panel': ActivitiesTabPanel",
+        "'notes-tab': RecordTabNote",
+        "'notes-tab-panel': RecordTabNotePanel",
+    ]),
+    '14e_warehouses_view_removes_old_hardcoded_tabs' => ! str_contains($files['warehouse_view'], '<RecordTabNote')
+        && ! str_contains($files['warehouse_view'], '<RecordTabNotePanel')
+        && ! str_contains($files['warehouse_view'], '<ActivitiesTab')
+        && ! str_contains($files['warehouse_view'], '<ActivitiesTabPanel')
+        && ! str_contains($files['warehouse_view'], '<ResourceMediaPanel'),
     '15_warehouse_resource_imports_pages_panel' => str_contains($files['warehouse_resource'], 'use Modules\Core\Pages\Panel;'),
     '16_warehouse_resource_imports_pages_tab' => str_contains($files['warehouse_resource'], 'use Modules\Core\Pages\Tab;'),
     '17_warehouse_resource_defines_boot_method' => str_contains($files['warehouse_resource'], 'protected function boot(): void'),

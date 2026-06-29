@@ -48,114 +48,93 @@
         </ICardBody>
       </ICard>
 
-      <ITabGroup>
-        <ICard
-          class="has-[[data-headlessui-state=selected]:not(:first-child)]:rounded-b-none"
-        >
-          <ITabList
-            class="has-[[data-headlessui-state=selected]:not(:first-child)]:pb-2.5 has-[[data-headlessui-state=selected]:not(:first-child)]:sm:pb-0"
-            centered
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+        <div class="col-span-4">
+          <Panels
+            v-slot="{ panel }"
+            v-model:panels="page.panels"
+            :identifier="resourceName"
           >
-            <ITab>
-              <Icon icon="ViewGrid" />
-              {{ $t('core::app.record_view.sections.details') }}
-            </ITab>
+            <div class="mb-3">
+              <component
+                :is="panel.component"
+                :resource-name="resourceName"
+                :resource-id="safeResource.id"
+                :resource="safeResource"
+                :panel="panel"
+                @updated="synchronizeResource($event, true)"
+              />
+            </div>
+          </Panels>
+        </div>
 
-            <RecordTabNote
-              :resource-name="resourceName"
-              :resource-id="safeResource.id"
-              :resource="safeResource"
-            />
-
-            <ActivitiesTab
-              :resource-name="resourceName"
-              :resource-id="safeResource.id"
-              :resource="safeResource"
-            />
-
-            <ITab>
-              <Icon icon="PaperClip" />
-              {{ $t('core::app.attachments') }}
-            </ITab>
-          </ITabList>
-        </ICard>
-
-        <ITabPanels class="[&_[data-slot=panel]]:-mt-[18px]">
-          <ITabPanel>
-            <ICard class="rounded-t-none">
-              <ICardHeader>
-                <ICardHeading :text="$t('core::app.record_view.sections.details')" />
-              </ICardHeader>
-
-              <ICardBody>
-                <FieldsPlaceholder v-if="!hasFields" />
-
-                <DetailFields
-                  v-else
-                  :fields="fields"
+        <div class="col-span-8 mt-4 lg:mt-0">
+          <ITabGroup :default-index="defaultTabIndex">
+            <ICard
+              class="has-[[data-headlessui-state=selected]:not(:first-child)]:rounded-b-none"
+            >
+              <ITabList
+                class="has-[[data-headlessui-state=selected]:not(:first-child)]:pb-2.5 has-[[data-headlessui-state=selected]:not(:first-child)]:sm:pb-0"
+                centered
+              >
+                <component
+                  :is="tabComponents[tab.component] || tab.component"
+                  v-for="tab in page.tabs"
+                  :key="tab.id"
                   :resource-name="resourceName"
-                  :resource-id="Number(warehouseId)"
+                  :resource-id="safeResource.id"
                   :resource="safeResource"
-                  @updated="synchronizeResource($event, true)"
                 />
-              </ICardBody>
+              </ITabList>
             </ICard>
-          </ITabPanel>
 
-          <RecordTabNotePanel
-            id="tabPanel-notes"
-            scroll-element="#main"
-            :resource-name="resourceName"
-            :resource-id="safeResource.id"
-            :resource="safeResource"
-          />
-
-          <ActivitiesTabPanel
-            scroll-element="#main"
-            :resource-name="resourceName"
-            :resource-id="safeResource.id"
-            :resource="safeResource"
-          />
-
-          <ITabPanel>
-            <ResourceMediaPanel
-              v-if="safeResource.id"
-              :panel="attachmentsPanel"
-              :resource-name="resourceName"
-              :resource-id="safeResource.id"
-              :resource="safeResource"
-            />
-          </ITabPanel>
-        </ITabPanels>
-      </ITabGroup>
+            <ITabPanels class="[&_[data-slot=panel]]:-mt-[18px]">
+              <component
+                :is="tabComponents[tab.panelComponent] || tab.panelComponent"
+                v-for="tab in page.tabs"
+                :id="'tabPanel-' + tab.id"
+                :key="tab.id"
+                scroll-element="#main"
+                :resource-name="resourceName"
+                :resource-id="safeResource.id"
+                :resource="safeResource"
+              />
+            </ITabPanels>
+          </ITabGroup>
+        </div>
+      </div>
     </div>
-<RouterView @updated="fetchResource" />
+
+    <RouterView @updated="fetchResource" />
   </MainLayout>
 </template>
 
 <script setup>
-import { computed, provide, watch } from 'vue'
+import { computed, provide, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import Panels from '@/Core/components/Panels.vue'
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 import { useResource } from '@/Core/composables/useResource'
-import { useResourceFields } from '@/Core/composables/useResourceFields'
 import { useFloatingResourceModal } from '@/Core/composables/useFloatingResourceModal'
 import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListener'
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
-import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
 import ActivitiesTab from '@/Activities/components/RecordTabActivity.vue'
 import ActivitiesTabPanel from '@/Activities/components/RecordTabActivityPanel.vue'
 
 const route = useRoute()
-
-
 const router = useRouter()
 const resourceName = Innoclapps.resourceName('warehouses')
 const warehouseId = computed(() => route.params.id)
 const resourcePath = computed(() => `/${resourceName}/${warehouseId.value}`)
 
+const tabComponents = {
+  'activities-tab': ActivitiesTab,
+  'activities-tab-panel': ActivitiesTabPanel,
+  'notes-tab': RecordTabNote,
+  'notes-tab-panel': RecordTabNotePanel,
+}
 
 function translateText(key, fallback) {
   const translated = Innoclapps.t ? Innoclapps.t(key) : null
@@ -181,15 +160,6 @@ function openEditFloatingModal() {
     resourceId: Number(warehouseId.value) || warehouseId.value,
   })
 }
-function isSameWarehouseFloatingUpdate({
-  resourceName: updatedResourceName,
-  resourceId,
-} = {}) {
-  return (
-    updatedResourceName === resourceName &&
-    String(resourceId) === String(warehouseId.value)
-  )
-}
 
 async function refreshWarehouseDetailAfterFloatingUpdate({
   resourceName: updatedResourceName,
@@ -206,19 +176,21 @@ async function refreshWarehouseDetailAfterFloatingUpdate({
 
   if (updatedResource) {
     synchronizeResource(normalizeResource(updatedResource), true)
-    setResource(resource)
   }
 
   try {
     await fetchResource()
     normalizeCurrentResource()
-    setResource(resource)
   } catch (error) {
     console.error('Failed to refresh warehouse detail after floating edit.', error)
   }
 }
 
-useGlobalEventListener('floating-resource-updated', refreshWarehouseDetailAfterFloatingUpdate)
+useGlobalEventListener(
+  'floating-resource-updated',
+  refreshWarehouseDetailAfterFloatingUpdate
+)
+
 const {
   resource,
   fetchResource,
@@ -226,25 +198,29 @@ const {
   incrementResourceCount,
   decrementResourceCount,
   detachResourceAssociations,
+  resourceInformation,
   resourceReady,
 } = useResource(resourceName, warehouseId)
 
-const { fields, hasFields, getDetailFields, setResource } =
-  useResourceFields()
+const page = ref(resourceInformation.value.detailPage)
 
-const componentReady = computed(() => resourceReady.value && hasFields.value)
+const componentReady = computed(() => resourceReady.value)
 
 const safeResource = computed(() => normalizeResource(resource.value || {}))
 
 const hasIsActiveStatus = computed(() =>
   Object.prototype.hasOwnProperty.call(safeResource.value, 'is_active')
 )
-const attachmentsPanel = computed(() => ({
-  id: 'warehouse-media',
-  component: 'resource-media-panel',
-  name: 'media',
-  heading: Innoclapps.t ? Innoclapps.t('core::app.attachments') : 'Attachments',
-}))
+
+const defaultTabIndex = computed(() => {
+  if (!route.query.section) {
+    return 0
+  }
+
+  const index = page.value.tabs.findIndex(tab => tab.id === route.query.section)
+
+  return index === -1 ? 0 : index
+})
 
 provide('fetchResource', fetchResource)
 provide('synchronizeResource', synchronizeResource)
@@ -272,15 +248,6 @@ async function prepareComponent() {
   }
 
   normalizeCurrentResource()
-
-  const detailFields = await getDetailFields(resourceName, warehouseId.value)
-
-  if (requestId !== prepareRequestId) {
-    return
-  }
-
-  fields.value = normalizeDetailFields(detailFields)
-  setResource(resource)
 }
 
 function normalizeCurrentResource() {
@@ -299,7 +266,9 @@ function normalizeResource(value) {
     notes: Array.isArray(value.notes) ? value.notes : [],
     notes_count: Number(value.notes_count || 0),
     activities: Array.isArray(value.activities) ? value.activities : [],
-    incomplete_activities_for_user_count: Number(value.incomplete_activities_for_user_count || 0),
+    incomplete_activities_for_user_count: Number(
+      value.incomplete_activities_for_user_count || 0
+    ),
 
     media: Array.isArray(value.media)
       ? value.media.map(media => ({
@@ -310,7 +279,9 @@ function normalizeResource(value) {
           },
         }))
       : [],
-    media_count: Number(value.media_count || (Array.isArray(value.media) ? value.media.length : 0)),
+    media_count: Number(
+      value.media_count || (Array.isArray(value.media) ? value.media.length : 0)
+    ),
 
     authorizations: {
       view: true,
@@ -321,17 +292,6 @@ function normalizeResource(value) {
     _edit_disabled: value._edit_disabled || {},
     _sync_timestamp: value._sync_timestamp || Date.now(),
   }
-}
-
-function normalizeDetailFields(detailFields) {
-  return detailFields.map(field => ({
-    ...field,
-
-    // Warehouse detail is edited through the dedicated edit page for now.
-    // Disabling inline editing prevents Core's FieldInlineEdit from crashing
-    // when a custom module response does not yet contain the full edit contract.
-    inlineEditDisabled: true,
-  }))
 }
 
 watch(warehouseId, prepareComponent, { immediate: true })
