@@ -150,6 +150,38 @@ $required = [
         'useResource(resourceName, warehouseId)',
         "const resourceName = Innoclapps.resourceName('warehouses')",
     ]),
+    '15_warehouse_resource_imports_pages_panel' => str_contains($files['warehouse_resource'], 'use Modules\Core\Pages\Panel;'),
+    '16_warehouse_resource_imports_pages_tab' => str_contains($files['warehouse_resource'], 'use Modules\Core\Pages\Tab;'),
+    '17_warehouse_resource_defines_boot_method' => str_contains($files['warehouse_resource'], 'protected function boot(): void'),
+    '18_warehouse_resource_calls_get_detail_page' => str_contains($files['warehouse_resource'], '$this->getDetailPage()'),
+    '19_warehouse_resource_registers_details_panel' => has_all($files['warehouse_resource'], [
+        "Panel::make('warehouse-detail-panel', 'resource-details-panel')",
+        "->heading(__('core::app.record_view.sections.details'))",
+        '->resizeable()',
+    ]),
+    '20_warehouse_resource_registers_media_panel' => has_all($files['warehouse_resource'], [
+        "Panel::make('media', 'resource-media-panel')",
+        "->heading(__('core::app.attachments'))",
+    ]),
+    '21_warehouse_resource_registers_activities_tab' => has_all($files['warehouse_resource'], [
+        "Tab::make('activities', 'activities-tab')",
+        "->panel('activities-tab-panel')",
+        '->order(15)',
+    ]),
+    '22_warehouse_resource_registers_notes_tab' => has_all($files['warehouse_resource'], [
+        "Tab::make('notes', 'notes-tab')",
+        "->panel('notes-tab-panel')",
+        '->order(35)',
+    ]),
+    '23_warehouse_provider_keeps_notes_activities_validation' => has_all(
+        contents($root, 'modules/Warehouse/app/Providers/WarehouseServiceProvider.php'),
+        [
+            '$this->registerNotesViaResourceValidation();',
+            '$this->registerActivitiesViaResourceValidation();',
+            'function registerNotesViaResourceValidation',
+            'function registerActivitiesViaResourceValidation',
+        ]
+    ),
 ];
 
 $target = [

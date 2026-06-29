@@ -30,7 +30,8 @@ use Modules\Core\Http\Requests\ActionRequest;
 use Modules\Core\Http\Requests\ResourceRequest;
 use Modules\Core\Models\Model;
 use Modules\Core\Menu\MenuItem;
-use Modules\Core\Panel;
+use Modules\Core\Pages\Panel;
+use Modules\Core\Pages\Tab;
 use Modules\Core\Resource\AssociatesResources;
 use Modules\Core\Resource\Resource;
 use Modules\Core\Rules\StringRule;
@@ -57,6 +58,32 @@ class Warehouse extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 
     public static string $title = 'name';
 
+    /**
+     * Boot the resource.
+     */
+    protected function boot(): void
+    {
+        $this->getDetailPage()
+            ->tab(
+                Tab::make('activities', 'activities-tab')
+                    ->panel('activities-tab-panel')
+                    ->order(15)
+            )
+            ->tab(
+                Tab::make('notes', 'notes-tab')
+                    ->panel('notes-tab-panel')
+                    ->order(35)
+            )
+            ->panels(function () {
+                return [
+                    Panel::make('warehouse-detail-panel', 'resource-details-panel')
+                        ->heading(__('core::app.record_view.sections.details'))
+                        ->resizeable(),
+                    Panel::make('media', 'resource-media-panel')
+                        ->heading(__('core::app.attachments')),
+                ];
+            });
+    }
     public function menu(): array
     {
         return [
