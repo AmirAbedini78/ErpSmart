@@ -647,7 +647,7 @@ class Activity extends Model implements DisplaysOnCalendar, ResourceableContract
      */
     protected function relatedPivotRelationsToTouch(): array
     {
-        return ['contacts', 'companies', 'deals', 'warehouses'];
+        return ['contacts', 'companies', 'deals'];
     }
 
     /**
@@ -659,7 +659,7 @@ class Activity extends Model implements DisplaysOnCalendar, ResourceableContract
             $this->deleteFromCalendar();
         }
 
-        foreach (['contacts', 'companies', 'deals', 'warehouses'] as $relation) {
+        foreach (['contacts', 'companies', 'deals'] as $relation) {
             $this->{$relation}()->withTrashed()->detach();
         }
 

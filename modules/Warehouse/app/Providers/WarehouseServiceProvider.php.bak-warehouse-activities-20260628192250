@@ -21,7 +21,6 @@ class WarehouseServiceProvider extends ModuleServiceProvider
     {
         $this->registerCommands();
         $this->registerNotesViaResourceValidation();
-        $this->registerActivitiesViaResourceValidation();
     }
 
     /**
@@ -53,33 +52,6 @@ class WarehouseServiceProvider extends ModuleServiceProvider
 
             $rules['via_resource'] = ['required_with:via_resource_id', Rule::in(['warehouses'])];
             $rules['via_resource_id'] = ['required_with:via_resource', 'integer', Rule::exists('warehouses', 'id')];
-
-            return $rules;
-        }, 50, 2);
-    }
-    /**
-     * Allow the Activities resource to accept Warehouse as via_resource.
-     *
-     * RelatedActivityCreate posts to /api/activities?via_resource=warehouses&via_resource_id={id}
-     * and may include warehouses: [{id}] depending on the Resource form payload.
-     */
-    protected function registerActivitiesViaResourceValidation(): void
-    {
-        if (! function_exists('add_filter')) {
-            return;
-        }
-
-        add_filter('http.request.create_resource_request.activities.rules', function (array $rules, CreateResourceRequest $request) {
-            $viaResource = $request->query('via_resource', $request->input('via_resource'));
-
-            if ($viaResource !== 'warehouses') {
-                return $rules;
-            }
-
-            $rules['via_resource'] = ['required_with:via_resource_id', Rule::in(['warehouses'])];
-            $rules['via_resource_id'] = ['required_with:via_resource', 'integer', Rule::exists('warehouses', 'id')];
-            $rules['warehouses'] = ['nullable', 'array'];
-            $rules['warehouses.*'] = ['integer', Rule::exists('warehouses', 'id')];
 
             return $rules;
         }, 50, 2);

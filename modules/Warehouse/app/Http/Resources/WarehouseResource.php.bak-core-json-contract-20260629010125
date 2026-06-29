@@ -1,0 +1,29 @@
+<?php
+
+namespace Modules\Warehouse\Http\Resources;
+
+use Illuminate\Http\Request;
+use Modules\Core\Http\Resources\JsonResource;
+
+/** @mixin \Modules\Warehouse\Models\Warehouse */
+class WarehouseResource extends JsonResource
+{
+    /**
+     * Transform the Warehouse model into the lightweight shape required by
+     * Core association pickers and Resource JSON responses.
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'display_name' => $this->display_name ?: $this->name,
+            'path' => '/warehouses/'.$this->id,
+            'code' => $this->code,
+            'description' => $this->description,
+            'is_active' => (bool) $this->is_active,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+}

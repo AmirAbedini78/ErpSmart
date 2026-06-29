@@ -323,7 +323,6 @@
               activities: {
                 id: activityId,
                 comments: [$event],
-                comments_count: commentsCount + 1,
               },
             })
         "

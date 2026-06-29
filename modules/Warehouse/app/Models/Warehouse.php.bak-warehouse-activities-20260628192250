@@ -2,7 +2,6 @@
 
 namespace Modules\Warehouse\Models;
 
-use Modules\Activities\Concerns\HasActivities;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Modules\Core\Common\Media\HasMedia;
 use Modules\Core\Common\Timeline\HasTimeline;
@@ -13,11 +12,11 @@ use Modules\Notes\Models\Note;
 
 class Warehouse extends Model implements ResourceableContract
 {
-    use HasMedia;
-    use HasTimeline;
-    use HasActivities;
-    use Resourceable;
-protected $table = 'warehouses';
+    use HasMedia,
+        HasTimeline,
+        Resourceable;
+
+    protected $table = 'warehouses';
     /**
      * The custom Warehouse detail page renders Core's ResourceMediaPanel directly.
      * Keep media eager loaded so attachments remain visible after navigating away
@@ -75,23 +74,5 @@ protected $table = 'warehouses';
         $normalized = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
         $this->attributes['is_active'] = $normalized ?? (bool) $value;
-    }
-    /**
-     * Keep the Activities tab badge safe when the detail payload has not loaded activities yet.
-     * The tab panel lazy-loads the actual records, so this accessor only prevents null/undefined badges.
-     */
-    public function getIncompleteActivitiesForUserCountAttribute(): int
-    {
-        if (! method_exists($this, 'activities')) {
-            return 0;
-        }
-
-        if (! $this->relationLoaded('activities')) {
-            return 0;
-        }
-
-        return $this->activities
-            ->where('is_completed', false)
-            ->count();
     }
 }

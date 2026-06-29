@@ -67,12 +67,6 @@
               :resource="safeResource"
             />
 
-            <ActivitiesTab
-              :resource-name="resourceName"
-              :resource-id="safeResource.id"
-              :resource="safeResource"
-            />
-
             <ITab>
               <Icon icon="PaperClip" />
               {{ $t('core::app.attachments') }}
@@ -110,13 +104,6 @@
             :resource="safeResource"
           />
 
-          <ActivitiesTabPanel
-            scroll-element="#main"
-            :resource-name="resourceName"
-            :resource-id="safeResource.id"
-            :resource="safeResource"
-          />
-
           <ITabPanel>
             <ResourceMediaPanel
               v-if="safeResource.id"
@@ -145,8 +132,6 @@ import { useGlobalEventListener } from '@/Core/composables/useGlobalEventListene
 import RecordTabNote from '@/Notes/components/RecordTabNote.vue'
 import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'
 import ResourceMediaPanel from '@/Core/components/Resource/ResourceMediaPanel.vue'
-import ActivitiesTab from '@/Activities/components/RecordTabActivity.vue'
-import ActivitiesTabPanel from '@/Activities/components/RecordTabActivityPanel.vue'
 
 const route = useRoute()
 
@@ -298,8 +283,6 @@ function normalizeResource(value) {
 
     notes: Array.isArray(value.notes) ? value.notes : [],
     notes_count: Number(value.notes_count || 0),
-    activities: Array.isArray(value.activities) ? value.activities : [],
-    incomplete_activities_for_user_count: Number(value.incomplete_activities_for_user_count || 0),
 
     media: Array.isArray(value.media)
       ? value.media.map(media => ({

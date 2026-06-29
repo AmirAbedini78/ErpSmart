@@ -1,0 +1,35 @@
+<?php
+
+namespace Modules\Warehouse\Http\Resources;
+
+use Illuminate\Http\Request;
+use Modules\Core\Resource\JsonResource;
+
+class WarehouseResource extends JsonResource
+{
+    /**
+     * Transform the Warehouse resource into an array.
+     *
+     * This class must extend Modules\Core\Resource\JsonResource, not Laravel's
+     * plain JsonResource, because Concord/ErpSmart calls Core resource helpers
+     * such as withActions(), withFields(), withAuthorizations(), etc.
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'display_name' => $this->display_name ?? $this->name,
+            'code' => $this->code,
+            'description' => $this->description,
+            'is_active' => (bool) $this->is_active,
+            'import_id' => $this->import_id,
+            'media' => $this->whenLoaded('media'),
+            'media_count' => $this->relationLoaded('media') ? $this->media->count() : 0,
+            'activities' => $this->whenLoaded('activities'),
+            'incomplete_activities_for_user_count' => (int) ($this->incomplete_activities_for_user_count ?? 0),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+}

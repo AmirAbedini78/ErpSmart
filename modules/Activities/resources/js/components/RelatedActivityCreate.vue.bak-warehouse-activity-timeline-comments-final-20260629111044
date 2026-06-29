@@ -89,7 +89,6 @@ const { fields, hasFields, updateField, getCreateFields } = useResourceFields()
 const { form } = useForm(
   {
     is_completed: false,
-    [props.viaResource]: [props.viaResourceId],
     associations: {
       [props.viaResource]: [props.viaResourceId],
     },
@@ -116,11 +115,6 @@ async function prepareComponent() {
 }
 
 async function create() {
-  form.fill(props.viaResource, [props.viaResourceId])
-  form.fill('associations', {
-    ...(form.associations || {}),
-    [props.viaResource]: [props.viaResourceId],
-  })
   let activity = await createResource(
     form.withQueryString({
       via_resource: props.viaResource,
