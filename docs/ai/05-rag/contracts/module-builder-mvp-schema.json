@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://erpsmart.local/schemas/module-builder-mvp-schema.json",
+  "title": "ERPSMART Module Builder MVP Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "module", "resource", "fields", "capabilities", "permissions", "frontend", "verifier"],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "namespace", "singularLabel", "pluralLabel", "table", "routeName", "resourceName", "icon"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+        "namespace": {"type": "string", "pattern": "^Modules\\\\[A-Z][A-Za-z0-9]*$"},
+        "singularLabel": {"type": "string", "minLength": 1},
+        "pluralLabel": {"type": "string", "minLength": 1},
+        "table": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "routeName": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "resourceName": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+        "icon": {"type": "string", "minLength": 1}
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelClass", "titleField", "orderBy", "hasDetailView", "globalSearchAction"],
+      "properties": {
+        "modelClass": {"type": "string", "pattern": "^Modules\\\\[A-Z][A-Za-z0-9]*\\\\Models\\\\[A-Z][A-Za-z0-9]*$"},
+        "titleField": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "orderBy": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "hasDetailView": {"type": "boolean"},
+        "globalSearchAction": {"type": "string", "enum": ["float", "navigate", "none"]}
+      }
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "label", "rules", "visibility"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "type": {"type": "string", "enum": ["id", "text", "textarea", "boolean", "integer", "decimal", "date", "datetime", "select", "belongsTo"]},
+          "label": {"type": "string", "minLength": 1},
+          "primary": {"type": "boolean", "default": false},
+          "required": {"type": "boolean", "default": false},
+          "default": {},
+          "rules": {"type": "array", "items": {"type": "string"}},
+          "creationRules": {"type": "array", "items": {"type": "string"}},
+          "updateRules": {"type": "array", "items": {"type": "string"}},
+          "visibility": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["index", "detail", "create", "update"],
+            "properties": {
+              "index": {"type": "boolean"},
+              "detail": {"type": "boolean"},
+              "create": {"type": "boolean"},
+              "update": {"type": "boolean"},
+              "settings": {"type": "boolean", "default": true}
+            }
+          },
+          "table": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "width": {"type": "string"},
+              "minWidth": {"type": "string"},
+              "primary": {"type": "boolean"},
+              "route": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["defaultView", "orderBy"],
+      "properties": {
+        "defaultView": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "flag"],
+          "properties": {"name": {"type": "string"}, "flag": {"type": "string"}}
+        },
+        "orderBy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["column", "direction"],
+          "properties": {"column": {"type": "string"}, "direction": {"type": "string", "enum": ["asc", "desc"]}}
+        }
+      }
+    },
+    "detailPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["panels", "tabs"],
+      "properties": {
+        "panels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "component"],
+            "properties": {
+              "id": {"type": "string"},
+              "component": {"type": "string"},
+              "heading": {"type": "string"},
+              "resizeable": {"type": "boolean", "default": false},
+              "whenCapability": {"type": "string"}
+            }
+          }
+        },
+        "tabs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "component", "panelComponent", "order"],
+            "properties": {
+              "id": {"type": "string"},
+              "component": {"type": "string"},
+              "panelComponent": {"type": "string"},
+              "order": {"type": "integer"},
+              "whenCapability": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tableable", "customFields", "uniqueCustomFields", "importable", "exportable", "cloneable", "mediable", "notes", "activities", "activityComments", "activityAssociations", "globalSearch", "quickCreate", "bulkDelete", "softDeletes", "timeline"],
+      "properties": {
+        "tableable": {"type": "boolean"},
+        "customFields": {"type": "boolean"},
+        "uniqueCustomFields": {"type": "boolean"},
+        "importable": {"type": "boolean"},
+        "exportable": {"type": "boolean"},
+        "cloneable": {"type": "boolean"},
+        "mediable": {"type": "boolean"},
+        "notes": {"type": "boolean"},
+        "activities": {"type": "boolean"},
+        "activityComments": {"type": "boolean"},
+        "activityAssociations": {"type": "boolean"},
+        "globalSearch": {"type": "boolean"},
+        "quickCreate": {"type": "boolean"},
+        "bulkDelete": {"type": "boolean"},
+        "softDeletes": {"type": "boolean"},
+        "timeline": {"type": "boolean"}
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["view", "create", "edit", "delete"],
+      "properties": {
+        "view": {"type": "array", "items": {"type": "string"}},
+        "create": {"type": "string"},
+        "edit": {"type": "array", "items": {"type": "string"}},
+        "delete": {"type": "array", "items": {"type": "string"}},
+        "bulkDelete": {"type": "string"},
+        "import": {"type": "string"},
+        "export": {"type": "string"}
+      }
+    },
+    "frontend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routes", "views", "floatingModal"],
+      "properties": {
+        "routes": {"type": "boolean"},
+        "views": {"type": "array", "items": {"type": "string", "enum": ["index", "create", "edit", "detail"]}},
+        "floatingModal": {"type": "boolean"},
+        "localTabComponents": {"type": "object", "additionalProperties": {"type": "string"}}
+      }
+    },
+    "verifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generate", "path", "checks"],
+      "properties": {
+        "generate": {"type": "boolean"},
+        "path": {"type": "string"},
+        "checks": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
