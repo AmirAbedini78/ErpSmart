@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "name": "Inventory",
+    "namespace": "Modules\\Inventory",
+    "singularLabel": "Item",
+    "pluralLabel": "Items",
+    "table": "items",
+    "routeName": "items",
+    "resourceName": "items",
+    "icon": "ArchiveBox"
+  },
+  "resource": {
+    "modelClass": "Modules\\Inventory\\Models\\Item",
+    "titleField": "name",
+    "orderBy": "name",
+    "hasDetailView": true,
+    "globalSearchAction": "float"
+  },
+  "fields": [
+    {
+      "name": "name",
+      "type": "text",
+      "label": "Name",
+      "primary": true,
+      "required": true,
+      "rules": ["string", "max:191"],
+      "creationRules": ["required"],
+      "updateRules": ["filled"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "300px", "minWidth": "200px", "primary": true, "route": "/items/{id}"}
+    },
+    {
+      "name": "code",
+      "type": "text",
+      "label": "Code",
+      "required": false,
+      "rules": ["nullable", "string", "max:64"],
+      "creationRules": ["nullable", "unique:items,code"],
+      "updateRules": ["nullable", "unique:items,code,{{resourceId}}"],
+      "visibility": {"index": true, "detail": false, "create": true, "update": true, "settings": false},
+      "table": {"width": "180px", "minWidth": "140px"}
+    },
+    {
+      "name": "description",
+      "type": "textarea",
+      "label": "Description",
+      "required": false,
+      "rules": ["nullable", "string"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "320px", "minWidth": "220px"}
+    },
+    {
+      "name": "is_active",
+      "type": "boolean",
+      "label": "Active",
+      "default": true,
+      "rules": ["nullable", "boolean"],
+      "creationRules": ["nullable", "boolean"],
+      "updateRules": ["nullable", "boolean"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    }
+  ],
+  "table": {
+    "defaultView": {"name": "Items", "flag": "all-items"},
+    "orderBy": {"column": "created_at", "direction": "desc"}
+  },
+  "detailPage": {
+    "panels": [
+      {"id": "item-detail-panel", "component": "resource-details-panel", "heading": "Details", "resizeable": true},
+      {"id": "media", "component": "resource-media-panel", "heading": "Attachments", "whenCapability": "mediable"}
+    ],
+    "tabs": [
+      {"id": "activities", "component": "activities-tab", "panelComponent": "activities-tab-panel", "order": 15, "whenCapability": "activities"},
+      {"id": "notes", "component": "notes-tab", "panelComponent": "notes-tab-panel", "order": 35, "whenCapability": "notes"}
+    ]
+  },
+  "capabilities": {
+    "tableable": true,
+    "customFields": true,
+    "uniqueCustomFields": true,
+    "importable": true,
+    "exportable": true,
+    "cloneable": true,
+    "mediable": true,
+    "notes": true,
+    "activities": true,
+    "activityComments": true,
+    "activityAssociations": true,
+    "globalSearch": true,
+    "quickCreate": true,
+    "bulkDelete": true,
+    "softDeletes": false,
+    "timeline": false
+  },
+  "permissions": {
+    "view": ["view all items"],
+    "create": "create items",
+    "edit": ["edit all items"],
+    "delete": ["delete any item"],
+    "bulkDelete": "bulk delete items",
+    "import": "import items",
+    "export": "export items"
+  },
+  "frontend": {
+    "routes": true,
+    "views": ["index", "create", "edit", "detail"],
+    "floatingModal": true,
+    "localTabComponents": {
+      "activities-tab": "ActivitiesTab",
+      "activities-tab-panel": "ActivitiesTabPanel",
+      "notes-tab": "RecordTabNote",
+      "notes-tab-panel": "RecordTabNotePanel"
+    }
+  },
+  "verifier": {
+    "generate": true,
+    "path": "patches/verify_inventory_item_contract.php",
+    "checks": ["resource", "json-resource", "detail-page", "frontend", "safety"]
+  }
+}
