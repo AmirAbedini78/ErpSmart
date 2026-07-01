@@ -200,17 +200,17 @@ class ErpsmartMakeModuleCommand extends Command
         $warnings = [];
         $capabilities = $definition['capabilities'] ?? [];
 
-        if (($capabilities['timeline'] ?? false) === true) {
-            $warnings[] = 'timeline requested but timeline UI generation is out of MVP dry-run implementation scope';
+        if ($this->capabilityEnabled($definition, 'timeline')) {
+            $warnings[] = 'timeline requested but timeline UI generation is future/unsupported in preview; no timeline APIs are generated';
         }
 
-        if (($capabilities['softDeletes'] ?? false) === true) {
+        if ($this->capabilityEnabled($definition, 'softDeletes')) {
             $warnings[] = 'softDeletes requested; deletion behavior must be verified before write-capable generation';
         }
 
-        foreach (['documents', 'calls', 'emails', 'mailClient', 'workflowTriggers'] as $unsupported) {
-            if (($capabilities[$unsupported] ?? false) === true) {
-                $warnings[] = $unsupported.' requested but is out of MVP scope';
+        foreach (['documents', 'calls', 'emails', 'emailSending', 'mailClient', 'workflow', 'workflowTriggers', 'tasks', 'approvals', 'notifications'] as $unsupported) {
+            if ($this->capabilityEnabled($definition, $unsupported)) {
+                $warnings[] = $unsupported.' requested but is future/unsupported in preview; no unsafe APIs are generated';
             }
         }
 
@@ -218,16 +218,25 @@ class ErpsmartMakeModuleCommand extends Command
             $type = $field['type'] ?? 'unknown';
             $name = $field['name'] ?? 'unknown';
 
-            if (! in_array($type, ['id', 'text', 'textarea', 'boolean', 'integer', 'decimal', 'date', 'datetime', 'select'], true)) {
+            if (! in_array($type, ['id', 'text', 'textarea', 'boolean', 'integer', 'decimal', 'date', 'datetime', 'select', 'belongsTo'], true)) {
                 $warnings[] = "field {$name} uses unsupported preview field type {$type}; falling back to Text";
-            }
-
-            if ($type === 'belongsTo') {
-                $warnings[] = "field {$name} uses belongsTo; relation field generation needs a deeper first-party contract probe and falls back to Text in preview";
             }
         }
 
         return $warnings;
+    }
+
+    protected function capabilityEnabled(array $definition, string $capability, array $aliases = []): bool
+    {
+        $capabilities = $definition['capabilities'] ?? [];
+
+        foreach (array_merge([$capability], $aliases) as $key) {
+            if (($capabilities[$key] ?? false) === true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function printPlan(array $definition, array $plan): void
@@ -454,25 +463,24 @@ PHP;
         $casts = $this->modelCasts($definition);
         $fillableLines = $this->arrayLines($fillable, 8);
         $castLines = $this->keyValueArrayLines($casts, 8);
+        $imports = $this->modelImports($definition);
+        $importLines = $imports === [] ? '' : implode("\n", $imports)."\n";
+        $traits = $this->modelTraitLines($definition);
+        $relationMethods = $this->modelRelationMethods($definition);
 
         return <<<PHP
 <?php
 
 namespace {$namespace}\\Models;
 
-use Modules\\Activities\\Concerns\\HasActivities;
-use Modules\\Core\\Common\\Media\\HasMedia;
-use Modules\\Core\\Common\\Timeline\\HasTimeline;
-use Modules\\Core\\Contracts\\Resources\\Resourceable as ResourceableContract;
+{$importLines}use Modules\\Core\\Contracts\\Resources\\Resourceable as ResourceableContract;
 use Modules\\Core\\Models\\Model;
 use Modules\\Core\\Resource\\Resourceable;
 
 class {$entity} extends Model implements ResourceableContract
 {
-    use HasMedia;
-    use HasTimeline;
-    use HasActivities;
     use Resourceable;
+{$traits}
 
     protected \$table = '{$table}';
 
@@ -483,8 +491,93 @@ class {$entity} extends Model implements ResourceableContract
     protected \$casts = [
 {$castLines}
     ];
+{$relationMethods}
 }
 PHP;
+    }
+
+    protected function modelImports(array $definition): array
+    {
+        $imports = [];
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $imports[] = 'use Modules\\Activities\\Concerns\\HasActivities;';
+        }
+
+        if ($this->capabilityEnabled($definition, 'media', ['mediable'])) {
+            $imports[] = 'use Modules\\Core\\Common\\Media\\HasMedia;';
+        }
+
+        foreach ($this->relations($definition) as $relation) {
+            if (($relation['type'] ?? null) === 'belongsTo') {
+                $imports[] = 'use Illuminate\\Database\\Eloquent\\Relations\\BelongsTo;';
+            }
+
+            if (($relation['type'] ?? null) === 'hasMany') {
+                $imports[] = 'use Illuminate\\Database\\Eloquent\\Relations\\HasMany;';
+            }
+
+            $relatedModel = $relation['targetModel'] ?? $relation['relatedModel'] ?? null;
+
+            if (is_string($relatedModel) && $relatedModel !== '') {
+                $imports[] = 'use '.ltrim($relatedModel, '\\').';';
+            }
+        }
+
+        return array_values(array_unique($imports));
+    }
+
+    protected function modelTraitLines(array $definition): string
+    {
+        $traits = [];
+
+        if ($this->capabilityEnabled($definition, 'media', ['mediable'])) {
+            $traits[] = '    use HasMedia;';
+        }
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $traits[] = '    use HasActivities;';
+        }
+
+        return $traits === [] ? '' : "\n".implode("\n", $traits);
+    }
+
+    protected function modelRelationMethods(array $definition): string
+    {
+        $methods = [];
+
+        foreach ($this->relations($definition) as $relation) {
+            $type = $relation['type'] ?? null;
+            $name = $relation['name'] ?? null;
+            $relatedClass = $this->relationRelatedClass($relation);
+            $foreignKey = $relation['foreignKey'] ?? null;
+
+            if (! is_string($name) || $name === '' || $relatedClass === null) {
+                continue;
+            }
+
+            if ($type === 'belongsTo' && is_string($foreignKey) && $foreignKey !== '') {
+                $methods[] = <<<PHP
+
+    public function {$name}(): BelongsTo
+    {
+        return \$this->belongsTo({$relatedClass}::class, '{$foreignKey}');
+    }
+PHP;
+            }
+
+            if ($type === 'hasMany' && is_string($foreignKey) && $foreignKey !== '') {
+                $methods[] = <<<PHP
+
+    public function {$name}(): HasMany
+    {
+        return \$this->hasMany({$relatedClass}::class, '{$foreignKey}');
+    }
+PHP;
+            }
+        }
+
+        return implode('', $methods);
     }
 
     protected function modelFillableFields(array $definition): array
@@ -501,7 +594,7 @@ PHP;
             $fields[] = $name;
         }
 
-        if (($definition['capabilities']['importable'] ?? false) === true && ! in_array('import_id', $fields, true)) {
+        if ($this->capabilityEnabled($definition, 'importable') && ! in_array('import_id', $fields, true)) {
             $fields[] = 'import_id';
         }
 
@@ -534,7 +627,7 @@ PHP;
             }
         }
 
-        if (($definition['capabilities']['importable'] ?? false) === true && ! isset($casts['import_id'])) {
+        if ($this->capabilityEnabled($definition, 'importable') && ! isset($casts['import_id'])) {
             $casts['import_id'] = 'integer';
         }
 
@@ -546,81 +639,48 @@ PHP;
         $resourceName = $definition['module']['resourceName'];
         $titleField = $definition['resource']['titleField'];
         $fieldImports = $this->resourceFieldImports($definition);
-        $fieldImportLines = implode("\n", array_map(fn (string $class): string => "use Modules\\Core\\Fields\\{$class};", $fieldImports));
+        $imports = $this->resourceImports($definition, $fieldImports, $namespace, $entity);
+        $importLines = implode("\n", $imports);
         $resourceFields = $this->resourceFieldLines($definition);
-        $detailPanelId = Str::kebab($entity).'-detail-panel';
+        $interfaces = $this->resourceInterfaces($definition);
+        $implements = implode(', ', $interfaces);
+        $traitLines = $this->resourceTraitLines($definition);
+        $bootMethod = $this->resourceBootMethod($definition, $entity);
+        $menuQuickCreateLine = $this->capabilityEnabled($definition, 'quickCreate') ? "\n                ->inQuickCreate()" : '';
+        $tableMethod = $this->resourceTableMethod($definition, $entity, $entities, $resourceName);
+        $actionsMethod = $this->resourceActionsMethod($definition);
+        $hasDetailView = $this->resourceHasDetailView($definition) ? 'true' : 'false';
+        $globallySearchable = $this->capabilityEnabled($definition, 'globalSearch') ? 'true' : 'false';
+        $globalSearchAction = $definition['resource']['globalSearchAction'] ?? 'none';
 
         return <<<PHP
 <?php
 
 namespace {$namespace}\\Resources;
 
-use Illuminate\\Database\\Eloquent\\Builder;
-use Modules\\Activities\\Actions\\CreateRelatedActivityAction;
-use Modules\\Comments\\Contracts\\PipesComments;
-use Modules\\Core\\Actions\\Action;
-use Modules\\Core\\Contracts\\Resources\\AcceptsCustomFields;
-use Modules\\Core\\Contracts\\Resources\\AcceptsUniqueCustomFields;
-use Modules\\Core\\Contracts\\Resources\\Cloneable;
-use Modules\\Core\\Contracts\\Resources\\Exportable;
-use Modules\\Core\\Contracts\\Resources\\Importable;
-use Modules\\Core\\Contracts\\Resources\\Mediable;
-use Modules\\Core\\Contracts\\Resources\\Tableable;
-use Modules\\Core\\Contracts\\Resources\\WithResourceRoutes;
-{$fieldImportLines}
-use Modules\\Core\\Http\\Requests\\ResourceRequest;
-use Modules\\Core\\Menu\\MenuItem;
-use Modules\\Core\\Pages\\Panel;
-use Modules\\Core\\Pages\\Tab;
-use Modules\\Core\\Resource\\AssociatesResources;
-use Modules\\Core\\Resource\\Resource;
-use Modules\\Core\\Table\\Table;
-use {$namespace}\\Http\\Resources\\{$entity}Resource;
-use {$namespace}\\Models\\{$entity} as {$entity}Model;
+{$importLines}
 
-class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Mediable, PipesComments, Tableable, WithResourceRoutes
+class {$entity} extends Resource implements {$implements}
 {
-    use AssociatesResources;
+{$traitLines}
 
-    public static bool \$hasDetailView = true;
-    public static bool \$globallySearchable = true;
-    public static string \$globalSearchAction = 'float';
+    public static bool \$hasDetailView = {$hasDetailView};
+    public static bool \$globallySearchable = {$globallySearchable};
+    public static string \$globalSearchAction = '{$globalSearchAction}';
     public static ?string \$icon = '{$definition['module']['icon']}';
     public static string \$model = {$entity}Model::class;
     public static string \$title = '{$titleField}';
-
-    protected function boot(): void
-    {
-        \$this->getDetailPage()
-            ->tab(Tab::make('activities', 'activities-tab')->panel('activities-tab-panel')->order(15))
-            ->tab(Tab::make('notes', 'notes-tab')->panel('notes-tab-panel')->order(35))
-            ->panels(function () {
-                return [
-                    Panel::make('{$detailPanelId}', 'resource-details-panel')
-                        ->heading(__('core::app.record_view.sections.details'))
-                        ->resizeable(),
-                    Panel::make('media', 'resource-media-panel')
-                        ->heading(__('core::app.attachments')),
-                ];
-            });
-    }
+{$bootMethod}
 
     public function menu(): array
     {
         return [
             MenuItem::make(static::label(), '/{$resourceName}')
-                ->icon(static::\$icon)
-                ->inQuickCreate()
+                ->icon(static::\$icon){$menuQuickCreateLine}
                 ->singularName(static::singularLabel()),
         ];
     }
-
-    public function table(Builder \$query, ResourceRequest \$request, string \$identifier): Table
-    {
-        return {$entity}Table::make(\$query, \$request, \$identifier)
-            ->withDefaultView(name: '{$entities}', flag: 'all-{$resourceName}')
-            ->orderBy('created_at', 'desc');
-    }
+{$tableMethod}
 
     public function fields(ResourceRequest \$request): array
     {
@@ -628,14 +688,7 @@ class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 {$resourceFields}
         ];
     }
-
-    public function actions(ResourceRequest \$request): array
-    {
-        return [
-            CreateRelatedActivityAction::make()->onlyInline(),
-            Action::make()->floatResourceInEditMode(),
-        ];
-    }
+{$actionsMethod}
 
     public function jsonResource(): string
     {
@@ -653,6 +706,185 @@ class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
     }
 }
 PHP;
+    }
+
+    protected function resourceImports(array $definition, array $fieldImports, string $namespace, string $entity): array
+    {
+        $imports = [];
+
+        if ($this->capabilityEnabled($definition, 'tableable')) {
+            $imports[] = 'use Illuminate\\Database\\Eloquent\\Builder;';
+        }
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $imports[] = 'use Modules\\Activities\\Actions\\CreateRelatedActivityAction;';
+        }
+
+        if (($definition['frontend']['floatingModal'] ?? false)
+            || $this->capabilityEnabled($definition, 'quickCreate')
+            || $this->capabilityEnabled($definition, 'activities')) {
+            $imports[] = 'use Modules\\Core\\Actions\\Action;';
+        }
+
+        foreach ($this->resourceInterfaces($definition) as $interface) {
+            if ($interface === 'PipesComments') {
+                $imports[] = 'use Modules\\Comments\\Contracts\\PipesComments;';
+            } else {
+                $imports[] = 'use Modules\\Core\\Contracts\\Resources\\'.$interface.';';
+            }
+        }
+
+        foreach ($fieldImports as $class) {
+            $imports[] = 'use Modules\\Core\\Fields\\'.$class.';';
+        }
+
+        $imports[] = 'use Modules\\Core\\Http\\Requests\\ResourceRequest;';
+        $imports[] = 'use Modules\\Core\\Menu\\MenuItem;';
+
+        if ($this->resourceHasDetailView($definition)) {
+            $imports[] = 'use Modules\\Core\\Pages\\Panel;';
+
+            if ($this->capabilityEnabled($definition, 'activities') || $this->capabilityEnabled($definition, 'notes')) {
+                $imports[] = 'use Modules\\Core\\Pages\\Tab;';
+            }
+        }
+
+        if ($this->capabilityEnabled($definition, 'activityAssociations')) {
+            $imports[] = 'use Modules\\Core\\Resource\\AssociatesResources;';
+        }
+
+        $imports[] = 'use Modules\\Core\\Resource\\Resource;';
+
+        if ($this->capabilityEnabled($definition, 'tableable')) {
+            $imports[] = 'use Modules\\Core\\Table\\Table;';
+        }
+
+        $imports[] = 'use '.$namespace.'\\Http\\Resources\\'.$entity.'Resource;';
+        $imports[] = 'use '.$namespace.'\\Models\\'.$entity.' as '.$entity.'Model;';
+
+        return array_values(array_unique($imports));
+    }
+
+    protected function resourceInterfaces(array $definition): array
+    {
+        $interfaces = ['WithResourceRoutes'];
+
+        $map = [
+            'customFields' => 'AcceptsCustomFields',
+            'uniqueCustomFields' => 'AcceptsUniqueCustomFields',
+            'cloneable' => 'Cloneable',
+            'exportable' => 'Exportable',
+            'importable' => 'Importable',
+            'tableable' => 'Tableable',
+        ];
+
+        foreach ($map as $capability => $interface) {
+            if ($this->capabilityEnabled($definition, $capability)) {
+                $interfaces[] = $interface;
+            }
+        }
+
+        if ($this->capabilityEnabled($definition, 'media', ['mediable'])) {
+            $interfaces[] = 'Mediable';
+        }
+
+        if ($this->capabilityEnabled($definition, 'comments')
+            || $this->capabilityEnabled($definition, 'activityComments')
+            || $this->capabilityEnabled($definition, 'notes')) {
+            $interfaces[] = 'PipesComments';
+        }
+
+        sort($interfaces);
+
+        return $interfaces;
+    }
+
+    protected function resourceTraitLines(array $definition): string
+    {
+        $traits = [];
+
+        if ($this->capabilityEnabled($definition, 'activityAssociations')) {
+            $traits[] = '    use AssociatesResources;';
+        }
+
+        return $traits === [] ? '    // No optional resource traits enabled for this preview.' : implode("\n", $traits);
+    }
+
+    protected function resourceBootMethod(array $definition, string $entity): string
+    {
+        if (! $this->resourceHasDetailView($definition)) {
+            return '';
+        }
+
+        $detailPanelId = Str::kebab($entity).'-detail-panel';
+        $chain = [];
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $chain[] = "            ->tab(Tab::make('activities', 'activities-tab')->panel('activities-tab-panel')->order(15))";
+        }
+
+        if ($this->capabilityEnabled($definition, 'notes')) {
+            $chain[] = "            ->tab(Tab::make('notes', 'notes-tab')->panel('notes-tab-panel')->order(35))";
+        }
+
+        $panels = [
+            "                    Panel::make('{$detailPanelId}', 'resource-details-panel')\n                        ->heading(__('core::app.record_view.sections.details'))\n                        ->resizeable(),",
+        ];
+
+        if ($this->capabilityEnabled($definition, 'media', ['mediable'])) {
+            $panels[] = "                    Panel::make('media', 'resource-media-panel')\n                        ->heading(__('core::app.attachments')),";
+        }
+
+        $chain[] = "            ->panels(function () {\n                return [\n".implode("\n", $panels)."\n                ];\n            });";
+
+        return "\n\n    protected function boot(): void\n    {\n        \$this->getDetailPage()\n".implode("\n", $chain)."\n    }\n";
+    }
+
+    protected function resourceTableMethod(array $definition, string $entity, string $entities, string $resourceName): string
+    {
+        if (! $this->capabilityEnabled($definition, 'tableable')) {
+            return '';
+        }
+
+        $defaultView = $definition['table']['defaultView']['name'] ?? $entities;
+        $defaultFlag = $definition['table']['defaultView']['flag'] ?? 'all-'.$resourceName;
+        $orderColumn = $definition['table']['orderBy']['column'] ?? 'id';
+        $orderDirection = $definition['table']['orderBy']['direction'] ?? 'desc';
+
+        return <<<PHP
+
+    public function table(Builder \$query, ResourceRequest \$request, string \$identifier): Table
+    {
+        return {$entity}Table::make(\$query, \$request, \$identifier)
+            ->withDefaultView(name: '{$defaultView}', flag: '{$defaultFlag}')
+            ->orderBy('{$orderColumn}', '{$orderDirection}');
+    }
+PHP;
+    }
+
+    protected function resourceActionsMethod(array $definition): string
+    {
+        $actions = [];
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $actions[] = '            CreateRelatedActivityAction::make()->onlyInline(),';
+        }
+
+        if ($definition['frontend']['floatingModal'] ?? false) {
+            $actions[] = '            Action::make()->floatResourceInEditMode(),';
+        }
+
+        if ($actions === []) {
+            return '';
+        }
+
+        return "\n\n    public function actions(ResourceRequest \$request): array\n    {\n        return [\n".implode("\n", $actions)."\n        ];\n    }\n";
+    }
+
+    protected function resourceHasDetailView(array $definition): bool
+    {
+        return ($definition['resource']['hasDetailView'] ?? false) === true
+            || $this->capabilityEnabled($definition, 'hasDetailView');
     }
 
     protected function resourceFieldImports(array $definition): array
@@ -711,7 +943,7 @@ PHP;
         return match ($type) {
             'id' => 'ID',
             'boolean' => 'Boolean',
-            'integer', 'decimal' => 'Number',
+            'integer', 'decimal', 'belongsTo' => 'Number',
             'date' => 'Date',
             'datetime' => 'DateTime',
             'select' => 'Select',
@@ -774,11 +1006,11 @@ PHP;
             $lines[] = '            '.$this->phpString($name).' => '.$this->jsonResourceValueExpression($field).',';
         }
 
-        if (($definition['capabilities']['importable'] ?? false) === true) {
+        if ($this->capabilityEnabled($definition, 'importable')) {
             $lines[] = "            'import_id' => \$this->import_id,";
         }
 
-        if (($definition['capabilities']['mediable'] ?? false) === true) {
+        if ($this->capabilityEnabled($definition, 'media', ['mediable'])) {
             $lines[] = "            'media' => \$this->whenLoaded('media'),";
         }
 
@@ -878,7 +1110,7 @@ PHP;
             array_unshift($lines, '            $table->id();');
         }
 
-        if (($definition['capabilities']['importable'] ?? false) === true
+        if ($this->capabilityEnabled($definition, 'importable')
             && ! in_array('import_id', array_column($definition['fields'] ?? [], 'name'), true)) {
             $lines[] = '            $table->unsignedBigInteger(\'import_id\')->nullable();';
         }
@@ -969,6 +1201,22 @@ PHP;
     protected function phpLiteral(mixed $value): string
     {
         return var_export($value, true);
+    }
+
+    protected function relations(array $definition): array
+    {
+        return is_array($definition['relations'] ?? null) ? $definition['relations'] : [];
+    }
+
+    protected function relationRelatedClass(array $relation): ?string
+    {
+        $relatedModel = $relation['targetModel'] ?? $relation['relatedModel'] ?? null;
+
+        if (! is_string($relatedModel) || $relatedModel === '') {
+            return null;
+        }
+
+        return class_basename($relatedModel);
     }
 
     protected function renderFrontendApp(string $entity): string

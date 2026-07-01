@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://erpsmart.local/schemas/module-builder-mvp-schema.json",
-  "title": "ERPSMART Module Builder MVP Definition",
+  "title": "ERPSMART Definition-Driven Module Builder Definition",
   "type": "object",
   "additionalProperties": false,
   "required": ["schemaVersion", "module", "resource", "fields", "capabilities", "permissions", "frontend", "verifier"],
@@ -72,7 +72,34 @@
               "primary": {"type": "boolean"},
               "route": {"type": "string"}
             }
-          }
+          },
+          "relation": {"type": "string"}
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "targetModule", "targetModel", "targetResource", "foreignKey"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][A-Za-z0-9]*$"},
+          "type": {"type": "string", "enum": ["belongsTo", "hasMany", "hasOne", "belongsToMany", "morphMany", "morphToMany"]},
+          "targetModule": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]*$"},
+          "targetModel": {"type": "string", "pattern": "^Modules\\\\[A-Z][A-Za-z0-9]*\\\\Models\\\\[A-Z][A-Za-z0-9]*$"},
+          "targetResource": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+          "localKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "foreignKey": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "displayField": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+          "required": {"type": "boolean"},
+          "nullable": {"type": "boolean"},
+          "onDelete": {"type": "string", "enum": ["cascade", "restrict", "set null", "no action"]},
+          "showOnDetail": {"type": "boolean"},
+          "showOnIndex": {"type": "boolean"},
+          "generateField": {"type": "boolean"},
+          "generateMigrationColumn": {"type": "boolean"},
+          "generateFrontendPanel": {"type": "boolean"}
         }
       }
     },
@@ -81,78 +108,47 @@
       "additionalProperties": false,
       "required": ["defaultView", "orderBy"],
       "properties": {
-        "defaultView": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["name", "flag"],
-          "properties": {"name": {"type": "string"}, "flag": {"type": "string"}}
-        },
-        "orderBy": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["column", "direction"],
-          "properties": {"column": {"type": "string"}, "direction": {"type": "string", "enum": ["asc", "desc"]}}
-        }
+        "defaultView": {"type": "object", "additionalProperties": false, "required": ["name", "flag"], "properties": {"name": {"type": "string"}, "flag": {"type": "string"}}},
+        "orderBy": {"type": "object", "additionalProperties": false, "required": ["column", "direction"], "properties": {"column": {"type": "string"}, "direction": {"type": "string", "enum": ["asc", "desc"]}}}
       }
     },
-    "detailPage": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["panels", "tabs"],
-      "properties": {
-        "panels": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "component"],
-            "properties": {
-              "id": {"type": "string"},
-              "component": {"type": "string"},
-              "heading": {"type": "string"},
-              "resizeable": {"type": "boolean", "default": false},
-              "whenCapability": {"type": "string"}
-            }
-          }
-        },
-        "tabs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "component", "panelComponent", "order"],
-            "properties": {
-              "id": {"type": "string"},
-              "component": {"type": "string"},
-              "panelComponent": {"type": "string"},
-              "order": {"type": "integer"},
-              "whenCapability": {"type": "string"}
-            }
-          }
-        }
-      }
-    },
+    "detailPage": {"type": "object", "additionalProperties": true},
     "capabilities": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["tableable", "customFields", "uniqueCustomFields", "importable", "exportable", "cloneable", "mediable", "notes", "activities", "activityComments", "activityAssociations", "globalSearch", "quickCreate", "bulkDelete", "softDeletes", "timeline"],
+      "required": ["tableable", "hasDetailView", "customFields", "importable", "exportable", "cloneable", "media", "notes", "activities", "globalSearch"],
       "properties": {
         "tableable": {"type": "boolean"},
+        "hasDetailView": {"type": "boolean"},
         "customFields": {"type": "boolean"},
         "uniqueCustomFields": {"type": "boolean"},
         "importable": {"type": "boolean"},
         "exportable": {"type": "boolean"},
         "cloneable": {"type": "boolean"},
-        "mediable": {"type": "boolean"},
+        "bulkDelete": {"type": "boolean"},
+        "globalSearch": {"type": "boolean"},
+        "quickCreate": {"type": "boolean"},
+        "softDeletes": {"type": "boolean"},
         "notes": {"type": "boolean"},
+        "comments": {"type": "boolean"},
         "activities": {"type": "boolean"},
         "activityComments": {"type": "boolean"},
         "activityAssociations": {"type": "boolean"},
-        "globalSearch": {"type": "boolean"},
-        "quickCreate": {"type": "boolean"},
-        "bulkDelete": {"type": "boolean"},
-        "softDeletes": {"type": "boolean"},
-        "timeline": {"type": "boolean"}
+        "media": {"type": "boolean"},
+        "mediable": {"type": "boolean"},
+        "documents": {"type": "boolean"},
+        "calls": {"type": "boolean"},
+        "emails": {"type": "boolean"},
+        "emailSending": {"type": "boolean"},
+        "tasks": {"type": "boolean"},
+        "workflow": {"type": "boolean"},
+        "approvals": {"type": "boolean"},
+        "notifications": {"type": "boolean"},
+        "timeline": {"type": "boolean"},
+        "formLayout": {"type": "boolean"},
+        "stepperForm": {"type": "boolean"},
+        "sections": {"type": "boolean"},
+        "conditionalVisibility": {"type": "boolean"}
       }
     },
     "permissions": {

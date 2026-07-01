@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "name": "RelatedEntries",
+    "namespace": "Modules\\RelatedEntries",
+    "singularLabel": "RelatedEntry",
+    "pluralLabel": "RelatedEntries",
+    "table": "related_entries",
+    "routeName": "related-entries",
+    "resourceName": "related-entries",
+    "icon": "Link"
+  },
+  "resource": {
+    "modelClass": "Modules\\RelatedEntries\\Models\\RelatedEntry",
+    "titleField": "title",
+    "orderBy": "title",
+    "hasDetailView": true,
+    "globalSearchAction": "float"
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "id",
+      "label": "ID",
+      "rules": [],
+      "visibility": {"index": false, "detail": false, "create": false, "update": false, "settings": false}
+    },
+    {
+      "name": "custom_record_id",
+      "type": "belongsTo",
+      "label": "Custom Record",
+      "required": true,
+      "rules": ["required", "integer", "exists:custom_records,id"],
+      "creationRules": ["required"],
+      "updateRules": ["required"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "relation": "customRecord"
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "primary": true,
+      "required": true,
+      "rules": ["required", "string", "max:191"],
+      "creationRules": ["required"],
+      "updateRules": ["filled"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "280px", "minWidth": "200px", "primary": true, "route": "/related-entries/{id}"}
+    },
+    {
+      "name": "notes",
+      "type": "textarea",
+      "label": "Notes",
+      "required": false,
+      "rules": ["nullable", "string"],
+      "creationRules": ["nullable"],
+      "updateRules": ["nullable"],
+      "visibility": {"index": false, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "label": "Active",
+      "default": true,
+      "required": false,
+      "rules": ["nullable", "boolean"],
+      "creationRules": ["nullable", "boolean"],
+      "updateRules": ["nullable", "boolean"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    }
+  ],
+  "relations": [
+    {
+      "name": "customRecord",
+      "type": "belongsTo",
+      "targetModule": "CustomRecords",
+      "targetModel": "Modules\\CustomRecords\\Models\\CustomRecord",
+      "targetResource": "custom-records",
+      "foreignKey": "custom_record_id",
+      "displayField": "title",
+      "required": true,
+      "nullable": false,
+      "onDelete": "restrict",
+      "showOnDetail": true,
+      "showOnIndex": true,
+      "generateField": true,
+      "generateMigrationColumn": true,
+      "generateFrontendPanel": false
+    }
+  ],
+  "table": {
+    "defaultView": {"name": "RelatedEntries", "flag": "all-related-entries"},
+    "orderBy": {"column": "title", "direction": "asc"}
+  },
+  "detailPage": {
+    "panels": [],
+    "tabs": []
+  },
+  "capabilities": {
+    "tableable": true,
+    "hasDetailView": true,
+    "customFields": true,
+    "uniqueCustomFields": false,
+    "importable": false,
+    "exportable": true,
+    "cloneable": true,
+    "bulkDelete": true,
+    "globalSearch": true,
+    "quickCreate": true,
+    "softDeletes": false,
+    "notes": false,
+    "comments": false,
+    "activities": false,
+    "activityComments": false,
+    "activityAssociations": false,
+    "media": false,
+    "documents": false,
+    "calls": false,
+    "emails": false,
+    "emailSending": false,
+    "tasks": false,
+    "workflow": false,
+    "approvals": false,
+    "notifications": false,
+    "timeline": false,
+    "formLayout": true,
+    "stepperForm": false,
+    "sections": true,
+    "conditionalVisibility": false
+  },
+  "permissions": {
+    "view": ["view all related entries"],
+    "create": "create related entries",
+    "edit": ["edit all related entries"],
+    "delete": ["delete any related entry"],
+    "bulkDelete": "bulk delete related entries",
+    "export": "export related entries"
+  },
+  "frontend": {
+    "routes": true,
+    "views": ["index", "create", "edit", "detail"],
+    "floatingModal": true,
+    "localTabComponents": {}
+  },
+  "verifier": {
+    "generate": true,
+    "path": "patches/verify_related-entries_related-entry_contract.php",
+    "checks": ["resource", "json-resource", "relations", "frontend", "safety"]
+  }
+}

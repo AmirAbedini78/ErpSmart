@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "name": "CustomRecords",
+    "namespace": "Modules\\CustomRecords",
+    "singularLabel": "CustomRecord",
+    "pluralLabel": "CustomRecords",
+    "table": "custom_records",
+    "routeName": "custom-records",
+    "resourceName": "custom-records",
+    "icon": "Component"
+  },
+  "resource": {
+    "modelClass": "Modules\\CustomRecords\\Models\\CustomRecord",
+    "titleField": "title",
+    "orderBy": "sort_order",
+    "hasDetailView": true,
+    "globalSearchAction": "float"
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "id",
+      "label": "ID",
+      "rules": [],
+      "visibility": {"index": false, "detail": false, "create": false, "update": false, "settings": false}
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "primary": true,
+      "required": true,
+      "rules": ["required", "string", "max:191"],
+      "creationRules": ["required"],
+      "updateRules": ["filled"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "280px", "minWidth": "200px", "primary": true, "route": "/custom-records/{id}"}
+    },
+    {
+      "name": "reference_number",
+      "type": "text",
+      "label": "Reference Number",
+      "required": false,
+      "rules": ["nullable", "string", "max:80"],
+      "creationRules": ["nullable"],
+      "updateRules": ["nullable"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "180px", "minWidth": "140px"}
+    },
+    {
+      "name": "long_text",
+      "type": "textarea",
+      "label": "Long Text",
+      "required": false,
+      "rules": ["nullable", "string"],
+      "creationRules": ["nullable"],
+      "updateRules": ["nullable"],
+      "visibility": {"index": false, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "label": "Active",
+      "default": true,
+      "required": false,
+      "rules": ["nullable", "boolean"],
+      "creationRules": ["nullable", "boolean"],
+      "updateRules": ["nullable", "boolean"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "amount",
+      "type": "decimal",
+      "label": "Amount",
+      "default": 0,
+      "required": false,
+      "rules": ["nullable", "numeric"],
+      "creationRules": ["nullable", "numeric"],
+      "updateRules": ["nullable", "numeric"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "sort_order",
+      "type": "integer",
+      "label": "Sort Order",
+      "default": 0,
+      "required": false,
+      "rules": ["nullable", "integer"],
+      "creationRules": ["nullable", "integer"],
+      "updateRules": ["nullable", "integer"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "due_date",
+      "type": "date",
+      "label": "Due Date",
+      "required": false,
+      "rules": ["nullable", "date"],
+      "creationRules": ["nullable", "date"],
+      "updateRules": ["nullable", "date"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    }
+  ],
+  "relations": [],
+  "table": {
+    "defaultView": {"name": "CustomRecords", "flag": "all-custom-records"},
+    "orderBy": {"column": "sort_order", "direction": "asc"}
+  },
+  "detailPage": {
+    "panels": [],
+    "tabs": []
+  },
+  "capabilities": {
+    "tableable": true,
+    "hasDetailView": true,
+    "customFields": true,
+    "uniqueCustomFields": false,
+    "importable": true,
+    "exportable": true,
+    "cloneable": true,
+    "bulkDelete": true,
+    "globalSearch": true,
+    "quickCreate": true,
+    "softDeletes": false,
+    "notes": true,
+    "comments": false,
+    "activities": true,
+    "activityComments": true,
+    "activityAssociations": false,
+    "media": true,
+    "documents": false,
+    "calls": false,
+    "emails": false,
+    "emailSending": false,
+    "tasks": false,
+    "workflow": false,
+    "approvals": false,
+    "notifications": false,
+    "timeline": false,
+    "formLayout": true,
+    "stepperForm": false,
+    "sections": true,
+    "conditionalVisibility": false
+  },
+  "permissions": {
+    "view": ["view all custom records"],
+    "create": "create custom records",
+    "edit": ["edit all custom records"],
+    "delete": ["delete any custom record"],
+    "bulkDelete": "bulk delete custom records",
+    "import": "import custom records",
+    "export": "export custom records"
+  },
+  "frontend": {
+    "routes": true,
+    "views": ["index", "create", "edit", "detail"],
+    "floatingModal": true,
+    "localTabComponents": {
+      "activities-tab": "ActivitiesTab",
+      "activities-tab-panel": "ActivitiesTabPanel",
+      "notes-tab": "RecordTabNote",
+      "notes-tab-panel": "RecordTabNotePanel"
+    }
+  },
+  "verifier": {
+    "generate": true,
+    "path": "patches/verify_custom-records_custom-record_contract.php",
+    "checks": ["resource", "json-resource", "detail-page", "frontend", "safety"]
+  }
+}
