@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 
-            $table->unique(['builder_definition_id', 'version']);
+            $table->unique(['builder_definition_id', 'version'], 'bdv_definition_version_unique');
         });
     }
 
