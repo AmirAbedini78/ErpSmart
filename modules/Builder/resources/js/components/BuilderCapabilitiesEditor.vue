@@ -17,6 +17,12 @@
           </IAlertBody>
         </IAlert>
 
+        <IAlert v-if="group.automation" class="mb-3" variant="warning">
+          <IAlertBody>
+            Automation metadata editor available; runtime execution is future work.
+          </IAlertBody>
+        </IAlert>
+
         <div class="grid gap-3 md:grid-cols-3">
           <IFormCheckboxField v-for="capability in group.items" :key="capability">
             <IFormCheckbox
@@ -74,18 +80,13 @@ const groups = [
   {
     name: 'Future/Warning-only',
     future: true,
-    items: [
-      'documents',
-      'calls',
-      'emails',
-      'emailSending',
-      'tasks',
-      'workflow',
-      'approvals',
-      'notifications',
-      'timeline',
-      'softDeletes',
-    ],
+    items: ['documents', 'calls', 'timeline', 'softDeletes'],
+  },
+  {
+    name: 'Automation',
+    future: true,
+    automation: true,
+    items: ['workflow', 'tasks', 'emails', 'emailSending', 'approvals', 'notifications'],
   },
   {
     name: 'Form/Layout',

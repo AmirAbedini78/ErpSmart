@@ -4,6 +4,7 @@
     "read builder definitions",
     "read builder definition versions",
     "propose definition_json changes",
+    "propose automation metadata changes",
     "call validate",
     "call preview",
     "run the end-to-end smoke verifier with temporary DB record cleanup",
@@ -22,6 +23,11 @@
     "edit licensing or updater code directly",
     "run migrations directly",
     "run generated module migrations directly",
+    "execute automation metadata",
+    "send emails from Builder metadata",
+    "create tasks from Builder metadata",
+    "create approvals from Builder metadata",
+    "send webhooks from Builder metadata",
     "bypass validation",
     "treat preview artifacts as source of truth",
     "treat vector indexes as source of truth"
@@ -55,6 +61,7 @@
     "cannot": [
       "modify Builder schema unless explicitly authorized",
       "modify module definitions unless explicitly authorized",
+      "execute Builder automation metadata directly",
       "bypass Builder validation or preview",
       "write runtime files"
     ]
@@ -73,7 +80,8 @@
     "update_draft",
     "validate",
     "preview",
-    "end_to_end_smoke"
+    "end_to_end_smoke",
+    "edit_automation_metadata"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

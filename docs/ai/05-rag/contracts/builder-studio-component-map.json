@@ -82,6 +82,15 @@
       "notes": "Metadata editor only. Runtime renderer and publish remain future work."
     },
     {
+      "name": "BuilderAutomationEditor",
+      "file": "modules/Builder/resources/js/components/BuilderAutomationEditor.vue",
+      "role": "Visual editor for definition_json.automation workflows, triggers, conditions, and action metadata.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Metadata only. No runtime workflow, email, task, approval, webhook, or publish execution."
+    },
+    {
       "name": "BuilderRelationsEditor",
       "file": "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
       "role": "Visual editor for relation declarations.",

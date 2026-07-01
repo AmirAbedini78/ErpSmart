@@ -571,6 +571,187 @@
                 }
             }
         },
+        "automation": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "workflows": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "id",
+                            "name",
+                            "enabled",
+                            "trigger",
+                            "conditions",
+                            "actions"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "enabled": {
+                                "type": "boolean"
+                            },
+                            "trigger": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                    "type",
+                                    "modes"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "record_created",
+                                            "record_updated",
+                                            "field_changed",
+                                            "status_changed",
+                                            "manual"
+                                        ]
+                                    },
+                                    "field": {
+                                        "type": "string"
+                                    },
+                                    "value": {},
+                                    "modes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "create",
+                                                "update"
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            "conditions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "id",
+                                        "field",
+                                        "operator",
+                                        "join"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "field": {
+                                            "type": "string"
+                                        },
+                                        "operator": {
+                                            "type": "string",
+                                            "enum": [
+                                                "equals",
+                                                "not_equals",
+                                                "empty",
+                                                "not_empty",
+                                                "greater_than",
+                                                "less_than"
+                                            ]
+                                        },
+                                        "value": {},
+                                        "join": {
+                                            "type": "string",
+                                            "enum": [
+                                                "and",
+                                                "or"
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            "actions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "id",
+                                        "type",
+                                        "enabled",
+                                        "label",
+                                        "order",
+                                        "config"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "enum": [
+                                                "create_task",
+                                                "send_email",
+                                                "send_notification",
+                                                "request_approval",
+                                                "webhook"
+                                            ]
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        },
+                                        "label": {
+                                            "type": "string"
+                                        },
+                                        "order": {
+                                            "type": "integer"
+                                        },
+                                        "config": {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "properties": {
+                                                "taskTitle": {
+                                                    "type": "string"
+                                                },
+                                                "taskDueInDays": {
+                                                    "type": "integer"
+                                                },
+                                                "emailTo": {
+                                                    "type": "string"
+                                                },
+                                                "emailSubject": {
+                                                    "type": "string"
+                                                },
+                                                "emailTemplate": {
+                                                    "type": "string"
+                                                },
+                                                "notificationMessage": {
+                                                    "type": "string"
+                                                },
+                                                "approvalRole": {
+                                                    "type": "string"
+                                                },
+                                                "webhookUrl": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "capabilities": {
             "type": "object",
             "additionalProperties": false,

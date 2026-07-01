@@ -81,6 +81,11 @@
             @changed="handleVisualChange"
           />
 
+          <BuilderAutomationEditor
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
+
           <BuilderCapabilitiesEditor
             :definition="definitionJson"
             @changed="handleVisualChange"
@@ -150,6 +155,7 @@ import { useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 
+import BuilderAutomationEditor from '../components/BuilderAutomationEditor.vue'
 import BuilderCapabilitiesEditor from '../components/BuilderCapabilitiesEditor.vue'
 import BuilderFieldsEditor from '../components/BuilderFieldsEditor.vue'
 import BuilderFormLayoutEditor from '../components/BuilderFormLayoutEditor.vue'
@@ -323,6 +329,7 @@ function normalizeDefinition(value) {
   value.detailPage ||= { panels: [], tabs: [] }
   value.table ||= {}
   value.formLayout ||= {}
+  value.automation ||= {}
 
   value.resource.hasDetailView = Boolean(value.resource.hasDetailView)
   value.capabilities.hasDetailView = Boolean(
@@ -340,6 +347,7 @@ function normalizeDefinition(value) {
   })
 
   normalizeFormLayout(value.formLayout)
+  normalizeAutomation(value.automation)
 
   return value
 }
@@ -386,6 +394,50 @@ function normalizeFormLayout(formLayout) {
     condition.value ??= ''
     condition.effect ||= 'show'
     condition.appliesTo ||= ['create', 'update']
+  })
+}
+
+function normalizeAutomation(automation) {
+  automation.enabled = Boolean(automation.enabled ?? false)
+  automation.workflows ||= []
+
+  automation.workflows.forEach((workflow, workflowIndex) => {
+    workflow.id ||= `workflow_${workflowIndex + 1}`
+    workflow.name ||= `Workflow ${workflowIndex + 1}`
+    workflow.description ||= ''
+    workflow.enabled = Boolean(workflow.enabled ?? true)
+    workflow.trigger ||= {}
+    workflow.trigger.type ||= 'record_created'
+    workflow.trigger.field ||= ''
+    workflow.trigger.value ??= ''
+    workflow.trigger.modes ||= ['create']
+    workflow.conditions ||= []
+    workflow.actions ||= []
+
+    workflow.conditions.forEach((condition, conditionIndex) => {
+      condition.id ||= `condition_${conditionIndex + 1}`
+      condition.field ||= ''
+      condition.operator ||= 'equals'
+      condition.value ??= ''
+      condition.join ||= 'and'
+    })
+
+    workflow.actions.forEach((action, actionIndex) => {
+      action.id ||= `action_${actionIndex + 1}`
+      action.type ||= 'create_task'
+      action.enabled = Boolean(action.enabled ?? true)
+      action.label ||= `Action ${actionIndex + 1}`
+      action.order ||= actionIndex + 1
+      action.config ||= {}
+      action.config.taskTitle ??= ''
+      action.config.taskDueInDays ??= 1
+      action.config.emailTo ??= ''
+      action.config.emailSubject ??= ''
+      action.config.emailTemplate ??= ''
+      action.config.notificationMessage ??= ''
+      action.config.approvalRole ??= ''
+      action.config.webhookUrl ??= ''
+    })
   })
 }
 

@@ -1,0 +1,92 @@
+{
+  "name": "ERPSMART Builder Automation Metadata Contract",
+  "purpose": "Define draft automation metadata edited by Builder Studio and later consumed by a future Workflow Engine.",
+  "status": "metadata_only_runtime_execution_future",
+  "source_path": "definition_json.automation",
+  "safe_for_agent": true,
+  "runtime_execution_implemented": false,
+  "email_sending_implemented": false,
+  "task_creation_implemented": false,
+  "approval_runtime_implemented": false,
+  "webhook_runtime_implemented": false,
+  "structure": {
+    "enabled": true,
+    "workflows": [
+      {
+        "id": "workflow_1",
+        "name": "Default Workflow",
+        "description": "",
+        "enabled": true,
+        "trigger": {
+          "type": "record_created",
+          "field": "",
+          "value": "",
+          "modes": ["create", "update"]
+        },
+        "conditions": [
+          {
+            "id": "condition_1",
+            "field": "field_name",
+            "operator": "equals",
+            "value": "",
+            "join": "and"
+          }
+        ],
+        "actions": [
+          {
+            "id": "action_1",
+            "type": "create_task",
+            "enabled": true,
+            "label": "Action",
+            "order": 1,
+            "config": {
+              "taskTitle": "",
+              "taskDueInDays": 1,
+              "emailTo": "",
+              "emailSubject": "",
+              "emailTemplate": "",
+              "notificationMessage": "",
+              "approvalRole": "",
+              "webhookUrl": ""
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "allowed_trigger_types": [
+    "record_created",
+    "record_updated",
+    "field_changed",
+    "status_changed",
+    "manual"
+  ],
+  "allowed_condition_operators": [
+    "equals",
+    "not_equals",
+    "empty",
+    "not_empty",
+    "greater_than",
+    "less_than"
+  ],
+  "allowed_condition_joins": ["and", "or"],
+  "allowed_action_types": [
+    "create_task",
+    "send_email",
+    "send_notification",
+    "request_approval",
+    "webhook"
+  ],
+  "forbidden_runtime_operations": [
+    "send_email must not send email in Builder Studio MVP",
+    "create_task must not create a runtime task in Builder Studio MVP",
+    "request_approval must not create a runtime approval in Builder Studio MVP",
+    "webhook must not send HTTP requests in Builder Studio MVP",
+    "automation metadata must not publish or write runtime modules"
+  ],
+  "agent_notes": [
+    "AI Builder Agent may propose automation metadata changes.",
+    "AI Builder Agent must not execute automation metadata.",
+    "Business Operations Agent execution must use future runtime APIs, not Builder metadata directly."
+  ]
+}

@@ -174,50 +174,50 @@
     {
       "name": "emails",
       "group": "collaboration_content",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["emails requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Needs MailClient integration contract before generation."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime email integration is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation action metadata"],
+      "warnings": ["emails metadata can be edited, but runtime email integration is future work"],
+      "agent_notes": "AI may propose send_email metadata but must not send email."
     },
     {
       "name": "emailSending",
       "group": "collaboration_content",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["emailSending requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires Notification/Email Engine contracts."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime email sending is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation action metadata"],
+      "warnings": ["emailSending metadata can be edited, but runtime sending is future work"],
+      "agent_notes": "AI may propose send_email metadata but must not send email."
     },
     {
       "name": "tasks",
       "group": "automation_process",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["tasks requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires Workflow or task routing contract."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime task creation is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation action metadata"],
+      "warnings": ["tasks metadata can be edited, but runtime task creation is future work"],
+      "agent_notes": "AI may propose create_task metadata but must not create runtime tasks."
     },
     {
       "name": "workflow",
       "group": "automation_process",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["workflow requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires Workflow Engine boundary."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime workflow execution is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation workflow metadata"],
+      "warnings": ["workflow metadata can be edited, but runtime execution is future work"],
+      "agent_notes": "AI may propose workflow metadata but must not execute it."
     },
     {
       "name": "approvals",
       "group": "automation_process",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["approvals requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires approvals workflow contract."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime approval routing is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation action metadata"],
+      "warnings": ["approvals metadata can be edited, but runtime approvals are future work"],
+      "agent_notes": "AI may propose request_approval metadata but must not create approvals."
     },
     {
       "name": "notifications",
       "group": "automation_process",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["notifications requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires Notification/Email Engine contract."
+      "preview_behavior": "Metadata-editable in Builder Studio automation; runtime notification sending is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.automation action metadata"],
+      "warnings": ["notifications metadata can be edited, but runtime notifications are future work"],
+      "agent_notes": "AI may propose send_notification metadata but must not send notifications."
     },
     {
       "name": "timeline",
