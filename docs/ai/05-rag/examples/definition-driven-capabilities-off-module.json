@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "name": "MinimalRecords",
+    "namespace": "Modules\\MinimalRecords",
+    "singularLabel": "MinimalRecord",
+    "pluralLabel": "MinimalRecords",
+    "table": "minimal_records",
+    "routeName": "minimal-records",
+    "resourceName": "minimal-records",
+    "icon": "Square2Stack"
+  },
+  "resource": {
+    "modelClass": "Modules\\MinimalRecords\\Models\\MinimalRecord",
+    "titleField": "title",
+    "orderBy": "title",
+    "hasDetailView": true,
+    "globalSearchAction": "none"
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "id",
+      "label": "ID",
+      "rules": [],
+      "visibility": {"index": false, "detail": false, "create": false, "update": false, "settings": false}
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "primary": true,
+      "required": true,
+      "rules": ["required", "string", "max:191"],
+      "creationRules": ["required"],
+      "updateRules": ["filled"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "label": "Active",
+      "default": true,
+      "required": false,
+      "rules": ["nullable", "boolean"],
+      "creationRules": ["nullable", "boolean"],
+      "updateRules": ["nullable", "boolean"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    }
+  ],
+  "relations": [],
+  "table": {
+    "defaultView": {"name": "MinimalRecords", "flag": "all-minimal-records"},
+    "orderBy": {"column": "title", "direction": "asc"}
+  },
+  "detailPage": {
+    "panels": [],
+    "tabs": []
+  },
+  "capabilities": {
+    "tableable": true,
+    "hasDetailView": true,
+    "customFields": false,
+    "uniqueCustomFields": false,
+    "importable": false,
+    "exportable": false,
+    "cloneable": false,
+    "bulkDelete": false,
+    "globalSearch": false,
+    "quickCreate": false,
+    "softDeletes": false,
+    "notes": false,
+    "comments": false,
+    "activities": false,
+    "activityComments": false,
+    "activityAssociations": false,
+    "media": false,
+    "mediable": false,
+    "documents": false,
+    "calls": false,
+    "emails": false,
+    "emailSending": false,
+    "tasks": false,
+    "workflow": false,
+    "approvals": false,
+    "notifications": false,
+    "timeline": false,
+    "formLayout": false,
+    "stepperForm": false,
+    "sections": false,
+    "conditionalVisibility": false,
+    "floatingModal": false
+  },
+  "permissions": {
+    "view": ["view all minimal records"],
+    "create": "create minimal records",
+    "edit": ["edit all minimal records"],
+    "delete": ["delete any minimal record"]
+  },
+  "frontend": {
+    "routes": true,
+    "views": ["index", "create", "edit", "detail"],
+    "floatingModal": false,
+    "localTabComponents": {}
+  },
+  "verifier": {
+    "generate": true,
+    "path": "patches/verify_minimal-records_minimal-record_contract.php",
+    "checks": ["resource", "json-resource", "detail-page", "frontend", "safety"]
+  }
+}

@@ -153,6 +153,18 @@ class ErpsmartMakeModuleCommand extends Command
         $moduleStudly = Str::studly($module['name']);
         $moduleLower = Str::kebab($moduleStudly);
         $entityLower = Str::kebab($singularStudly);
+        $frontendFiles = [
+            "modules/{$moduleStudly}/resources/js/app.js",
+            "modules/{$moduleStudly}/resources/js/routes.js",
+            "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Index.vue",
+            "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Create.vue",
+            "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Edit.vue",
+            "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}View.vue",
+        ];
+
+        if ($this->floatingModalEnabled($definition)) {
+            $frontendFiles[] = "modules/{$moduleStudly}/resources/js/components/{$singularStudly}FloatingModal.vue";
+        }
 
         return [
             'normalized' => [
@@ -178,15 +190,7 @@ class ErpsmartMakeModuleCommand extends Command
                 "modules/{$moduleStudly}/routes/api.php",
                 "modules/{$moduleStudly}/routes/web.php",
             ],
-            'frontend' => [
-                "modules/{$moduleStudly}/resources/js/app.js",
-                "modules/{$moduleStudly}/resources/js/routes.js",
-                "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Index.vue",
-                "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Create.vue",
-                "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}Edit.vue",
-                "modules/{$moduleStudly}/resources/js/views/{$pluralStudly}View.vue",
-                "modules/{$moduleStudly}/resources/js/components/{$singularStudly}FloatingModal.vue",
-            ],
+            'frontend' => $frontendFiles,
             'docs' => [
                 "patches/verify_{$moduleLower}_{$entityLower}_contract.php",
                 "docs/ai/04-docops/history/YYYY-MM-DD-{$moduleLower}-{$entityLower}-generated.md",
@@ -200,15 +204,23 @@ class ErpsmartMakeModuleCommand extends Command
         $warnings = [];
         $capabilities = $definition['capabilities'] ?? [];
 
-        if ($this->capabilityEnabled($definition, 'timeline')) {
-            $warnings[] = 'timeline requested but timeline UI generation is future/unsupported in preview; no timeline APIs are generated';
-        }
-
-        if ($this->capabilityEnabled($definition, 'softDeletes')) {
-            $warnings[] = 'softDeletes requested; deletion behavior must be verified before write-capable generation';
-        }
-
-        foreach (['documents', 'calls', 'emails', 'emailSending', 'mailClient', 'workflow', 'workflowTriggers', 'tasks', 'approvals', 'notifications'] as $unsupported) {
+        foreach ([
+            'documents',
+            'calls',
+            'emails',
+            'emailSending',
+            'workflow',
+            'workflowTriggers',
+            'tasks',
+            'approvals',
+            'notifications',
+            'timeline',
+            'softDeletes',
+            'stepperForm',
+            'formLayout',
+            'sections',
+            'conditionalVisibility',
+        ] as $unsupported) {
             if ($this->capabilityEnabled($definition, $unsupported)) {
                 $warnings[] = $unsupported.' requested but is future/unsupported in preview; no unsafe APIs are generated';
             }
@@ -237,6 +249,12 @@ class ErpsmartMakeModuleCommand extends Command
         }
 
         return false;
+    }
+
+    protected function floatingModalEnabled(array $definition): bool
+    {
+        return ($definition['frontend']['floatingModal'] ?? false) === true
+            || $this->capabilityEnabled($definition, 'floatingModal');
     }
 
     protected function printPlan(array $definition, array $plan): void
@@ -355,7 +373,7 @@ class ErpsmartMakeModuleCommand extends Command
         $lowerModule = Str::kebab($module);
         $lowerEntity = Str::kebab($entity);
 
-        return [
+        $files = [
             "modules/{$module}/module.json" => $this->renderModuleJson($definition, $module),
             "modules/{$module}/bootstrap/module.php" => "<?php\n\nreturn new ".$namespace."\\Providers\\".$module."ServiceProvider(app());\n",
             "modules/{$module}/app/Providers/{$module}ServiceProvider.php" => $this->renderServiceProvider($namespace, $module, $entity, $lowerModule),
@@ -368,16 +386,21 @@ class ErpsmartMakeModuleCommand extends Command
             "modules/{$module}/database/migrations/create_{$table}_table.php" => $this->renderMigration($definition, $table),
             "modules/{$module}/routes/api.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['api'])->group(function () {\n    // Preview only. Runtime resource routes are registered through WithResourceRoutes.\n});\n",
             "modules/{$module}/routes/web.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['web'])->group(function () {\n    // Preview only.\n});\n",
-            "modules/{$module}/resources/js/app.js" => $this->renderFrontendApp($entity),
+            "modules/{$module}/resources/js/app.js" => $this->renderFrontendApp($definition, $entity),
             "modules/{$module}/resources/js/routes.js" => $this->renderRoutesJs($definition, $entities),
             "modules/{$module}/resources/js/views/{$entities}Index.vue" => $this->renderSimpleVue($entities.'Index', '<ResourceTable resource-name="'.$resourceName.'" />'),
             "modules/{$module}/resources/js/views/{$entities}Create.vue" => $this->renderSimpleVue($entities.'Create', '<div />'),
             "modules/{$module}/resources/js/views/{$entities}Edit.vue" => $this->renderSimpleVue($entities.'Edit', '<div />'),
-            "modules/{$module}/resources/js/views/{$entities}View.vue" => $this->renderDetailVue($resourceName),
-            "modules/{$module}/resources/js/components/{$entity}FloatingModal.vue" => $this->renderFloatingModal($entity),
+            "modules/{$module}/resources/js/views/{$entities}View.vue" => $this->renderDetailVue($definition, $resourceName),
             "patches/verify_{$lowerModule}_{$lowerEntity}_contract.php" => $this->renderGeneratedVerifier($module, $entity),
             "docs/ai/04-docops/history/YYYY-MM-DD-{$lowerModule}-{$lowerEntity}-generated.md" => "# {$module} {$entity} Generated Preview\n\nStatus: preview only\n\nGenerated by Module Builder preview renderer. No runtime files were written.\n",
         ];
+
+        if ($this->floatingModalEnabled($definition)) {
+            $files["modules/{$module}/resources/js/components/{$entity}FloatingModal.vue"] = $this->renderFloatingModal($entity);
+        }
+
+        return $files;
     }
 
     protected function renderModuleJson(array $definition, string $module): string
@@ -720,7 +743,7 @@ PHP;
             $imports[] = 'use Modules\\Activities\\Actions\\CreateRelatedActivityAction;';
         }
 
-        if (($definition['frontend']['floatingModal'] ?? false)
+        if ($this->floatingModalEnabled($definition)
             || $this->capabilityEnabled($definition, 'quickCreate')
             || $this->capabilityEnabled($definition, 'activities')) {
             $imports[] = 'use Modules\\Core\\Actions\\Action;';
@@ -870,7 +893,7 @@ PHP;
             $actions[] = '            CreateRelatedActivityAction::make()->onlyInline(),';
         }
 
-        if ($definition['frontend']['floatingModal'] ?? false) {
+        if ($this->floatingModalEnabled($definition)) {
             $actions[] = '            Action::make()->floatResourceInEditMode(),';
         }
 
@@ -1219,15 +1242,22 @@ PHP;
         return class_basename($relatedModel);
     }
 
-    protected function renderFrontendApp(string $entity): string
+    protected function renderFrontendApp(array $definition, string $entity): string
     {
+        $floatingImport = $this->floatingModalEnabled($definition)
+            ? "\nimport {$entity}FloatingModal from './components/{$entity}FloatingModal.vue'"
+            : '';
+        $floatingRegistration = $this->floatingModalEnabled($definition)
+            ? "\n  app.component('{$entity}FloatingModal', {$entity}FloatingModal)"
+            : '';
+
         return <<<JS
 import routes from './routes'
-import {$entity}FloatingModal from './components/{$entity}FloatingModal.vue'
+{$floatingImport}
 
 Innoclapps.booting((app, router) => {
   routes.forEach(route => router.addRoute(route))
-  app.component('{$entity}FloatingModal', {$entity}FloatingModal)
+{$floatingRegistration}
 })
 JS;
     }
@@ -1260,8 +1290,28 @@ defineOptions({ name: '{$name}' })
 VUE;
     }
 
-    protected function renderDetailVue(string $resourceName): string
+    protected function renderDetailVue(array $definition, string $resourceName): string
     {
+        $tabImports = [];
+        $tabMap = [];
+
+        if ($this->capabilityEnabled($definition, 'activities')) {
+            $tabImports[] = "import ActivitiesTab from '@/Activities/components/RecordTabActivity.vue'";
+            $tabImports[] = "import ActivitiesTabPanel from '@/Activities/components/RecordTabActivityPanel.vue'";
+            $tabMap[] = "  'activities-tab': ActivitiesTab,";
+            $tabMap[] = "  'activities-tab-panel': ActivitiesTabPanel,";
+        }
+
+        if ($this->capabilityEnabled($definition, 'notes')) {
+            $tabImports[] = "import RecordTabNote from '@/Notes/components/RecordTabNote.vue'";
+            $tabImports[] = "import RecordTabNotePanel from '@/Notes/components/RecordTabNotePanel.vue'";
+            $tabMap[] = "  'notes-tab': RecordTabNote,";
+            $tabMap[] = "  'notes-tab-panel': RecordTabNotePanel,";
+        }
+
+        $tabImportLines = $tabImports === [] ? '' : "\n".implode("\n", $tabImports);
+        $tabMapLines = $tabMap === [] ? '' : "\n".implode("\n", $tabMap)."\n";
+
         return <<<VUE
 <template>
   <div v-if="resourceReady">
@@ -1295,11 +1345,12 @@ VUE;
 import { ref } from 'vue'
 import Panels from '@/Core/components/Panels.vue'
 import { useResource } from '@/Core/composables/useResource'
+{$tabImportLines}
 
 const resourceName = '{$resourceName}'
 const { resource, resourceInformation, resourceReady } = useResource(resourceName)
 const page = ref(resourceInformation.value.detailPage)
-const tabComponents = {}
+const tabComponents = {{$tabMapLines}}
 </script>
 VUE;
     }

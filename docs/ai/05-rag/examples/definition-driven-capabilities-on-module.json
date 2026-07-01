@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "name": "EnhancedRecords",
+    "namespace": "Modules\\EnhancedRecords",
+    "singularLabel": "EnhancedRecord",
+    "pluralLabel": "EnhancedRecords",
+    "table": "enhanced_records",
+    "routeName": "enhanced-records",
+    "resourceName": "enhanced-records",
+    "icon": "Sparkles"
+  },
+  "resource": {
+    "modelClass": "Modules\\EnhancedRecords\\Models\\EnhancedRecord",
+    "titleField": "title",
+    "orderBy": "title",
+    "hasDetailView": true,
+    "globalSearchAction": "float"
+  },
+  "fields": [
+    {
+      "name": "id",
+      "type": "id",
+      "label": "ID",
+      "rules": [],
+      "visibility": {"index": false, "detail": false, "create": false, "update": false, "settings": false}
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "label": "Title",
+      "primary": true,
+      "required": true,
+      "rules": ["required", "string", "max:191"],
+      "creationRules": ["required"],
+      "updateRules": ["filled"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "body",
+      "type": "textarea",
+      "label": "Body",
+      "required": false,
+      "rules": ["nullable", "string"],
+      "creationRules": ["nullable"],
+      "updateRules": ["nullable"],
+      "visibility": {"index": false, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "label": "Active",
+      "default": true,
+      "required": false,
+      "rules": ["nullable", "boolean"],
+      "creationRules": ["nullable", "boolean"],
+      "updateRules": ["nullable", "boolean"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "amount",
+      "type": "decimal",
+      "label": "Amount",
+      "default": 0,
+      "required": false,
+      "rules": ["nullable", "numeric"],
+      "creationRules": ["nullable", "numeric"],
+      "updateRules": ["nullable", "numeric"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    }
+  ],
+  "relations": [],
+  "table": {
+    "defaultView": {"name": "EnhancedRecords", "flag": "all-enhanced-records"},
+    "orderBy": {"column": "title", "direction": "asc"}
+  },
+  "detailPage": {
+    "panels": [],
+    "tabs": []
+  },
+  "capabilities": {
+    "tableable": true,
+    "hasDetailView": true,
+    "customFields": true,
+    "uniqueCustomFields": true,
+    "importable": true,
+    "exportable": true,
+    "cloneable": true,
+    "bulkDelete": true,
+    "globalSearch": true,
+    "quickCreate": true,
+    "softDeletes": false,
+    "notes": true,
+    "comments": true,
+    "activities": true,
+    "activityComments": true,
+    "activityAssociations": true,
+    "media": true,
+    "mediable": false,
+    "documents": false,
+    "calls": false,
+    "emails": false,
+    "emailSending": false,
+    "tasks": false,
+    "workflow": false,
+    "approvals": false,
+    "notifications": false,
+    "timeline": false,
+    "formLayout": false,
+    "stepperForm": false,
+    "sections": false,
+    "conditionalVisibility": false,
+    "floatingModal": true
+  },
+  "permissions": {
+    "view": ["view all enhanced records"],
+    "create": "create enhanced records",
+    "edit": ["edit all enhanced records"],
+    "delete": ["delete any enhanced record"],
+    "bulkDelete": "bulk delete enhanced records",
+    "import": "import enhanced records",
+    "export": "export enhanced records"
+  },
+  "frontend": {
+    "routes": true,
+    "views": ["index", "create", "edit", "detail"],
+    "floatingModal": true,
+    "localTabComponents": {
+      "activities-tab": "ActivitiesTab",
+      "activities-tab-panel": "ActivitiesTabPanel",
+      "notes-tab": "RecordTabNote",
+      "notes-tab-panel": "RecordTabNotePanel"
+    }
+  },
+  "verifier": {
+    "generate": true,
+    "path": "patches/verify_enhanced-records_enhanced-record_contract.php",
+    "checks": ["resource", "json-resource", "detail-page", "frontend", "safety"]
+  }
+}
