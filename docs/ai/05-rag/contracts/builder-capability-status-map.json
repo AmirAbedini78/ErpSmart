@@ -1,0 +1,313 @@
+{
+  "name": "ERPSMART Builder Capability Status Map",
+  "preview_safe": [
+    {
+      "name": "tableable",
+      "group": "data_ui",
+      "preview_behavior": "Generate Resource table contracts in preview.",
+      "generated_artifacts_if_enabled": ["Resource table metadata", "Table preview file"],
+      "warnings": [],
+      "agent_notes": "Safe for MVP preview."
+    },
+    {
+      "name": "hasDetailView",
+      "group": "data_ui",
+      "preview_behavior": "Generate StandardDetailPage metadata and detail view preview.",
+      "generated_artifacts_if_enabled": ["Resource detailPage metadata", "View preview file"],
+      "warnings": [],
+      "agent_notes": "Keep synchronized with resource.hasDetailView."
+    },
+    {
+      "name": "customFields",
+      "group": "data_ui",
+      "preview_behavior": "Generate custom-field-ready resource contracts where supported.",
+      "generated_artifacts_if_enabled": ["Resource interface/trait preview"],
+      "warnings": [],
+      "agent_notes": "Do not invent new custom field storage."
+    },
+    {
+      "name": "uniqueCustomFields",
+      "group": "data_ui",
+      "preview_behavior": "Generate unique custom field contract where supported.",
+      "generated_artifacts_if_enabled": ["Resource interface preview"],
+      "warnings": [],
+      "agent_notes": "Use only first-party contract patterns."
+    },
+    {
+      "name": "importable",
+      "group": "data_ui",
+      "preview_behavior": "Generate Importable contract and import_id only when enabled.",
+      "generated_artifacts_if_enabled": ["Resource import contract", "import_id preview column"],
+      "warnings": [],
+      "agent_notes": "Never add import_id when importable is false."
+    },
+    {
+      "name": "exportable",
+      "group": "data_ui",
+      "preview_behavior": "Generate Exportable contract.",
+      "generated_artifacts_if_enabled": ["Resource export contract"],
+      "warnings": [],
+      "agent_notes": "Safe for MVP preview."
+    },
+    {
+      "name": "cloneable",
+      "group": "data_ui",
+      "preview_behavior": "Generate Cloneable contract/action preview.",
+      "generated_artifacts_if_enabled": ["Resource clone contract"],
+      "warnings": [],
+      "agent_notes": "Safe for MVP preview."
+    },
+    {
+      "name": "bulkDelete",
+      "group": "data_ui",
+      "preview_behavior": "Generate deletion capability metadata when supported.",
+      "generated_artifacts_if_enabled": ["Resource action metadata"],
+      "warnings": [],
+      "agent_notes": "Must still respect permissions."
+    },
+    {
+      "name": "globalSearch",
+      "group": "data_ui",
+      "preview_behavior": "Generate global search metadata.",
+      "generated_artifacts_if_enabled": ["Resource search metadata"],
+      "warnings": [],
+      "agent_notes": "Use definition resource title field."
+    },
+    {
+      "name": "quickCreate",
+      "group": "data_ui",
+      "preview_behavior": "Generate quick create metadata where supported.",
+      "generated_artifacts_if_enabled": ["Resource menu/action preview"],
+      "warnings": [],
+      "agent_notes": "Safe only as preview metadata."
+    },
+    {
+      "name": "floatingModal",
+      "group": "data_ui",
+      "preview_behavior": "Generate floating modal frontend preview when enabled.",
+      "generated_artifacts_if_enabled": ["Floating modal Vue preview"],
+      "warnings": [],
+      "agent_notes": "Frontend-only preview until publish is implemented."
+    },
+    {
+      "name": "notes",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate notes tab metadata and comments pipe support as needed.",
+      "generated_artifacts_if_enabled": ["Notes tab preview", "PipesComments when needed"],
+      "warnings": [],
+      "agent_notes": "Use canonical via_resource behavior."
+    },
+    {
+      "name": "comments",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate PipesComments when enabled.",
+      "generated_artifacts_if_enabled": ["PipesComments contract preview"],
+      "warnings": [],
+      "agent_notes": "Do not duplicate note/comment data in JsonResource unless canonical pattern requires it."
+    },
+    {
+      "name": "activities",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate activities tab metadata and related activity action.",
+      "generated_artifacts_if_enabled": ["HasActivities", "Activities tab preview", "CreateRelatedActivityAction preview"],
+      "warnings": [],
+      "agent_notes": "Activity associations are separate and must be explicitly enabled."
+    },
+    {
+      "name": "activityComments",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate comment pipe support for activity comments where needed.",
+      "generated_artifacts_if_enabled": ["PipesComments when needed"],
+      "warnings": [],
+      "agent_notes": "Safe when activities are enabled."
+    },
+    {
+      "name": "activityAssociations",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate AssociatesResources only when enabled.",
+      "generated_artifacts_if_enabled": ["AssociatesResources trait preview"],
+      "warnings": [],
+      "agent_notes": "Do not assume associations without definition flag."
+    },
+    {
+      "name": "media",
+      "group": "collaboration_content",
+      "preview_behavior": "Generate media panel and JsonResource media only when enabled.",
+      "generated_artifacts_if_enabled": ["HasMedia", "Mediable", "ResourceMediaPanel preview"],
+      "warnings": [],
+      "agent_notes": "Alias mediable to media if needed."
+    }
+  ],
+  "warning_only": [
+    "documents",
+    "calls",
+    "emails",
+    "emailSending",
+    "tasks",
+    "workflow",
+    "approvals",
+    "notifications",
+    "timeline",
+    "softDeletes",
+    "formLayout",
+    "stepperForm",
+    "sections",
+    "conditionalVisibility"
+  ],
+  "warning_only_details": [
+    {
+      "name": "documents",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["documents requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs first-party Documents integration contract before generation."
+    },
+    {
+      "name": "calls",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["calls requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs Calls integration contract before generation."
+    },
+    {
+      "name": "emails",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["emails requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs MailClient integration contract before generation."
+    },
+    {
+      "name": "emailSending",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["emailSending requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires Notification/Email Engine contracts."
+    },
+    {
+      "name": "tasks",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["tasks requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires Workflow or task routing contract."
+    },
+    {
+      "name": "workflow",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["workflow requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires Workflow Engine boundary."
+    },
+    {
+      "name": "approvals",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["approvals requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires approvals workflow contract."
+    },
+    {
+      "name": "notifications",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["notifications requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires Notification/Email Engine contract."
+    },
+    {
+      "name": "timeline",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["timeline requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires timeline/changelog contract and UI placement decision."
+    },
+    {
+      "name": "softDeletes",
+      "group": "data_ui",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["softDeletes requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires delete/restore policy, table, and migration contract."
+    },
+    {
+      "name": "formLayout",
+      "group": "form_layout",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["formLayout requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires visual form layout builder contract."
+    },
+    {
+      "name": "stepperForm",
+      "group": "form_layout",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["stepperForm requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires stepper form builder contract."
+    },
+    {
+      "name": "sections",
+      "group": "form_layout",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["sections requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires section metadata and rendering contract."
+    },
+    {
+      "name": "conditionalVisibility",
+      "group": "form_layout",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["conditionalVisibility requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires conditional visibility evaluator and safety rules."
+    }
+  ],
+  "future": [
+    {
+      "name": "documents",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["documents requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs first-party Documents integration contract before generation."
+    },
+    {
+      "name": "calls",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["calls requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs Calls integration contract before generation."
+    },
+    {
+      "name": "emails",
+      "group": "collaboration_content",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["emails requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Needs MailClient integration contract before generation."
+    },
+    {
+      "name": "workflow",
+      "group": "automation_process",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["workflow requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires Workflow Engine boundary."
+    },
+    {
+      "name": "formLayout",
+      "group": "form_layout",
+      "preview_behavior": "Warn only; do not generate unsafe APIs.",
+      "generated_artifacts_if_enabled": [],
+      "warnings": ["formLayout requested but is future/unsupported in preview; no unsafe APIs are generated"],
+      "agent_notes": "Requires visual form layout builder contract."
+    }
+  ]
+}

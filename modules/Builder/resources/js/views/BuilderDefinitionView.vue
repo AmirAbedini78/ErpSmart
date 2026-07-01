@@ -47,6 +47,21 @@
 
       <div class="grid gap-6 xl:grid-cols-12">
         <div class="space-y-6 xl:col-span-8">
+          <ICard>
+            <ICardHeader>
+              <ICardHeading text="Demo flow" />
+            </ICardHeader>
+
+            <ICardBody>
+              <ol class="grid gap-2 text-sm md:grid-cols-2">
+                <li v-for="step in demoFlowSteps" :key="step" class="flex gap-2">
+                  <span class="text-neutral-400">•</span>
+                  <span>{{ step }}</span>
+                </li>
+              </ol>
+            </ICardBody>
+          </ICard>
+
           <BuilderModuleIdentityForm
             :definition="definitionJson"
             @changed="handleVisualChange"
@@ -151,6 +166,15 @@ const definitionText = ref('')
 const validationReport = ref(null)
 const previewRun = ref(null)
 const jsonError = ref(null)
+const demoFlowSteps = [
+  'Edit identity',
+  'Add fields',
+  'Toggle capabilities',
+  'Add relations if needed',
+  'Save',
+  'Validate',
+  'Preview',
+]
 
 usePageTitle('Builder Definition')
 

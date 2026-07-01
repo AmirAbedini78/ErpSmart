@@ -1,0 +1,122 @@
+{
+  "name": "ERPSMART Builder Studio AI/RAG Manifest",
+  "purpose": "Describe the UI-first Builder Studio, backend Control Plane, safe preview workflow, and AI/RAG boundaries for future Builder Agents.",
+  "source_of_truth": {
+    "database": [
+      "builder_definitions",
+      "builder_definition_versions",
+      "builder_preview_runs"
+    ],
+    "schema": [
+      "docs/ai/05-rag/contracts/module-builder-mvp-schema.json"
+    ],
+    "backend": [
+      "app/Http/Controllers/Builder/BuilderDefinitionController.php",
+      "app/Services/Builder/BuilderDefinitionValidator.php",
+      "app/Services/Builder/BuilderPreviewService.php",
+      "app/Services/Builder/BuilderDefinitionVersionService.php"
+    ],
+    "frontend": [
+      "modules/Builder/resources/js/app.js",
+      "modules/Builder/resources/js/routes.js",
+      "modules/Builder/resources/js/services/builderApi.js",
+      "modules/Builder/resources/js/views/BuilderDefinitionsIndex.vue",
+      "modules/Builder/resources/js/views/BuilderDefinitionView.vue",
+      "modules/Builder/resources/js/components"
+    ],
+    "architecture_docs": [
+      "docs/ai/03-architecture/module-builder-ui-control-plane.md",
+      "docs/ai/03-architecture/module-builder-storage-strategy.md",
+      "docs/ai/03-architecture/builder-studio-ui-shell.md",
+      "docs/ai/03-architecture/builder-studio-visual-definition-editor.md",
+      "docs/ai/03-architecture/builder-studio-demo-workflow.md"
+    ]
+  },
+  "generated_or_derived_files": {
+    "preview_artifacts": "storage/app/module-builder-preview",
+    "temporary_definition_files": "storage/app/builder-definitions",
+    "vector_indexes": "derived and rebuildable",
+    "generated_preview_files_are_source_of_truth": false
+  },
+  "backend_models": [
+    "App\\Models\\BuilderDefinition",
+    "App\\Models\\BuilderDefinitionVersion",
+    "App\\Models\\BuilderPreviewRun"
+  ],
+  "backend_controllers": [
+    "App\\Http\\Controllers\\Builder\\BuilderDefinitionController"
+  ],
+  "backend_services": [
+    "App\\Services\\Builder\\BuilderDefinitionValidator",
+    "App\\Services\\Builder\\BuilderPreviewService",
+    "App\\Services\\Builder\\BuilderDefinitionVersionService"
+  ],
+  "frontend_module_files": [
+    "modules/Builder/resources/js/app.js",
+    "modules/Builder/resources/js/routes.js",
+    "modules/Builder/resources/js/services/builderApi.js",
+    "modules/Builder/resources/js/views/BuilderDefinitionsIndex.vue",
+    "modules/Builder/resources/js/views/BuilderDefinitionView.vue",
+    "modules/Builder/resources/js/components/BuilderModuleIdentityForm.vue",
+    "modules/Builder/resources/js/components/BuilderFieldsEditor.vue",
+    "modules/Builder/resources/js/components/BuilderCapabilitiesEditor.vue",
+    "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
+    "modules/Builder/resources/js/components/BuilderRawJsonEditor.vue",
+    "modules/Builder/resources/js/components/BuilderValidationPreviewPanel.vue",
+    "modules/Builder/resources/js/components/BuilderStatusBadge.vue"
+  ],
+  "current_lifecycle_states": [
+    "draft",
+    "validating",
+    "validated",
+    "validation_failed",
+    "previewing",
+    "previewed",
+    "preview_failed",
+    "publish_pending",
+    "publishing",
+    "published",
+    "publish_failed",
+    "archived",
+    "rolled_back"
+  ],
+  "safe_operations": [
+    "list definitions",
+    "create draft definition",
+    "read definition",
+    "update draft definition_json",
+    "validate definition",
+    "render preview into storage/app/module-builder-preview",
+    "read validation reports",
+    "read preview manifests and output text"
+  ],
+  "forbidden_operations": [
+    "publish from Builder Studio MVP",
+    "write runtime module files directly",
+    "run generated module migrations from Builder Studio MVP",
+    "edit Core files",
+    "edit Warehouse files",
+    "edit SaaS, licensing, updater, package, composer, vendor, node_modules, public/build files",
+    "bypass validation before preview",
+    "treat preview artifacts or vector indexes as source of truth"
+  ],
+  "future_operations": [
+    "queued validation",
+    "queued preview",
+    "preview file browser",
+    "generated verifier viewer",
+    "AI prompt assistant",
+    "publish and rollback after safety contracts are complete"
+  ],
+  "notes_for_ai_builder_agent": [
+    "Use the backend Builder Control Plane APIs instead of editing runtime module files.",
+    "Propose changes to definition_json, then call validate and preview.",
+    "Respect warning-only capabilities and do not generate unsafe APIs for them.",
+    "Never use stale backup, vendor, build, cache, or generated noise as canonical evidence."
+  ],
+  "notes_for_business_operations_agent_separation": [
+    "The Business Operations Agent is separate from the AI Builder Agent.",
+    "Business operations should use permissioned runtime business APIs after modules exist.",
+    "Business operations must not modify Builder schema or module definitions unless explicitly authorized."
+  ]
+}

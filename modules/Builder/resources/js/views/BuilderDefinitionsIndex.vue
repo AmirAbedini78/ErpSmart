@@ -15,8 +15,23 @@
     </template>
 
     <div class="mx-auto max-w-7xl">
-      <div class="mb-6">
-        <ITextDisplay text="Builder Studio" />
+      <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <ITextDisplay text="Builder Studio" />
+          <IText
+            class="mt-2 max-w-3xl"
+            text="Create a draft, edit visually, validate, and preview. Publish is not available yet."
+          />
+        </div>
+
+        <IButton
+          class="lg:hidden"
+          variant="primary"
+          icon="PlusSolid"
+          text="Create draft"
+          :loading="creating"
+          @click="createDraft"
+        />
       </div>
 
       <ICard>
@@ -25,8 +40,10 @@
             <ITableRow>
               <ITableHeader>Name</ITableHeader>
               <ITableHeader>Module</ITableHeader>
+              <ITableHeader>Entity</ITableHeader>
               <ITableHeader>Resource</ITableHeader>
               <ITableHeader>Status</ITableHeader>
+              <ITableHeader>Updated</ITableHeader>
               <ITableHeader></ITableHeader>
             </ITableRow>
           </ITableHead>
@@ -39,9 +56,13 @@
                 </span>
               </ITableCell>
               <ITableCell>{{ definition.module_name || '-' }}</ITableCell>
+              <ITableCell>{{ definition.entity_name || '-' }}</ITableCell>
               <ITableCell>{{ definition.resource_name || '-' }}</ITableCell>
               <ITableCell>
-                <IBadge :text="definition.status" variant="neutral" />
+                <BuilderStatusBadge :status="definition.status" />
+              </ITableCell>
+              <ITableCell>
+                {{ definition.updated_at || definition.created_at || '-' }}
               </ITableCell>
               <ITableCell class="text-right">
                 <IButton
@@ -57,8 +78,24 @@
             </ITableRow>
 
             <ITableRow v-if="!loading && definitions.length === 0">
-              <ITableCell colspan="5">
-                <IText text="No builder definitions yet." />
+              <ITableCell colspan="7">
+                <div class="flex flex-col items-center gap-3 py-12 text-center">
+                  <ITextDark
+                    class="font-medium"
+                    text="No builder definitions yet."
+                  />
+                  <IText
+                    class="max-w-xl"
+                    text="Start with a neutral draft, then edit identity, fields, capabilities, and relations before running validation and preview."
+                  />
+                  <IButton
+                    variant="primary"
+                    icon="PlusSolid"
+                    text="Create draft"
+                    :loading="creating"
+                    @click="createDraft"
+                  />
+                </div>
               </ITableCell>
             </ITableRow>
           </ITableBody>
@@ -74,6 +111,7 @@ import { useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 
+import BuilderStatusBadge from '../components/BuilderStatusBadge.vue'
 import { createDefinition, fetchDefinitions } from '../services/builderApi'
 import { neutralDefinition } from '../fixtures/neutralDefinition'
 

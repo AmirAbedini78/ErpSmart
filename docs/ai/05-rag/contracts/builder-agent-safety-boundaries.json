@@ -1,0 +1,66 @@
+{
+  "name": "ERPSMART Builder Agent Safety Boundaries",
+  "ai_builder_agent_can": [
+    "read builder definitions",
+    "read builder definition versions",
+    "propose definition_json changes",
+    "call validate",
+    "call preview",
+    "explain validation errors",
+    "explain preview warnings",
+    "summarize generated preview manifests",
+    "suggest next safe UI edits"
+  ],
+  "ai_builder_agent_cannot": [
+    "publish",
+    "write runtime modules directly",
+    "edit generated runtime module files directly",
+    "edit Core code directly",
+    "edit Warehouse code directly",
+    "edit SaaS code directly",
+    "edit licensing or updater code directly",
+    "run migrations directly",
+    "run generated module migrations directly",
+    "bypass validation",
+    "treat preview artifacts as source of truth",
+    "treat vector indexes as source of truth"
+  ],
+  "business_operations_agent_separation": {
+    "purpose": "Business Operations Agent works with runtime business data after modules exist.",
+    "can": [
+      "use permissioned runtime business APIs later",
+      "create records through approved tools later",
+      "update records through approved tools later",
+      "analyze operational data through approved tools later"
+    ],
+    "cannot": [
+      "modify Builder schema unless explicitly authorized",
+      "modify module definitions unless explicitly authorized",
+      "bypass Builder validation or preview",
+      "write runtime files"
+    ]
+  },
+  "source_of_truth_rules": {
+    "builder_definitions": "Database definitions and immutable version snapshots are source of truth for draft Builder intent.",
+    "published_runtime": "Published runtime modules and migrations will become runtime truth only after a future publish workflow.",
+    "preview_files": "Generated preview files are derived artifacts and are not source of truth.",
+    "rag_docs": "RAG docs guide agents but are not runtime truth.",
+    "vector_index": "Vector indexes are derived and rebuildable."
+  },
+  "safe_control_plane_operations": [
+    "list",
+    "create_draft",
+    "read",
+    "update_draft",
+    "validate",
+    "preview"
+  ],
+  "forbidden_control_plane_operations_in_mvp": [
+    "publish",
+    "runtime_write",
+    "migration_run",
+    "core_edit",
+    "warehouse_edit",
+    "saas_license_update_edit"
+  ]
+}

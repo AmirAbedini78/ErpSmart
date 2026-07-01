@@ -1,0 +1,72 @@
+{
+  "name": "ERPSMART Builder Studio API Map",
+  "base_path": "/api",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/builder/definitions",
+      "purpose": "List Builder definitions for Builder Studio.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Read-only list endpoint."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions",
+      "purpose": "Create a draft Builder definition.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Creates version 1 and stores definition_json."
+    },
+    {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}",
+      "purpose": "Read one Builder definition with versions and preview runs.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Read-only detail endpoint."
+    },
+    {
+      "method": "PUT",
+      "path": "/api/builder/definitions/{id}",
+      "purpose": "Update draft Builder definition JSON and create a new version snapshot.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Does not publish or write runtime module files."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/validate",
+      "purpose": "Validate definition structure and capability warnings.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Returns definition and validation report."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/preview",
+      "purpose": "Render a sandbox preview under storage/app/module-builder-preview.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "notes": "Validates first and does not publish, run migrations, or write real modules."
+    }
+  ]
+}

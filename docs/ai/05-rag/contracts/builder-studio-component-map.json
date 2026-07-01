@@ -1,0 +1,112 @@
+{
+  "name": "ERPSMART Builder Studio Component Map",
+  "builder_app_entry": {
+    "file": "modules/Builder/resources/js/app.js",
+    "role": "Registers Builder frontend routes in the application module boot flow.",
+    "edits_definition_json": false,
+    "calls_api": false,
+    "risk_level": "low",
+    "notes": "Should stay narrow and only register Builder Studio UI routes."
+  },
+  "routes_file": {
+    "file": "modules/Builder/resources/js/routes.js",
+    "role": "Defines Builder Studio index and detail routes.",
+    "edits_definition_json": false,
+    "calls_api": false,
+    "risk_level": "low",
+    "notes": "Routes are UI-only and do not expose publish behavior."
+  },
+  "service_file": {
+    "file": "modules/Builder/resources/js/services/builderApi.js",
+    "role": "Thin client for Builder Definition backend Control Plane endpoints.",
+    "edits_definition_json": false,
+    "calls_api": true,
+    "risk_level": "medium",
+    "notes": "Must not add publish/write-capable methods during MVP."
+  },
+  "views": [
+    {
+      "name": "BuilderDefinitionsIndex",
+      "file": "modules/Builder/resources/js/views/BuilderDefinitionsIndex.vue",
+      "role": "Lists definitions and creates a neutral draft.",
+      "edits_definition_json": false,
+      "calls_api": true,
+      "risk_level": "medium",
+      "notes": "Demo entrypoint. Should explain create, edit, validate, and preview flow."
+    },
+    {
+      "name": "BuilderDefinitionView",
+      "file": "modules/Builder/resources/js/views/BuilderDefinitionView.vue",
+      "role": "Coordinates visual definition editing, raw JSON synchronization, save, validate, and preview.",
+      "edits_definition_json": true,
+      "calls_api": true,
+      "risk_level": "high",
+      "notes": "Owns definitionJson and definitionText synchronization. Must not expose publish."
+    }
+  ],
+  "components": [
+    {
+      "name": "BuilderModuleIdentityForm",
+      "file": "modules/Builder/resources/js/components/BuilderModuleIdentityForm.vue",
+      "role": "Visual editor for module and resource identity.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "May suggest derived names but must not force overwrite after user edits."
+    },
+    {
+      "name": "BuilderFieldsEditor",
+      "file": "modules/Builder/resources/js/components/BuilderFieldsEditor.vue",
+      "role": "Visual editor for fields, validation rules, visibility, and table metadata.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Must use neutral placeholder field names only and avoid fixed business defaults."
+    },
+    {
+      "name": "BuilderCapabilitiesEditor",
+      "file": "modules/Builder/resources/js/components/BuilderCapabilitiesEditor.vue",
+      "role": "Grouped capability toggles.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Future/warning-only capabilities must be clearly labeled."
+    },
+    {
+      "name": "BuilderRelationsEditor",
+      "file": "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
+      "role": "Visual editor for relation declarations.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Only belongsTo and hasMany are MVP relation types. Other relation types are warning-only."
+    },
+    {
+      "name": "BuilderRawJsonEditor",
+      "file": "modules/Builder/resources/js/components/BuilderRawJsonEditor.vue",
+      "role": "Debug and recovery raw JSON editor.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Invalid JSON must not be applied silently."
+    },
+    {
+      "name": "BuilderValidationPreviewPanel",
+      "file": "modules/Builder/resources/js/components/BuilderValidationPreviewPanel.vue",
+      "role": "Displays actions, validation report, warnings, preview status, and output.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "Emits save, validate, and preview events to the parent view."
+    },
+    {
+      "name": "BuilderStatusBadge",
+      "file": "modules/Builder/resources/js/components/BuilderStatusBadge.vue",
+      "role": "Consistent status badge rendering.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "low",
+      "notes": "Presentation only."
+    }
+  ]
+}

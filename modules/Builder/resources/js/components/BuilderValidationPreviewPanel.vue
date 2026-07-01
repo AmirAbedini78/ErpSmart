@@ -36,7 +36,12 @@
         <ICardHeading text="Validation Report" />
       </ICardHeader>
 
-      <ICardBody>
+      <ICardBody class="space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <IText text="Last validation" />
+          <BuilderStatusBadge :status="validationStatus" />
+        </div>
+
         <IAlert v-if="validationReport?.warnings?.length" variant="warning">
           <IAlertBody>
             <ul class="list-disc space-y-1 pl-5">
@@ -46,7 +51,18 @@
             </ul>
           </IAlertBody>
         </IAlert>
-        <pre class="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs">{{ formattedValidationReport }}</pre>
+
+        <IAlert v-if="validationReport?.errors?.length" variant="danger">
+          <IAlertBody>
+            <ul class="list-disc space-y-1 pl-5">
+              <li v-for="error in validationReport.errors" :key="error">
+                {{ error }}
+              </li>
+            </ul>
+          </IAlertBody>
+        </IAlert>
+
+        <pre class="max-h-72 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedValidationReport }}</pre>
       </ICardBody>
     </ICard>
 
@@ -55,11 +71,19 @@
         <ICardHeading text="Preview Output" />
       </ICardHeader>
 
-      <ICardBody>
-        <div v-if="previewRun?.status" class="mb-3">
-          <BuilderStatusBadge :status="previewRun.status" />
+      <ICardBody class="space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <IText text="Last preview" />
+          <BuilderStatusBadge :status="previewStatus" />
         </div>
-        <pre class="max-h-96 overflow-auto whitespace-pre-wrap text-xs">{{ formattedPreviewOutput }}</pre>
+
+        <IText
+          v-if="previewPath"
+          class="break-all text-xs"
+          :text="previewPath"
+        />
+
+        <pre class="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedPreviewOutput }}</pre>
       </ICardBody>
     </ICard>
   </div>
@@ -82,6 +106,20 @@ const props = defineProps({
 defineEmits(['save', 'validate', 'preview'])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))
+
+const validationStatus = computed(() => {
+  if (!props.validationReport) {
+    return 'not_run'
+  }
+
+  return props.validationReport.valid ? 'validated' : 'validation_failed'
+})
+
+const previewStatus = computed(() => props.previewRun?.status || 'not_run')
+
+const previewPath = computed(
+  () => props.previewRun?.preview_path || props.previewManifest?.preview_path
+)
 
 const formattedPreviewOutput = computed(() => {
   if (props.previewRun?.output_text) {
