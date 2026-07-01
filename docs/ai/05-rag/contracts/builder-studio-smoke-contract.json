@@ -1,0 +1,59 @@
+{
+  "name": "ERPSMART Builder Studio End-to-End Smoke Contract",
+  "purpose": "Verify that the Builder Studio backend Control Plane can create a temporary definition, create a version snapshot, validate it, render a safe preview, record a preview run, and clean up without publishing or writing runtime modules.",
+  "required_tables": [
+    "builder_definitions",
+    "builder_definition_versions",
+    "builder_preview_runs"
+  ],
+  "smoke_steps": [
+    "confirm Builder tables exist",
+    "load a neutral definition fixture",
+    "rewrite the fixture to a unique SmokeRecords module name",
+    "disable warning-only future capabilities for a clean validation path",
+    "create a temporary BuilderDefinition record",
+    "create version 1 through BuilderDefinitionVersionService",
+    "run BuilderDefinitionValidator",
+    "run BuilderPreviewService",
+    "assert BuilderPreviewRun was recorded",
+    "assert preview output reports Real runtime writes performed: 0",
+    "assert preview path is under storage/app/module-builder-preview",
+    "assert no modules/{SmokeModule} runtime directory exists",
+    "cleanup temporary DB records and unique preview artifacts"
+  ],
+  "expected_outputs": {
+    "validation_valid": true,
+    "preview_status": "previewed",
+    "runtime_writes": 0,
+    "preview_artifact_root": "storage/app/module-builder-preview",
+    "real_runtime_module_created": false
+  },
+  "cleanup_rules": [
+    "delete temporary builder_preview_runs for the smoke definition",
+    "delete temporary builder_definition_versions for the smoke definition",
+    "delete temporary builder_definitions smoke record",
+    "delete storage/app/builder-definitions/{id} for the smoke record",
+    "delete only the uniquely named storage/app/module-builder-preview/{SmokeModule} directory created by this smoke",
+    "do not delete shared preview directories"
+  ],
+  "forbidden_operations": [
+    "publish",
+    "write runtime modules",
+    "run generated migrations",
+    "modify Core",
+    "modify Warehouse",
+    "modify SaaS, licensing, updater, installer, package, composer, vendor, node_modules, or public/build files"
+  ],
+  "safe_for_agent": true,
+  "agent_notes": [
+    "This smoke may create temporary DB records but must clean them up.",
+    "This smoke may create a unique preview directory under storage/app/module-builder-preview and may delete only that unique directory.",
+    "The smoke is allowed to call validate and preview, but not publish.",
+    "The preview output must confirm zero real runtime writes."
+  ],
+  "demo_notes": [
+    "Run before moving to the Visual Form Layout Builder.",
+    "A PASS proves the demo path is wired across DB, services, preview engine, and UI response assumptions.",
+    "It does not prove publish safety because publish remains intentionally absent."
+  ]
+}

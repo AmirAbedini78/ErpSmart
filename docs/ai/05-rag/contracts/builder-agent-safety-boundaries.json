@@ -6,6 +6,7 @@
     "propose definition_json changes",
     "call validate",
     "call preview",
+    "run the end-to-end smoke verifier with temporary DB record cleanup",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -25,6 +26,24 @@
     "treat preview artifacts as source of truth",
     "treat vector indexes as source of truth"
   ],
+  "end_to_end_smoke_boundaries": {
+    "safe_for_agent": true,
+    "allowed": [
+      "create temporary BuilderDefinition smoke records",
+      "create temporary BuilderDefinitionVersion smoke records",
+      "create temporary BuilderPreviewRun smoke records",
+      "render preview into a uniquely named storage/app/module-builder-preview smoke directory",
+      "assert preview output contains Real runtime writes performed: 0",
+      "cleanup temporary DB records and unique smoke preview artifacts"
+    ],
+    "forbidden": [
+      "publish",
+      "run migrations",
+      "write runtime modules",
+      "delete shared preview directories",
+      "leave temporary smoke records behind"
+    ]
+  },
   "business_operations_agent_separation": {
     "purpose": "Business Operations Agent works with runtime business data after modules exist.",
     "can": [
@@ -53,7 +72,8 @@
     "read",
     "update_draft",
     "validate",
-    "preview"
+    "preview",
+    "end_to_end_smoke"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

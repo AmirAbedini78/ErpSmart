@@ -36,6 +36,10 @@
     </template>
 
     <div v-if="definition" class="mx-auto max-w-7xl">
+      <IAlert v-if="apiError" class="mb-6" variant="danger">
+        <IAlertBody>{{ apiError }}</IAlertBody>
+      </IAlert>
+
       <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <ITextDisplay :text="definition.name" />
@@ -166,6 +170,7 @@ const definitionText = ref('')
 const validationReport = ref(null)
 const previewRun = ref(null)
 const jsonError = ref(null)
+const apiError = ref(null)
 const demoFlowSteps = [
   'Edit identity',
   'Add fields',
@@ -199,6 +204,7 @@ async function saveDefinition() {
   }
 
   saving.value = true
+  apiError.value = null
 
   try {
     const { data } = await updateDefinition(definition.value.id, {
@@ -206,6 +212,8 @@ async function saveDefinition() {
     })
     setDefinition(data)
     Innoclapps.success('Builder definition saved.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
   } finally {
     saving.value = false
   }
@@ -213,11 +221,14 @@ async function saveDefinition() {
 
 async function runValidation() {
   validating.value = true
+  apiError.value = null
 
   try {
     const { data } = await validateDefinition(definition.value.id)
     setDefinition(data.definition)
-    validationReport.value = data.report
+    validationReport.value = data.validation_report || data.report
+  } catch (error) {
+    apiError.value = errorMessage(error)
   } finally {
     validating.value = false
   }
@@ -225,11 +236,22 @@ async function runValidation() {
 
 async function runPreview() {
   previewing.value = true
+  apiError.value = null
 
   try {
     const { data } = await previewDefinition(definition.value.id)
     setDefinition(data.definition)
     previewRun.value = data.preview_run
+    validationReport.value = data.validation_report || data.report || validationReport.value
+  } catch (error) {
+    const response = error.response?.data
+
+    if (response?.definition) {
+      setDefinition(response.definition)
+    }
+
+    validationReport.value = response?.validation_report || response?.report || validationReport.value
+    apiError.value = response?.message || errorMessage(error)
   } finally {
     previewing.value = false
   }
@@ -319,5 +341,9 @@ function stringify(value) {
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
+}
+
+function errorMessage(error) {
+  return error.response?.data?.message || error.message || 'Builder request failed.'
 }
 </script>

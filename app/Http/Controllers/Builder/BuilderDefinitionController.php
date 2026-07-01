@@ -109,6 +109,7 @@ class BuilderDefinitionController extends ApiController
 
         return $this->response([
             'definition' => $builderDefinition->fresh(),
+            'validation_report' => $report,
             'report' => $report,
         ]);
     }
@@ -129,6 +130,8 @@ class BuilderDefinitionController extends ApiController
 
             return $this->response([
                 'message' => 'Builder definition validation failed. Preview was not rendered.',
+                'definition' => $builderDefinition->fresh(),
+                'validation_report' => $report,
                 'report' => $report,
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -148,6 +151,8 @@ class BuilderDefinitionController extends ApiController
         return $this->response([
             'definition' => $builderDefinition->fresh(),
             'preview_run' => $run->fresh(),
+            'validation_report' => $report,
+            'output_text' => $run->output_text,
         ], $run->status === 'previewed' ? JsonResponse::HTTP_OK : JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
     }
 

@@ -29,7 +29,11 @@
       "docs/ai/03-architecture/module-builder-storage-strategy.md",
       "docs/ai/03-architecture/builder-studio-ui-shell.md",
       "docs/ai/03-architecture/builder-studio-visual-definition-editor.md",
-      "docs/ai/03-architecture/builder-studio-demo-workflow.md"
+      "docs/ai/03-architecture/builder-studio-demo-workflow.md",
+      "docs/ai/03-architecture/builder-studio-end-to-end-smoke.md"
+    ],
+    "smoke_contracts": [
+      "docs/ai/05-rag/contracts/builder-studio-smoke-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -88,7 +92,8 @@
     "validate definition",
     "render preview into storage/app/module-builder-preview",
     "read validation reports",
-    "read preview manifests and output text"
+    "read preview manifests and output text",
+    "run end-to-end smoke with temporary DB records and cleanup"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -98,7 +103,8 @@
     "edit Warehouse files",
     "edit SaaS, licensing, updater, package, composer, vendor, node_modules, public/build files",
     "bypass validation before preview",
-    "treat preview artifacts or vector indexes as source of truth"
+    "treat preview artifacts or vector indexes as source of truth",
+    "leave smoke DB records or unique smoke preview directories behind"
   ],
   "future_operations": [
     "queued validation",
@@ -112,7 +118,9 @@
     "Use the backend Builder Control Plane APIs instead of editing runtime module files.",
     "Propose changes to definition_json, then call validate and preview.",
     "Respect warning-only capabilities and do not generate unsafe APIs for them.",
-    "Never use stale backup, vendor, build, cache, or generated noise as canonical evidence."
+    "Never use stale backup, vendor, build, cache, or generated noise as canonical evidence.",
+    "The end-to-end smoke path may create temporary DB records, but it must clean them up.",
+    "Preview output must confirm Real runtime writes performed: 0."
   ],
   "notes_for_business_operations_agent_separation": [
     "The Business Operations Agent is separate from the AI Builder Agent.",

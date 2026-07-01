@@ -22,7 +22,8 @@
       "safe_for_agent": true,
       "requires_admin": true,
       "publish_related": false,
-      "notes": "Creates version 1 and stores definition_json."
+      "response_shape": ["definition"],
+      "notes": "Creates version 1, extracts module/entity/resource names, and stores definition_json."
     },
     {
       "method": "GET",
@@ -44,7 +45,8 @@
       "safe_for_agent": true,
       "requires_admin": true,
       "publish_related": false,
-      "notes": "Does not publish or write runtime module files."
+      "response_shape": ["definition"],
+      "notes": "Does not publish or write runtime module files. Resets status to draft when definition_json changes."
     },
     {
       "method": "POST",
@@ -55,7 +57,8 @@
       "safe_for_agent": true,
       "requires_admin": true,
       "publish_related": false,
-      "notes": "Returns definition and validation report."
+      "response_shape": ["definition", "validation_report", "report"],
+      "notes": "Returns definition and validation report. The report alias is retained for backward compatibility."
     },
     {
       "method": "POST",
@@ -66,6 +69,15 @@
       "safe_for_agent": true,
       "requires_admin": true,
       "publish_related": false,
+      "response_shape": ["definition", "preview_run", "validation_report", "output_text"],
+      "safety_checks": [
+        "validates first",
+        "preview path under storage/app/module-builder-preview",
+        "output must report Real runtime writes performed: 0",
+        "does not publish",
+        "does not run migrations",
+        "does not write real modules"
+      ],
       "notes": "Validates first and does not publish, run migrations, or write real modules."
     }
   ]
