@@ -1,10 +1,10 @@
 const endpoint = '/builder/definitions'
 
-export function fetchDefinitions() {
+export function listDefinitions() {
   return Innoclapps.request(endpoint)
 }
 
-export function fetchDefinition(id) {
+export function getDefinition(id) {
   return Innoclapps.request(`${endpoint}/${id}`)
 }
 
@@ -23,3 +23,6 @@ export function validateDefinition(id) {
 export function previewDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/preview`)
 }
+
+export const fetchDefinitions = listDefinitions
+export const fetchDefinition = getDefinition

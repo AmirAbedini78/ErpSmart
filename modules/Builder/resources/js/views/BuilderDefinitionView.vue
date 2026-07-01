@@ -42,75 +42,78 @@
           <IText class="mt-1" :text="definition.resource_name || 'draft'" />
         </div>
 
-        <IBadge :text="definition.status" variant="neutral" />
+        <BuilderStatusBadge :status="definition.status" />
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-12">
-        <div class="lg:col-span-7">
-          <ICard>
-            <ICardHeader>
-              <ICardHeading text="Definition JSON" />
-            </ICardHeader>
+      <div class="grid gap-6 xl:grid-cols-12">
+        <div class="space-y-6 xl:col-span-8">
+          <BuilderModuleIdentityForm
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
 
-            <ICardBody>
-              <IFormTextarea
-                v-model="definitionText"
-                rows="28"
-                class="font-mono text-sm"
-              />
+          <BuilderFieldsEditor
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
 
-              <IAlert v-if="jsonError" class="mt-3" variant="danger">
-                <IAlertBody>{{ jsonError }}</IAlertBody>
-              </IAlert>
-            </ICardBody>
-          </ICard>
+          <BuilderCapabilitiesEditor
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
+
+          <BuilderRelationsEditor
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
+
+          <BuilderRawJsonEditor
+            v-model="definitionText"
+            :error="jsonError"
+            @apply="applyRawJson"
+            @format="formatRawJson"
+          />
         </div>
 
-        <div class="space-y-6 lg:col-span-5">
-          <ICard>
-            <ICardHeader>
-              <ICardHeading text="Metadata" />
-            </ICardHeader>
+        <div class="xl:col-span-4">
+          <div class="space-y-6 xl:sticky xl:top-6">
+            <ICard>
+              <ICardHeader>
+                <ICardHeading text="Metadata" />
+              </ICardHeader>
 
-            <ICardBody>
-              <dl class="space-y-3 text-sm">
-                <div class="flex justify-between gap-4">
-                  <dt class="text-neutral-500 dark:text-neutral-400">Module</dt>
-                  <dd class="font-medium">{{ definition.module_name || '-' }}</dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                  <dt class="text-neutral-500 dark:text-neutral-400">Entity</dt>
-                  <dd class="font-medium">{{ definition.entity_name || '-' }}</dd>
-                </div>
-                <div class="flex justify-between gap-4">
-                  <dt class="text-neutral-500 dark:text-neutral-400">Checksum</dt>
-                  <dd class="max-w-56 truncate font-mono text-xs">
-                    {{ definition.checksum || '-' }}
-                  </dd>
-                </div>
-              </dl>
-            </ICardBody>
-          </ICard>
+              <ICardBody>
+                <dl class="space-y-3 text-sm">
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-neutral-500 dark:text-neutral-400">Module</dt>
+                    <dd class="font-medium">{{ definition.module_name || '-' }}</dd>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-neutral-500 dark:text-neutral-400">Entity</dt>
+                    <dd class="font-medium">{{ definition.entity_name || '-' }}</dd>
+                  </div>
+                  <div class="flex justify-between gap-4">
+                    <dt class="text-neutral-500 dark:text-neutral-400">Checksum</dt>
+                    <dd class="max-w-56 truncate font-mono text-xs">
+                      {{ definition.checksum || '-' }}
+                    </dd>
+                  </div>
+                </dl>
+              </ICardBody>
+            </ICard>
 
-          <ICard>
-            <ICardHeader>
-              <ICardHeading text="Validation Report" />
-            </ICardHeader>
-
-            <ICardBody>
-              <pre class="max-h-72 overflow-auto whitespace-pre-wrap text-xs">{{ formattedValidationReport }}</pre>
-            </ICardBody>
-          </ICard>
-
-          <ICard>
-            <ICardHeader>
-              <ICardHeading text="Preview Output" />
-            </ICardHeader>
-
-            <ICardBody>
-              <pre class="max-h-96 overflow-auto whitespace-pre-wrap text-xs">{{ formattedPreviewOutput }}</pre>
-            </ICardBody>
-          </ICard>
+            <BuilderValidationPreviewPanel
+              :saving="saving"
+              :validating="validating"
+              :previewing="previewing"
+              :validation-report="validationReport || definition.last_validation_report_json"
+              :preview-run="previewRun"
+              :preview-manifest="definition.last_preview_manifest_json"
+              @save="saveDefinition"
+              @validate="runValidation"
+              @preview="runPreview"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -118,13 +121,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 
+import BuilderCapabilitiesEditor from '../components/BuilderCapabilitiesEditor.vue'
+import BuilderFieldsEditor from '../components/BuilderFieldsEditor.vue'
+import BuilderModuleIdentityForm from '../components/BuilderModuleIdentityForm.vue'
+import BuilderRawJsonEditor from '../components/BuilderRawJsonEditor.vue'
+import BuilderRelationsEditor from '../components/BuilderRelationsEditor.vue'
+import BuilderStatusBadge from '../components/BuilderStatusBadge.vue'
+import BuilderValidationPreviewPanel from '../components/BuilderValidationPreviewPanel.vue'
 import {
-  fetchDefinition,
+  getDefinition,
   previewDefinition,
   updateDefinition,
   validateDefinition,
@@ -136,6 +146,7 @@ const saving = ref(false)
 const validating = ref(false)
 const previewing = ref(false)
 const definition = ref(null)
+const definitionJson = ref(null)
 const definitionText = ref('')
 const validationReport = ref(null)
 const previewRun = ref(null)
@@ -143,25 +154,13 @@ const jsonError = ref(null)
 
 usePageTitle('Builder Definition')
 
-const formattedValidationReport = computed(() =>
-  formatJson(validationReport.value || definition.value?.last_validation_report_json)
-)
-
-const formattedPreviewOutput = computed(() => {
-  if (previewRun.value?.output_text) {
-    return previewRun.value.output_text
-  }
-
-  return formatJson(definition.value?.last_preview_manifest_json)
-})
-
 onMounted(loadDefinition)
 
 async function loadDefinition() {
   loading.value = true
 
   try {
-    const { data } = await fetchDefinition(route.params.id)
+    const { data } = await getDefinition(route.params.id)
     setDefinition(data)
   } finally {
     loading.value = false
@@ -212,6 +211,33 @@ async function runPreview() {
   }
 }
 
+function handleVisualChange() {
+  jsonError.value = null
+  normalizeDefinition(definitionJson.value)
+  definitionText.value = stringify(definitionJson.value)
+}
+
+function applyRawJson() {
+  const parsed = parseDefinitionText()
+
+  if (!parsed) {
+    return
+  }
+
+  definitionJson.value = normalizeDefinition(parsed)
+  definitionText.value = stringify(definitionJson.value)
+}
+
+function formatRawJson() {
+  const parsed = parseDefinitionText()
+
+  if (!parsed) {
+    return
+  }
+
+  definitionText.value = stringify(parsed)
+}
+
 function parseDefinitionText() {
   try {
     jsonError.value = null
@@ -226,16 +252,48 @@ function parseDefinitionText() {
 
 function setDefinition(value) {
   definition.value = value
-  definitionText.value = JSON.stringify(value.definition_json || {}, null, 2)
+  definitionJson.value = normalizeDefinition(clone(value.definition_json || {}))
+  definitionText.value = stringify(definitionJson.value)
   validationReport.value = value.last_validation_report_json
   previewRun.value = null
 }
 
-function formatJson(value) {
-  if (!value) {
-    return 'Not run yet.'
-  }
+function normalizeDefinition(value) {
+  value.schemaVersion ||= 1
+  value.module ||= {}
+  value.resource ||= {}
+  value.fields ||= []
+  value.relations ||= []
+  value.capabilities ||= {}
+  value.permissions ||= {}
+  value.frontend ||= {}
+  value.verifier ||= { generate: true }
+  value.detailPage ||= { panels: [], tabs: [] }
+  value.table ||= {}
 
+  value.resource.hasDetailView = Boolean(value.resource.hasDetailView)
+  value.capabilities.hasDetailView = Boolean(
+    value.capabilities.hasDetailView ?? value.resource.hasDetailView
+  )
+
+  value.fields = value.fields.map(field => {
+    field.visibility ||= {}
+    field.rules ||= []
+    field.creationRules ||= []
+    field.updateRules ||= []
+    field.table ||= {}
+
+    return field
+  })
+
+  return value
+}
+
+function stringify(value) {
   return JSON.stringify(value, null, 2)
+}
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value))
 }
 </script>
