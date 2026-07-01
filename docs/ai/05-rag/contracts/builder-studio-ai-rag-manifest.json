@@ -33,7 +33,10 @@
       "docs/ai/03-architecture/builder-studio-end-to-end-smoke.md",
       "docs/ai/03-architecture/builder-studio-form-layout-builder.md",
       "docs/ai/03-architecture/builder-studio-automation-metadata-editor.md",
-      "docs/ai/03-architecture/builder-studio-demo-journey-polish.md"
+      "docs/ai/03-architecture/builder-studio-demo-journey-polish.md",
+      "docs/ai/03-architecture/builder-safe-publish-and-lifecycle.md",
+      "docs/ai/03-architecture/builder-module-removal-strategy.md",
+      "docs/ai/03-architecture/builder-capability-removal-strategy.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -46,6 +49,13 @@
     ],
     "smoke_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-smoke-contract.json"
+    ],
+    "lifecycle_contracts": [
+      "docs/ai/05-rag/contracts/builder-lifecycle-state-machine.json",
+      "docs/ai/05-rag/contracts/builder-publish-safety-contract.json",
+      "docs/ai/05-rag/contracts/builder-module-removal-safety-contract.json",
+      "docs/ai/05-rag/contracts/builder-capability-removal-contract.json",
+      "docs/ai/05-rag/contracts/builder-module-dependency-impact-map.json"
     ]
   },
   "generated_or_derived_files": {
@@ -125,7 +135,12 @@
     "leave smoke DB records or unique smoke preview directories behind",
     "treat formLayout metadata as runtime-rendered before the renderer exists",
     "execute automation metadata before the Workflow Engine exists",
-    "claim publish exists in the Builder Studio MVP"
+    "claim publish exists in the Builder Studio MVP",
+    "execute publish",
+    "delete runtime modules",
+    "uninstall modules",
+    "drop tables or business data",
+    "hide existing modules without an explicitly approved future lifecycle implementation"
   ],
   "future_operations": [
     "queued validation",
@@ -133,7 +148,13 @@
     "preview file browser",
     "generated verifier viewer",
     "AI prompt assistant",
-    "publish and rollback after safety contracts are complete"
+    "publish and rollback after safety contracts are complete",
+    "safe module lifecycle planning",
+    "archive draft definitions",
+    "disable published modules",
+    "hide existing modules through approved gates",
+    "uninstall generated modules after dependency analysis, backups, retention rules, and rollback are implemented",
+    "remove capabilities after safety contracts and data dependency checks are implemented"
   ],
   "notes_for_ai_builder_agent": [
     "Use the backend Builder Control Plane APIs instead of editing runtime module files.",
@@ -144,7 +165,9 @@
     "Preview output must confirm Real runtime writes performed: 0.",
     "Form layout metadata is definition data, but runtime form rendering is future work.",
     "Automation metadata is definition data, but runtime workflow/email/task/approval/webhook execution is future work.",
-    "The demo journey is safe for manual smoke as long as it remains limited to draft, save, validate, and preview."
+    "The demo journey is safe for manual smoke as long as it remains limited to draft, save, validate, and preview.",
+    "Module lifecycle/removal is safety-critical planning only until a separate implementation task adds dependency checks, backups, retention rules, rollback, permissions, jobs, and verifier coverage.",
+    "Preview remains the current safe executable operation; publish, delete, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],
   "notes_for_business_operations_agent_separation": [
     "The Business Operations Agent is separate from the AI Builder Agent.",

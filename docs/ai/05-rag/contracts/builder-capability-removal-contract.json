@@ -1,0 +1,137 @@
+{
+  "name": "ERPSMART Builder Capability Removal Contract",
+  "purpose": "Describe how future capability removal should be analyzed before any runtime changes are implemented.",
+  "groups": {
+    "data_ui": {
+      "capabilities": [
+        "tableable",
+        "hasDetailView",
+        "customFields",
+        "uniqueCustomFields",
+        "cloneable",
+        "quickCreate",
+        "bulkDelete"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Preserve records and custom field values unless an explicit destructive plan is approved.",
+      "dependency_checks": [
+        "resource contracts",
+        "fields",
+        "panels",
+        "routes",
+        "permissions",
+        "settings",
+        "saved views"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "AI may propose metadata changes before publish but must not remove runtime files or fields."
+    },
+    "collaboration_content": {
+      "capabilities": [
+        "notes",
+        "comments",
+        "activities",
+        "activityComments",
+        "activityAssociations"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Retain user comments, notes, activity records, and associations unless retention policy allows deletion.",
+      "dependency_checks": [
+        "via_resource validation",
+        "activity associations",
+        "comments",
+        "tabs",
+        "permissions",
+        "notifications"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "Collaboration records are user-owned data and must not be deleted casually."
+    },
+    "form_layout": {
+      "capabilities": [
+        "formLayout",
+        "stepperForm",
+        "sections",
+        "conditionalVisibility"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Form layout metadata can be versioned and archived; future runtime renderer bindings need compatibility checks.",
+      "dependency_checks": [
+        "definition_json.formLayout",
+        "field references",
+        "step references",
+        "condition targets",
+        "future renderer contracts"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "Currently metadata-only; future renderer may make removal more complex."
+    },
+    "automation_process": {
+      "capabilities": [
+        "workflow",
+        "tasks",
+        "emails",
+        "emailSending",
+        "approvals",
+        "notifications",
+        "timeline"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Retain workflow history, task records, approval logs, email logs, and notification history after runtime engine exists.",
+      "dependency_checks": [
+        "definition_json.automation",
+        "workflow instances",
+        "jobs",
+        "logs",
+        "email templates",
+        "approval roles",
+        "notifications"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "AI may propose automation metadata but must not execute workflows, send emails, create tasks, or call webhooks."
+    },
+    "media_files": {
+      "capabilities": [
+        "media",
+        "mediable",
+        "attachments"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Preserve uploaded files and media records unless explicit retention/destruction policy is approved.",
+      "dependency_checks": [
+        "media table records",
+        "storage files",
+        "attachment panels",
+        "file permissions",
+        "backup coverage"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "File deletion is destructive and must require backup plus explicit approval."
+    },
+    "search_import_export": {
+      "capabilities": [
+        "globalSearch",
+        "importable",
+        "exportable"
+      ],
+      "metadata_removal_safe_before_publish": true,
+      "runtime_removal_requires_analysis": true,
+      "data_retention_rules": "Do not delete imported business records when disabling import/export; rebuild search indexes if search is removed.",
+      "dependency_checks": [
+        "search actions",
+        "search indexes",
+        "import_id",
+        "import mappings",
+        "export actions",
+        "permissions"
+      ],
+      "recommended_first_action": "disable/hide/archive instead of delete",
+      "agent_notes": "Operational workflows may depend on import/export even if data tables remain unchanged."
+    }
+  }
+}

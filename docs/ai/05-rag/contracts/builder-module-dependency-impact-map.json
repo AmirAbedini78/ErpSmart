@@ -1,0 +1,160 @@
+{
+  "name": "ERPSMART Builder Module Dependency Impact Map",
+  "purpose": "List dependencies that future disable, uninstall, delete, rollback, and capability removal flows must inspect.",
+  "dependencies": {
+    "routes": {
+      "impact_on_disable": "Gate or hide runtime routes without deleting route files.",
+      "impact_on_uninstall": "Remove generated route registrations using publish manifest.",
+      "impact_on_delete": "Delete only generated route files after backup and dependency check.",
+      "required_check": "Route names, API paths, frontend route paths, middleware, and conflicts.",
+      "agent_notes": "Never delete existing first-party routes as a side effect."
+    },
+    "menus": {
+      "impact_on_disable": "Hide menu entries while preserving permissions and data.",
+      "impact_on_uninstall": "Remove generated menu registration from manifest.",
+      "impact_on_delete": "Delete generated menu code only after backup.",
+      "required_check": "Menu ids, order, settings links, and cached menu metadata.",
+      "agent_notes": "Prefer menu gating for existing modules."
+    },
+    "permissions": {
+      "impact_on_disable": "Keep permissions auditable; deny or hide actions.",
+      "impact_on_uninstall": "Archive generated permissions or mark inactive.",
+      "impact_on_delete": "Delete only when no audit requirement remains.",
+      "required_check": "Roles, capabilities, policies, audit logs.",
+      "agent_notes": "Permissions may be historical evidence."
+    },
+    "policies": {
+      "impact_on_disable": "Policy can deny module access.",
+      "impact_on_uninstall": "Remove generated policy registration from manifest.",
+      "impact_on_delete": "Delete generated policy files only after dependency check.",
+      "required_check": "Policy class, auth gates, resource ownership.",
+      "agent_notes": "Do not modify Core policy behavior in removal flow."
+    },
+    "models": {
+      "impact_on_disable": "Models remain available for data retention and admin recovery.",
+      "impact_on_uninstall": "Remove generated model files after data decision.",
+      "impact_on_delete": "Delete generated model files only from manifest.",
+      "required_check": "Relations, observers, casts, traits, imports.",
+      "agent_notes": "Relations can make removal unsafe."
+    },
+    "migrations": {
+      "impact_on_disable": "No migration changes.",
+      "impact_on_uninstall": "Plan rollback or forward cleanup migrations.",
+      "impact_on_delete": "Destructive migration requires backup and explicit approval.",
+      "required_check": "Migration status, schema state, rollback availability.",
+      "agent_notes": "Do not run generated migrations from the current MVP."
+    },
+    "tables": {
+      "impact_on_disable": "Tables and data remain untouched.",
+      "impact_on_uninstall": "Retain, export, archive, migrate, or drop data based on approved plan.",
+      "impact_on_delete": "Drop only with backup, retention approval, and irreversible warning.",
+      "required_check": "Row counts, foreign keys, indexes, custom field columns, data retention rules.",
+      "agent_notes": "Dropping tables is forbidden for AI execution."
+    },
+    "custom fields": {
+      "impact_on_disable": "Field UI can be hidden; data retained.",
+      "impact_on_uninstall": "Custom field metadata and values require retention decision.",
+      "impact_on_delete": "Column/value deletion is destructive.",
+      "required_check": "Field definitions, options, values, indexes, saved views.",
+      "agent_notes": "Current custom field storage must be respected."
+    },
+    "relations": {
+      "impact_on_disable": "Related UI can be hidden while foreign keys remain.",
+      "impact_on_uninstall": "Foreign keys and dependent modules must be analyzed.",
+      "impact_on_delete": "Relation columns/tables require explicit schema plan.",
+      "required_check": "belongsTo, hasMany, pivots, foreign keys, delete behavior.",
+      "agent_notes": "Relations are one of the highest-risk removal blockers."
+    },
+    "activities": {
+      "impact_on_disable": "Hide activity tabs/actions; retain activities.",
+      "impact_on_uninstall": "Detach or archive associations based on policy.",
+      "impact_on_delete": "Delete only with retention approval.",
+      "required_check": "Associations, comments, reminders, resource names.",
+      "agent_notes": "Activities may reference multiple resources."
+    },
+    "notes": {
+      "impact_on_disable": "Hide notes tab; retain notes.",
+      "impact_on_uninstall": "Archive or detach notes using retention policy.",
+      "impact_on_delete": "Delete only with explicit approval.",
+      "required_check": "via_resource validation, note records, comments.",
+      "agent_notes": "Notes are user-authored data."
+    },
+    "comments": {
+      "impact_on_disable": "Hide comments UI; retain comments.",
+      "impact_on_uninstall": "Archive or detach comments based on policy.",
+      "impact_on_delete": "Delete only with explicit approval.",
+      "required_check": "commentable types, activity comments, note comments.",
+      "agent_notes": "Comments may be audit-relevant."
+    },
+    "media": {
+      "impact_on_disable": "Hide media panel; retain files.",
+      "impact_on_uninstall": "Archive/export media or retain storage.",
+      "impact_on_delete": "Delete files only with backup and approval.",
+      "required_check": "media rows, storage paths, file references, backups.",
+      "agent_notes": "File deletion is destructive."
+    },
+    "imports/exports": {
+      "impact_on_disable": "Hide import/export actions; data remains.",
+      "impact_on_uninstall": "Archive import metadata if needed.",
+      "impact_on_delete": "Do not delete imported records as a side effect.",
+      "required_check": "import_id, mappings, permissions, jobs.",
+      "agent_notes": "Operational history may depend on import/export."
+    },
+    "search indexes": {
+      "impact_on_disable": "Remove or suppress disabled module from search results.",
+      "impact_on_uninstall": "Delete generated search index entries.",
+      "impact_on_delete": "Rebuild indexes after data deletion.",
+      "required_check": "global search actions, indexed fields, cache state.",
+      "agent_notes": "Search indexes are derived and rebuildable."
+    },
+    "workflows/automation metadata": {
+      "impact_on_disable": "Pause automation and prevent execution.",
+      "impact_on_uninstall": "Archive workflow definitions and execution history.",
+      "impact_on_delete": "Delete only after audit/retention approval.",
+      "required_check": "triggers, jobs, logs, tasks, emails, approvals, notifications.",
+      "agent_notes": "Builder metadata must not execute directly."
+    },
+    "formLayout metadata": {
+      "impact_on_disable": "Ignore renderer metadata while retaining definition.",
+      "impact_on_uninstall": "Archive layout versions with definition.",
+      "impact_on_delete": "Delete only draft metadata if never published.",
+      "required_check": "field references, sections, steps, conditions.",
+      "agent_notes": "Currently metadata-only but future renderers may depend on it."
+    },
+    "cache": {
+      "impact_on_disable": "Invalidate resource/menu/permission caches.",
+      "impact_on_uninstall": "Rebuild runtime caches after generated artifacts are removed.",
+      "impact_on_delete": "Clear stale cache keys.",
+      "required_check": "cache keys, locks, menu cache, route/resource metadata.",
+      "agent_notes": "Cache is derived and not source of truth."
+    },
+    "built assets": {
+      "impact_on_disable": "No asset deletion; hide routes/menus.",
+      "impact_on_uninstall": "Future build process must remove generated frontend entries safely.",
+      "impact_on_delete": "Delete only generated assets from manifest.",
+      "required_check": "frontend route entries, component files, compiled build artifacts.",
+      "agent_notes": "Do not edit public/build in planning tasks."
+    },
+    "RAG manifests": {
+      "impact_on_disable": "Mark module disabled in derived indexes.",
+      "impact_on_uninstall": "Update curated manifests and rebuild indexes.",
+      "impact_on_delete": "Remove derived RAG references after source truth changes.",
+      "required_check": "RAG contracts, architecture docs, exclusions, source evidence.",
+      "agent_notes": "RAG guidance is derived, not runtime truth."
+    },
+    "vector indexes": {
+      "impact_on_disable": "Rebuild or filter disabled module vectors.",
+      "impact_on_uninstall": "Rebuild derived vector indexes.",
+      "impact_on_delete": "Remove vectors after source deletion is approved.",
+      "required_check": "index namespace, source document ids, rebuild plan.",
+      "agent_notes": "Vector indexes are derived and rebuildable."
+    },
+    "backups/snapshots": {
+      "impact_on_disable": "Snapshot availability status before change.",
+      "impact_on_uninstall": "Required before file, migration, or data changes.",
+      "impact_on_delete": "Required and must be verified before destructive delete.",
+      "required_check": "backup completeness, restore test, checksum, retention.",
+      "agent_notes": "No destructive operation should proceed without backup."
+    }
+  }
+}

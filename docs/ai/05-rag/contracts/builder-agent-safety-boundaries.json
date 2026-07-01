@@ -9,6 +9,8 @@
     "call preview",
     "run the end-to-end smoke verifier with temporary DB record cleanup",
     "guide the Builder Studio demo journey with read, save, validate, and preview only",
+    "plan module lifecycle states",
+    "propose archive, disable, or delete-draft rules for a future approved lifecycle task",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -16,6 +18,12 @@
   ],
   "ai_builder_agent_cannot": [
     "publish",
+    "execute publish",
+    "execute uninstall",
+    "delete runtime modules",
+    "drop tables or business data",
+    "hide existing modules without an explicitly approved implementation flow",
+    "remove runtime capabilities without dependency analysis and approved lifecycle implementation",
     "write runtime modules directly",
     "edit generated runtime module files directly",
     "edit Core code directly",
@@ -34,6 +42,19 @@
     "treat preview artifacts as source of truth",
     "treat vector indexes as source of truth"
   ],
+  "lifecycle_planning_boundaries": {
+    "ai_builder_agent_may_plan_lifecycle": true,
+    "ai_builder_agent_may_propose_disable_archive_delete_draft_rules": true,
+    "ai_builder_agent_may_execute_publish": false,
+    "ai_builder_agent_may_execute_uninstall": false,
+    "ai_builder_agent_may_delete_runtime_modules": false,
+    "ai_builder_agent_may_drop_tables_or_data": false,
+    "ai_builder_agent_may_hide_existing_modules_without_approved_flow": false,
+    "notes": [
+      "Lifecycle planning is allowed because it produces docs and contracts only.",
+      "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
+    ]
+  },
   "end_to_end_smoke_boundaries": {
     "safe_for_agent": true,
     "allowed": [
@@ -88,6 +109,10 @@
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",
+    "uninstall",
+    "delete_runtime_module",
+    "drop_table",
+    "hide_existing_module",
     "runtime_write",
     "migration_run",
     "core_edit",

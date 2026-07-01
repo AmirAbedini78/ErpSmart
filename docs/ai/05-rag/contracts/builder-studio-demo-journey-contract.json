@@ -83,8 +83,21 @@
     "uninstall published module",
     "rollback published module",
     "remove wrong capabilities safely",
-    "remove existing modules that should not be available in the app"
+    "remove existing modules that should not be available in the app",
+    "show disable/archive before destructive removal in future demos",
+    "require dependency checks, data retention rules, backups, rollback rules, and RAG updates before lifecycle execution"
   ],
+  "current_lifecycle_ui_boundary": {
+    "delete_available": false,
+    "publish_available": false,
+    "uninstall_available": false,
+    "rollback_available": false,
+    "notes": [
+      "Current UI does not expose delete, publish, uninstall, or rollback.",
+      "Future lifecycle demos should show archive and disable before any destructive removal path.",
+      "Delete/uninstall/rollback require a separate Builder Module Lifecycle task."
+    ]
+  },
   "agent_notes": [
     "AI Builder Agent may guide the demo journey through read, save, validate, and preview.",
     "AI Builder Agent must not claim publish exists.",

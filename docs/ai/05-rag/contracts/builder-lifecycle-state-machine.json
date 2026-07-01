@@ -1,0 +1,143 @@
+{
+  "name": "ERPSMART Builder Lifecycle State Machine",
+  "purpose": "Define current and future Builder lifecycle states before publish, uninstall, rollback, or destructive removal are implemented.",
+  "current_mvp_supported_states": [
+    "draft",
+    "validated",
+    "previewed"
+  ],
+  "states": [
+    "draft",
+    "validated",
+    "previewed",
+    "publish_ready",
+    "published",
+    "disabled",
+    "archived",
+    "uninstall_planned",
+    "uninstalling",
+    "uninstalled",
+    "rollback_planned",
+    "rolled_back",
+    "failed"
+  ],
+  "future_states": [
+    "publish_ready",
+    "published",
+    "disabled",
+    "archived",
+    "uninstall_planned",
+    "uninstalling",
+    "uninstalled",
+    "rollback_planned",
+    "rolled_back",
+    "failed"
+  ],
+  "destructive_states": [
+    "uninstalling",
+    "uninstalled"
+  ],
+  "requires_backup": [
+    "publish_ready",
+    "published",
+    "uninstall_planned",
+    "uninstalling",
+    "rollback_planned",
+    "rolled_back"
+  ],
+  "requires_dependency_analysis": [
+    "publish_ready",
+    "published",
+    "disabled",
+    "uninstall_planned",
+    "uninstalling",
+    "rollback_planned"
+  ],
+  "allowed_transitions": [
+    {
+      "from": "draft",
+      "to": "validated",
+      "current_mvp": true
+    },
+    {
+      "from": "draft",
+      "to": "archived",
+      "current_mvp": false
+    },
+    {
+      "from": "validated",
+      "to": "previewed",
+      "current_mvp": true
+    },
+    {
+      "from": "previewed",
+      "to": "publish_ready",
+      "current_mvp": false
+    },
+    {
+      "from": "publish_ready",
+      "to": "published",
+      "current_mvp": false
+    },
+    {
+      "from": "published",
+      "to": "disabled",
+      "current_mvp": false
+    },
+    {
+      "from": "disabled",
+      "to": "published",
+      "current_mvp": false
+    },
+    {
+      "from": "published",
+      "to": "uninstall_planned",
+      "current_mvp": false
+    },
+    {
+      "from": "uninstall_planned",
+      "to": "uninstalling",
+      "current_mvp": false
+    },
+    {
+      "from": "uninstalling",
+      "to": "uninstalled",
+      "current_mvp": false
+    },
+    {
+      "from": "published",
+      "to": "rollback_planned",
+      "current_mvp": false
+    },
+    {
+      "from": "rollback_planned",
+      "to": "rolled_back",
+      "current_mvp": false
+    },
+    {
+      "from": "*",
+      "to": "failed",
+      "current_mvp": false
+    }
+  ],
+  "forbidden_transitions": [
+    "draft -> published",
+    "previewed -> published without publish_ready",
+    "published -> uninstalled without uninstall_planned and uninstalling",
+    "disabled -> uninstalled without uninstall_planned and uninstalling",
+    "any current MVP state -> runtime module deletion",
+    "any current MVP state -> table drop"
+  ],
+  "future_only_transitions": [
+    "previewed -> publish_ready",
+    "publish_ready -> published",
+    "published -> disabled",
+    "published -> uninstall_planned",
+    "published -> rollback_planned"
+  ],
+  "agent_notes": [
+    "AI Builder Agent may plan lifecycle transitions but may not execute publish, uninstall, rollback, table drops, or runtime file deletion.",
+    "Current MVP execution is limited to draft, validate, and preview behavior.",
+    "Publish, uninstall, and rollback require separate implementation tasks with safety contracts, backups, dependency checks, and verifier coverage."
+  ]
+}

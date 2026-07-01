@@ -1,0 +1,103 @@
+{
+  "name": "ERPSMART Builder Module Removal Safety Contract",
+  "purpose": "Classify future module removal operations and keep destructive operations forbidden in the current MVP.",
+  "current_mvp_rule": "Current MVP must not execute uninstall or destructive delete.",
+  "operations": {
+    "delete_draft_definition": {
+      "status": "future_safe_candidate",
+      "risk_level": "low_if_never_published",
+      "data_effect": "Removes draft Builder data according to retention policy; no runtime business data should exist.",
+      "code_effect": "No runtime code effect.",
+      "db_effect": "May remove or archive builder definition, version, and preview rows.",
+      "requires_backup": false,
+      "requires_dependency_analysis": true,
+      "reversible": "policy-dependent",
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "archive_definition": {
+      "status": "future_safe_candidate",
+      "risk_level": "low",
+      "data_effect": "Keeps definition, versions, previews, and audit history.",
+      "code_effect": "No runtime code effect.",
+      "db_effect": "Sets archived state or equivalent metadata.",
+      "requires_backup": false,
+      "requires_dependency_analysis": false,
+      "reversible": true,
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "disable_published_module": {
+      "status": "future",
+      "risk_level": "medium",
+      "data_effect": "Business data preserved; runtime access hidden or gated.",
+      "code_effect": "Module code remains installed.",
+      "db_effect": "May write availability/status metadata; must not drop tables.",
+      "requires_backup": true,
+      "requires_dependency_analysis": true,
+      "reversible": true,
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "hide_existing_module": {
+      "status": "future",
+      "risk_level": "medium",
+      "data_effect": "Data preserved.",
+      "code_effect": "Code should not be deleted; UI/routes/menus/permissions should be gated where safe.",
+      "db_effect": "May write configuration or availability metadata.",
+      "requires_backup": true,
+      "requires_dependency_analysis": true,
+      "reversible": true,
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "remove_capability": {
+      "status": "future",
+      "risk_level": "medium_to_high",
+      "data_effect": "Depends on capability; may involve notes, media, activities, custom fields, search indexes, or automation metadata.",
+      "code_effect": "May remove or hide generated panels, tabs, actions, contracts, routes, permissions, and frontend components.",
+      "db_effect": "May require metadata updates, retention rules, or schema changes.",
+      "requires_backup": true,
+      "requires_dependency_analysis": true,
+      "reversible": "prefer disable-first to keep reversible",
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "uninstall_generated_module": {
+      "status": "future_safety_critical",
+      "risk_level": "high",
+      "data_effect": "Must choose retain, export, archive, migrate, or destroy data explicitly.",
+      "code_effect": "May remove generated files only from a publish manifest.",
+      "db_effect": "May alter or drop tables only after backup, approval, and rollback analysis.",
+      "requires_backup": true,
+      "requires_dependency_analysis": true,
+      "reversible": "only with complete backup and rollback manifest",
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    },
+    "destructive_delete": {
+      "status": "future_safety_critical",
+      "risk_level": "critical",
+      "data_effect": "Drops files, tables, media, indexes, and business data.",
+      "code_effect": "Removes runtime code or generated assets.",
+      "db_effect": "Drops or deletes database objects and records.",
+      "requires_backup": true,
+      "requires_dependency_analysis": true,
+      "reversible": false,
+      "allowed_in_current_mvp": false,
+      "agent_may_plan": true,
+      "agent_may_execute": false
+    }
+  },
+  "agent_notes": [
+    "Prefer archive or disable before delete.",
+    "Do not execute uninstall or destructive delete in the current MVP.",
+    "Runtime module removal requires a separate implementation task with approvals, dependency checks, retention rules, backups, rollback, and verifier coverage."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "name": "ERPSMART Builder Publish Safety Contract",
+  "purpose": "Define future publish safety requirements while keeping actual publish forbidden in the current MVP.",
+  "safe_for_agent": false,
+  "agent_may_plan_publish": true,
+  "agent_may_execute_publish": false,
+  "future_publish_phases": [
+    "validate",
+    "dependency impact analysis",
+    "dry-run file plan",
+    "DB migration plan",
+    "permission/menu/route plan",
+    "backup/snapshot",
+    "publish transaction or staged publish",
+    "post-publish smoke",
+    "rollback point"
+  ],
+  "required_preflight_checks": [
+    "definition schema valid",
+    "capability support status valid",
+    "unsupported features acknowledged",
+    "file conflicts checked",
+    "route conflicts checked",
+    "menu conflicts checked",
+    "permission conflicts checked",
+    "table and migration conflicts checked",
+    "dependency graph built",
+    "generated verifier passes",
+    "preview output confirms zero runtime writes before publish"
+  ],
+  "required_snapshots": [
+    "definition version",
+    "publish manifest",
+    "generated file checksum manifest",
+    "migration plan",
+    "rollback manifest",
+    "database backup or table snapshot when destructive or schema-changing work is planned",
+    "RAG manifest update plan"
+  ],
+  "forbidden_current_operations": [
+    "publish generated modules",
+    "write runtime module files",
+    "run generated migrations",
+    "register runtime routes",
+    "rebuild runtime menus as publish",
+    "delete runtime files",
+    "drop tables or data",
+    "execute rollback"
+  ],
+  "preview_vs_publish_difference": {
+    "preview": "Writes disposable artifacts under storage/app/module-builder-preview and records preview metadata. It does not change the running application.",
+    "publish": "Future operation that writes runtime module files, may run migrations, registers routes/menus/permissions, updates caches, and requires backup plus rollback."
+  },
+  "rollback_requirements": [
+    "rollback manifest created before runtime writes",
+    "file restore plan",
+    "migration rollback or forward-fix plan",
+    "data retention decision",
+    "cache/menu/route/search rebuild plan",
+    "post-rollback smoke",
+    "audit log"
+  ],
+  "agent_notes": [
+    "AI Builder Agent may explain or draft a publish plan.",
+    "AI Builder Agent must not execute publish, migrations, runtime writes, or rollback.",
+    "Publish implementation needs a separate safety-critical task."
+  ]
+}
