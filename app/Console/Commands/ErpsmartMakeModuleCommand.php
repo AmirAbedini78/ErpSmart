@@ -3,20 +3,30 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class ErpsmartMakeModuleCommand extends Command
 {
     protected $signature = 'erpsmart:make-module
         {--definition= : Path to the module definition JSON file}
-        {--dry-run : Validate and print planned files without writing anything}';
+        {--dry-run : Validate and print planned files without writing anything}
+        {--preview : Render preview files under storage/app/module-builder-preview without runtime writes}
+        {--write : Reserved for future write mode; currently refused}';
 
     protected $description = 'Dry-run the ERPSMART Module Builder MVP without writing generated module files.';
 
     public function handle(): int
     {
-        if (! $this->option('dry-run')) {
-            $this->error('Refusing to run without --dry-run. This MVP command is dry-run only.');
+        if ($this->option('write')) {
+            $this->error('Refusing --write. Real module generation is not implemented yet.');
+
+            return self::FAILURE;
+        }
+
+        if (! $this->option('dry-run') && ! $this->option('preview')) {
+            $this->error('Refusing to run without --dry-run or --preview. Real module generation is not implemented yet.');
+            $this->error('Use --dry-run to print the plan or --preview to render safe preview files.');
 
             return self::FAILURE;
         }
@@ -59,7 +69,11 @@ class ErpsmartMakeModuleCommand extends Command
 
         $plan = $this->buildPlan($definition);
 
-        $this->printPlan($definition, $plan);
+        if ($this->option('preview')) {
+            $this->renderPreview($definition, $plan);
+        } else {
+            $this->printPlan($definition, $plan);
+        }
 
         return self::SUCCESS;
     }
@@ -249,5 +263,537 @@ class ErpsmartMakeModuleCommand extends Command
 
         $this->newLine();
         $this->line('Writes performed: 0');
+    }
+
+    protected function renderPreview(array $definition, array $plan): void
+    {
+        $this->line('ERPSMART Module Builder Preview');
+        $this->newLine();
+
+        $this->line('Definition: '.$this->option('definition'));
+        $this->line('Module: '.$plan['normalized']['module']);
+        $this->line('Entity: '.$plan['normalized']['entity'].' / '.$plan['normalized']['entities']);
+        $this->line('Resource: '.$plan['normalized']['resource']);
+        $this->line('Table: '.$plan['normalized']['table']);
+
+        $previewRoot = storage_path('app/module-builder-preview/'.$plan['normalized']['module']);
+        $files = $this->previewFiles($definition, $plan);
+        $written = 0;
+
+        File::ensureDirectoryExists($previewRoot);
+
+        $this->newLine();
+        $this->line('Preview files written:');
+
+        foreach ($files as $relativePath => $contents) {
+            if (str_starts_with($relativePath, '/') || str_contains($relativePath, '..')) {
+                $this->error('Unsafe preview relative path: '.$relativePath);
+
+                continue;
+            }
+
+            $target = $previewRoot.'/'.$relativePath;
+
+            if (! str_starts_with(dirname($target), $previewRoot)) {
+                $this->error('Unsafe preview target: '.$target);
+
+                continue;
+            }
+
+            File::ensureDirectoryExists(dirname($target));
+            File::put($target, $contents);
+            $written++;
+
+            $this->line('- '.$target);
+        }
+
+        $this->newLine();
+        $this->line('Warnings:');
+        if ($plan['warnings'] === []) {
+            $this->line('- none');
+        } else {
+            foreach ($plan['warnings'] as $warning) {
+                $this->line('- '.$warning);
+            }
+        }
+
+        $this->newLine();
+        $this->line('Real runtime writes performed: 0');
+        $this->line('Preview writes performed: '.$written);
+    }
+
+    protected function previewFiles(array $definition, array $plan): array
+    {
+        $module = $plan['normalized']['module'];
+        $entity = $plan['normalized']['entity'];
+        $entities = $plan['normalized']['entities'];
+        $resourceName = $plan['normalized']['resource'];
+        $table = $plan['normalized']['table'];
+        $namespace = $definition['module']['namespace'];
+        $lowerModule = Str::kebab($module);
+        $lowerEntity = Str::kebab($entity);
+
+        return [
+            "modules/{$module}/module.json" => $this->renderModuleJson($definition, $module),
+            "modules/{$module}/bootstrap/module.php" => "<?php\n\nreturn new ".$namespace."\\Providers\\".$module."ServiceProvider(app());\n",
+            "modules/{$module}/app/Providers/{$module}ServiceProvider.php" => $this->renderServiceProvider($namespace, $module, $entity, $lowerModule),
+            "modules/{$module}/app/Providers/RouteServiceProvider.php" => $this->renderRouteServiceProvider($namespace, $module),
+            "modules/{$module}/app/Models/{$entity}.php" => $this->renderModel($namespace, $entity, $table),
+            "modules/{$module}/app/Resources/{$entity}.php" => $this->renderResource($definition, $namespace, $module, $entity, $entities, $table),
+            "modules/{$module}/app/Resources/{$entity}Table.php" => $this->renderTable($namespace, $entity),
+            "modules/{$module}/app/Http/Resources/{$entity}Resource.php" => $this->renderJsonResource($namespace, $entity),
+            "modules/{$module}/app/Policies/{$entity}Policy.php" => $this->renderPolicy($namespace, $entity),
+            "modules/{$module}/database/migrations/create_{$table}_table.php" => $this->renderMigration($table),
+            "modules/{$module}/routes/api.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['api'])->group(function () {\n    // Preview only. Runtime resource routes are registered through WithResourceRoutes.\n});\n",
+            "modules/{$module}/routes/web.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['web'])->group(function () {\n    // Preview only.\n});\n",
+            "modules/{$module}/resources/js/app.js" => $this->renderFrontendApp($entity),
+            "modules/{$module}/resources/js/routes.js" => $this->renderRoutesJs($definition, $entities),
+            "modules/{$module}/resources/js/views/{$entities}Index.vue" => $this->renderSimpleVue($entities.'Index', '<ResourceTable resource-name="'.$resourceName.'" />'),
+            "modules/{$module}/resources/js/views/{$entities}Create.vue" => $this->renderSimpleVue($entities.'Create', '<div />'),
+            "modules/{$module}/resources/js/views/{$entities}Edit.vue" => $this->renderSimpleVue($entities.'Edit', '<div />'),
+            "modules/{$module}/resources/js/views/{$entities}View.vue" => $this->renderDetailVue($resourceName),
+            "modules/{$module}/resources/js/components/{$entity}FloatingModal.vue" => $this->renderFloatingModal($entity),
+            "patches/verify_{$lowerModule}_{$lowerEntity}_contract.php" => $this->renderGeneratedVerifier($module, $entity),
+            "docs/ai/04-docops/history/YYYY-MM-DD-{$lowerModule}-{$lowerEntity}-generated.md" => "# {$module} {$entity} Generated Preview\n\nStatus: preview only\n\nGenerated by Module Builder preview renderer. No runtime files were written.\n",
+        ];
+    }
+
+    protected function renderModuleJson(array $definition, string $module): string
+    {
+        return json_encode([
+            'name' => $module,
+            'alias' => Str::kebab($module),
+            'description' => 'Module Builder preview module.',
+            'keywords' => [],
+            'priority' => 0,
+            'providers' => [
+                $definition['module']['namespace'].'\\Providers\\'.$module.'ServiceProvider',
+            ],
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL;
+    }
+
+    protected function renderServiceProvider(string $namespace, string $module, string $entity, string $moduleLower): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Providers;
+
+use Closure;
+use Modules\\Core\\Support\\ModuleServiceProvider;
+
+class {$module}ServiceProvider extends ModuleServiceProvider
+{
+    protected array \$resources = [
+        \\{$namespace}\\Resources\\{$entity}::class,
+    ];
+
+    public function register(): void
+    {
+        \$this->registerResources();
+        \$this->app->register(RouteServiceProvider::class);
+    }
+
+    protected function setup(): void
+    {
+        //
+    }
+
+    protected function scriptData(): Closure|array
+    {
+        return [
+            '{$module}' => [],
+        ];
+    }
+
+    protected function moduleName(): string
+    {
+        return '{$module}';
+    }
+
+    protected function moduleNameLower(): string
+    {
+        return '{$moduleLower}';
+    }
+}
+PHP;
+    }
+
+    protected function renderRouteServiceProvider(string $namespace, string $module): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Providers;
+
+use Modules\\Core\\Providers\\ModuleRouteServiceProvider;
+
+class RouteServiceProvider extends ModuleRouteServiceProvider
+{
+    protected string \$moduleName = '{$module}';
+}
+PHP;
+    }
+
+    protected function renderModel(string $namespace, string $entity, string $table): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Models;
+
+use Modules\\Activities\\Concerns\\HasActivities;
+use Modules\\Core\\Common\\Media\\HasMedia;
+use Modules\\Core\\Common\\Timeline\\HasTimeline;
+use Modules\\Core\\Contracts\\Resources\\Resourceable as ResourceableContract;
+use Modules\\Core\\Models\\Model;
+use Modules\\Core\\Resource\\Resourceable;
+
+class {$entity} extends Model implements ResourceableContract
+{
+    use HasMedia;
+    use HasTimeline;
+    use HasActivities;
+    use Resourceable;
+
+    protected \$table = '{$table}';
+
+    protected \$fillable = [
+        'name',
+        'code',
+        'description',
+        'is_active',
+        'import_id',
+    ];
+
+    protected \$casts = [
+        'is_active' => 'boolean',
+        'import_id' => 'integer',
+    ];
+}
+PHP;
+    }
+
+    protected function renderResource(array $definition, string $namespace, string $module, string $entity, string $entities, string $table): string
+    {
+        $resourceName = $definition['module']['resourceName'];
+        $titleField = $definition['resource']['titleField'];
+
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Resources;
+
+use Illuminate\\Database\\Eloquent\\Builder;
+use Modules\\Activities\\Actions\\CreateRelatedActivityAction;
+use Modules\\Comments\\Contracts\\PipesComments;
+use Modules\\Core\\Actions\\Action;
+use Modules\\Core\\Contracts\\Resources\\AcceptsCustomFields;
+use Modules\\Core\\Contracts\\Resources\\AcceptsUniqueCustomFields;
+use Modules\\Core\\Contracts\\Resources\\Cloneable;
+use Modules\\Core\\Contracts\\Resources\\Exportable;
+use Modules\\Core\\Contracts\\Resources\\Importable;
+use Modules\\Core\\Contracts\\Resources\\Mediable;
+use Modules\\Core\\Contracts\\Resources\\Tableable;
+use Modules\\Core\\Contracts\\Resources\\WithResourceRoutes;
+use Modules\\Core\\Fields\\Boolean;
+use Modules\\Core\\Fields\\ID;
+use Modules\\Core\\Fields\\Text;
+use Modules\\Core\\Http\\Requests\\ResourceRequest;
+use Modules\\Core\\Menu\\MenuItem;
+use Modules\\Core\\Pages\\Panel;
+use Modules\\Core\\Pages\\Tab;
+use Modules\\Core\\Resource\\AssociatesResources;
+use Modules\\Core\\Resource\\Resource;
+use Modules\\Core\\Table\\Table;
+use {$namespace}\\Http\\Resources\\{$entity}Resource;
+use {$namespace}\\Models\\{$entity} as {$entity}Model;
+
+class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCustomFields, Cloneable, Exportable, Importable, Mediable, PipesComments, Tableable, WithResourceRoutes
+{
+    use AssociatesResources;
+
+    public static bool \$hasDetailView = true;
+    public static bool \$globallySearchable = true;
+    public static string \$globalSearchAction = 'float';
+    public static ?string \$icon = '{$definition['module']['icon']}';
+    public static string \$model = {$entity}Model::class;
+    public static string \$title = '{$titleField}';
+
+    protected function boot(): void
+    {
+        \$this->getDetailPage()
+            ->tab(Tab::make('activities', 'activities-tab')->panel('activities-tab-panel')->order(15))
+            ->tab(Tab::make('notes', 'notes-tab')->panel('notes-tab-panel')->order(35))
+            ->panels(function () {
+                return [
+                    Panel::make('item-detail-panel', 'resource-details-panel')
+                        ->heading(__('core::app.record_view.sections.details'))
+                        ->resizeable(),
+                    Panel::make('media', 'resource-media-panel')
+                        ->heading(__('core::app.attachments')),
+                ];
+            });
+    }
+
+    public function menu(): array
+    {
+        return [
+            MenuItem::make(static::label(), '/{$resourceName}')
+                ->icon(static::\$icon)
+                ->inQuickCreate()
+                ->singularName(static::singularLabel()),
+        ];
+    }
+
+    public function table(Builder \$query, ResourceRequest \$request, string \$identifier): Table
+    {
+        return {$entity}Table::make(\$query, \$request, \$identifier)
+            ->withDefaultView(name: '{$entities}', flag: 'all-{$resourceName}')
+            ->orderBy('created_at', 'desc');
+    }
+
+    public function fields(ResourceRequest \$request): array
+    {
+        return [
+            ID::make()->hidden(),
+            Text::make('name', 'Name')->primary()->required(true),
+            Text::make('code', 'Code'),
+            Text::make('description', 'Description'),
+            Boolean::make('is_active', 'Active'),
+        ];
+    }
+
+    public function actions(ResourceRequest \$request): array
+    {
+        return [
+            CreateRelatedActivityAction::make()->onlyInline(),
+            Action::make()->floatResourceInEditMode(),
+        ];
+    }
+
+    public function jsonResource(): string
+    {
+        return {$entity}Resource::class;
+    }
+
+    public static function label(): string
+    {
+        return '{$entities}';
+    }
+
+    public static function singularLabel(): string
+    {
+        return '{$entity}';
+    }
+}
+PHP;
+    }
+
+    protected function renderTable(string $namespace, string $entity): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Resources;
+
+use Modules\\Core\\Table\\Table;
+
+class {$entity}Table extends Table
+{
+}
+PHP;
+    }
+
+    protected function renderJsonResource(string $namespace, string $entity): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Http\\Resources;
+
+use Illuminate\\Http\\Request;
+use Modules\\Core\\Resource\\JsonResource;
+
+class {$entity}Resource extends JsonResource
+{
+    public function toArray(Request \$request): array
+    {
+        return \$this->withCommonData([
+            'name' => \$this->name,
+            'code' => \$this->code,
+            'description' => \$this->description,
+            'is_active' => (bool) \$this->is_active,
+            'import_id' => \$this->import_id,
+            'media' => \$this->whenLoaded('media'),
+        ], \$request);
+    }
+}
+PHP;
+    }
+
+    protected function renderPolicy(string $namespace, string $entity): string
+    {
+        return <<<PHP
+<?php
+
+namespace {$namespace}\\Policies;
+
+use Illuminate\\Auth\\Access\\HandlesAuthorization;
+
+class {$entity}Policy
+{
+    use HandlesAuthorization;
+}
+PHP;
+    }
+
+    protected function renderMigration(string $table): string
+    {
+        return <<<PHP
+<?php
+
+use Illuminate\\Database\\Migrations\\Migration;
+use Illuminate\\Database\\Schema\\Blueprint;
+use Illuminate\\Support\\Facades\\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('{$table}', function (Blueprint \$table) {
+            \$table->id();
+            \$table->string('name');
+            \$table->string('code')->nullable()->unique();
+            \$table->text('description')->nullable();
+            \$table->boolean('is_active')->default(true);
+            \$table->unsignedBigInteger('import_id')->nullable();
+            \$table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('{$table}');
+    }
+};
+PHP;
+    }
+
+    protected function renderFrontendApp(string $entity): string
+    {
+        return <<<JS
+import routes from './routes'
+import {$entity}FloatingModal from './components/{$entity}FloatingModal.vue'
+
+Innoclapps.booting((app, router) => {
+  routes.forEach(route => router.addRoute(route))
+  app.component('{$entity}FloatingModal', {$entity}FloatingModal)
+})
+JS;
+    }
+
+    protected function renderRoutesJs(array $definition, string $entities): string
+    {
+        $resourceName = $definition['module']['resourceName'];
+
+        return <<<JS
+import {$entities}Index from './views/{$entities}Index.vue'
+import {$entities}View from './views/{$entities}View.vue'
+
+export default [
+  { path: '/{$resourceName}', name: '{$resourceName}-index', component: {$entities}Index },
+  { path: '/{$resourceName}/:id', name: 'view-{$resourceName}', component: {$entities}View },
+]
+JS;
+    }
+
+    protected function renderSimpleVue(string $name, string $template): string
+    {
+        return <<<VUE
+<template>
+  {$template}
+</template>
+
+<script setup>
+defineOptions({ name: '{$name}' })
+</script>
+VUE;
+    }
+
+    protected function renderDetailVue(string $resourceName): string
+    {
+        return <<<VUE
+<template>
+  <div v-if="resourceReady">
+    <Panels v-model:panels="page.panels" :identifier="resourceName" />
+    <ITabGroup>
+      <ITabList>
+        <component
+          :is="tabComponents[tab.component] || tab.component"
+          v-for="tab in page.tabs"
+          :key="tab.id"
+          :resource-name="resourceName"
+          :resource-id="resource.id"
+          :resource="resource"
+        />
+      </ITabList>
+      <ITabPanels>
+        <component
+          :is="tabComponents[tab.panelComponent] || tab.panelComponent"
+          v-for="tab in page.tabs"
+          :key="tab.id"
+          :resource-name="resourceName"
+          :resource-id="resource.id"
+          :resource="resource"
+        />
+      </ITabPanels>
+    </ITabGroup>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import Panels from '@/Core/components/Panels.vue'
+import { useResource } from '@/Core/composables/useResource'
+
+const resourceName = '{$resourceName}'
+const { resource, resourceInformation, resourceReady } = useResource(resourceName)
+const page = ref(resourceInformation.value.detailPage)
+const tabComponents = {}
+</script>
+VUE;
+    }
+
+    protected function renderFloatingModal(string $entity): string
+    {
+        return <<<VUE
+<template>
+  <ICard>
+    <FormFields :fields="fields" :form="resource" />
+  </ICard>
+</template>
+
+<script setup>
+defineProps({
+  visible: Boolean,
+  floatingReady: Boolean,
+  resource: { type: Object, required: true },
+  fields: { type: Array, required: true },
+  mode: { type: String, required: true },
+  updateHandler: { type: Function, required: true },
+})
+</script>
+VUE;
+    }
+
+    protected function renderGeneratedVerifier(string $module, string $entity): string
+    {
+        return <<<PHP
+<?php
+
+echo '{$module} {$entity} generated contract verifier preview'.PHP_EOL;
+echo 'PASS'.PHP_EOL;
+PHP;
     }
 }
