@@ -59,6 +59,30 @@
       "creationRules": ["nullable", "boolean"],
       "updateRules": ["nullable", "boolean"],
       "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true}
+    },
+    {
+      "name": "stock_quantity",
+      "type": "integer",
+      "label": "Stock Quantity",
+      "default": 0,
+      "required": false,
+      "rules": ["nullable", "integer", "min:0"],
+      "creationRules": ["nullable", "integer", "min:0"],
+      "updateRules": ["nullable", "integer", "min:0"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "160px", "minWidth": "120px"}
+    },
+    {
+      "name": "unit_cost",
+      "type": "decimal",
+      "label": "Unit Cost",
+      "default": 0,
+      "required": false,
+      "rules": ["nullable", "numeric", "min:0"],
+      "creationRules": ["nullable", "numeric", "min:0"],
+      "updateRules": ["nullable", "numeric", "min:0"],
+      "visibility": {"index": true, "detail": true, "create": true, "update": true, "settings": true},
+      "table": {"width": "140px", "minWidth": "120px"}
     }
   ],
   "table": {

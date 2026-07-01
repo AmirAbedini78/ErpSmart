@@ -214,6 +214,19 @@ class ErpsmartMakeModuleCommand extends Command
             }
         }
 
+        foreach ($definition['fields'] ?? [] as $field) {
+            $type = $field['type'] ?? 'unknown';
+            $name = $field['name'] ?? 'unknown';
+
+            if (! in_array($type, ['id', 'text', 'textarea', 'boolean', 'integer', 'decimal', 'date', 'datetime', 'select'], true)) {
+                $warnings[] = "field {$name} uses unsupported preview field type {$type}; falling back to Text";
+            }
+
+            if ($type === 'belongsTo') {
+                $warnings[] = "field {$name} uses belongsTo; relation field generation needs a deeper first-party contract probe and falls back to Text in preview";
+            }
+        }
+
         return $warnings;
     }
 
@@ -338,12 +351,12 @@ class ErpsmartMakeModuleCommand extends Command
             "modules/{$module}/bootstrap/module.php" => "<?php\n\nreturn new ".$namespace."\\Providers\\".$module."ServiceProvider(app());\n",
             "modules/{$module}/app/Providers/{$module}ServiceProvider.php" => $this->renderServiceProvider($namespace, $module, $entity, $lowerModule),
             "modules/{$module}/app/Providers/RouteServiceProvider.php" => $this->renderRouteServiceProvider($namespace, $module),
-            "modules/{$module}/app/Models/{$entity}.php" => $this->renderModel($namespace, $entity, $table),
+            "modules/{$module}/app/Models/{$entity}.php" => $this->renderModel($definition, $namespace, $entity, $table),
             "modules/{$module}/app/Resources/{$entity}.php" => $this->renderResource($definition, $namespace, $module, $entity, $entities, $table),
             "modules/{$module}/app/Resources/{$entity}Table.php" => $this->renderTable($namespace, $entity),
-            "modules/{$module}/app/Http/Resources/{$entity}Resource.php" => $this->renderJsonResource($namespace, $entity),
+            "modules/{$module}/app/Http/Resources/{$entity}Resource.php" => $this->renderJsonResource($definition, $namespace, $entity),
             "modules/{$module}/app/Policies/{$entity}Policy.php" => $this->renderPolicy($namespace, $entity),
-            "modules/{$module}/database/migrations/create_{$table}_table.php" => $this->renderMigration($table),
+            "modules/{$module}/database/migrations/create_{$table}_table.php" => $this->renderMigration($definition, $table),
             "modules/{$module}/routes/api.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['api'])->group(function () {\n    // Preview only. Runtime resource routes are registered through WithResourceRoutes.\n});\n",
             "modules/{$module}/routes/web.php" => "<?php\n\nuse Illuminate\\Support\\Facades\\Route;\n\nRoute::middleware(['web'])->group(function () {\n    // Preview only.\n});\n",
             "modules/{$module}/resources/js/app.js" => $this->renderFrontendApp($entity),
@@ -435,8 +448,13 @@ class RouteServiceProvider extends ModuleRouteServiceProvider
 PHP;
     }
 
-    protected function renderModel(string $namespace, string $entity, string $table): string
+    protected function renderModel(array $definition, string $namespace, string $entity, string $table): string
     {
+        $fillable = $this->modelFillableFields($definition);
+        $casts = $this->modelCasts($definition);
+        $fillableLines = $this->arrayLines($fillable, 8);
+        $castLines = $this->keyValueArrayLines($casts, 8);
+
         return <<<PHP
 <?php
 
@@ -459,25 +477,78 @@ class {$entity} extends Model implements ResourceableContract
     protected \$table = '{$table}';
 
     protected \$fillable = [
-        'name',
-        'code',
-        'description',
-        'is_active',
-        'import_id',
+{$fillableLines}
     ];
 
     protected \$casts = [
-        'is_active' => 'boolean',
-        'import_id' => 'integer',
+{$castLines}
     ];
 }
 PHP;
+    }
+
+    protected function modelFillableFields(array $definition): array
+    {
+        $fields = [];
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $name = $field['name'] ?? null;
+
+            if (! is_string($name) || $name === '' || $name === 'id') {
+                continue;
+            }
+
+            $fields[] = $name;
+        }
+
+        if (($definition['capabilities']['importable'] ?? false) === true && ! in_array('import_id', $fields, true)) {
+            $fields[] = 'import_id';
+        }
+
+        return $fields;
+    }
+
+    protected function modelCasts(array $definition): array
+    {
+        $casts = [];
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $name = $field['name'] ?? null;
+            $type = $field['type'] ?? null;
+
+            if (! is_string($name) || $name === '' || $name === 'id') {
+                continue;
+            }
+
+            $cast = match ($type) {
+                'boolean' => 'boolean',
+                'integer', 'belongsTo' => 'integer',
+                'decimal' => 'decimal:2',
+                'date' => 'date',
+                'datetime' => 'datetime',
+                default => null,
+            };
+
+            if ($cast !== null) {
+                $casts[$name] = $cast;
+            }
+        }
+
+        if (($definition['capabilities']['importable'] ?? false) === true && ! isset($casts['import_id'])) {
+            $casts['import_id'] = 'integer';
+        }
+
+        return $casts;
     }
 
     protected function renderResource(array $definition, string $namespace, string $module, string $entity, string $entities, string $table): string
     {
         $resourceName = $definition['module']['resourceName'];
         $titleField = $definition['resource']['titleField'];
+        $fieldImports = $this->resourceFieldImports($definition);
+        $fieldImportLines = implode("\n", array_map(fn (string $class): string => "use Modules\\Core\\Fields\\{$class};", $fieldImports));
+        $resourceFields = $this->resourceFieldLines($definition);
+        $detailPanelId = Str::kebab($entity).'-detail-panel';
 
         return <<<PHP
 <?php
@@ -496,9 +567,7 @@ use Modules\\Core\\Contracts\\Resources\\Importable;
 use Modules\\Core\\Contracts\\Resources\\Mediable;
 use Modules\\Core\\Contracts\\Resources\\Tableable;
 use Modules\\Core\\Contracts\\Resources\\WithResourceRoutes;
-use Modules\\Core\\Fields\\Boolean;
-use Modules\\Core\\Fields\\ID;
-use Modules\\Core\\Fields\\Text;
+{$fieldImportLines}
 use Modules\\Core\\Http\\Requests\\ResourceRequest;
 use Modules\\Core\\Menu\\MenuItem;
 use Modules\\Core\\Pages\\Panel;
@@ -527,7 +596,7 @@ class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
             ->tab(Tab::make('notes', 'notes-tab')->panel('notes-tab-panel')->order(35))
             ->panels(function () {
                 return [
-                    Panel::make('item-detail-panel', 'resource-details-panel')
+                    Panel::make('{$detailPanelId}', 'resource-details-panel')
                         ->heading(__('core::app.record_view.sections.details'))
                         ->resizeable(),
                     Panel::make('media', 'resource-media-panel')
@@ -556,11 +625,7 @@ class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
     public function fields(ResourceRequest \$request): array
     {
         return [
-            ID::make()->hidden(),
-            Text::make('name', 'Name')->primary()->required(true),
-            Text::make('code', 'Code'),
-            Text::make('description', 'Description'),
-            Boolean::make('is_active', 'Active'),
+{$resourceFields}
         ];
     }
 
@@ -590,6 +655,72 @@ class {$entity} extends Resource implements AcceptsCustomFields, AcceptsUniqueCu
 PHP;
     }
 
+    protected function resourceFieldImports(array $definition): array
+    {
+        $imports = ['ID'];
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $imports[] = $this->fieldClassForType($field['type'] ?? 'text');
+        }
+
+        $imports = array_values(array_unique($imports));
+        sort($imports);
+
+        return $imports;
+    }
+
+    protected function resourceFieldLines(array $definition): string
+    {
+        $lines = [];
+        $hasId = false;
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $name = $field['name'] ?? '';
+            $type = $field['type'] ?? 'text';
+
+            if ($name === 'id' || $type === 'id') {
+                $hasId = true;
+                $lines[] = '            ID::make()->hidden(),';
+                continue;
+            }
+
+            $class = $this->fieldClassForType($type);
+            $label = $this->phpString($field['label'] ?? Str::headline($name));
+            $line = "            {$class}::make('{$name}', {$label})";
+
+            if (($field['primary'] ?? false) === true) {
+                $line .= '->primary()';
+            }
+
+            if ($this->fieldRequired($field)) {
+                $line .= '->required(true)';
+            }
+
+            $lines[] = $line.',';
+        }
+
+        if (! $hasId) {
+            array_unshift($lines, '            ID::make()->hidden(),');
+        }
+
+        return implode("\n", $lines);
+    }
+
+    protected function fieldClassForType(string $type): string
+    {
+        return match ($type) {
+            'id' => 'ID',
+            'boolean' => 'Boolean',
+            'integer', 'decimal' => 'Number',
+            'date' => 'Date',
+            'datetime' => 'DateTime',
+            'select' => 'Select',
+            'textarea' => 'Textarea',
+            'text' => 'Text',
+            default => 'Text',
+        };
+    }
+
     protected function renderTable(string $namespace, string $entity): string
     {
         return <<<PHP
@@ -605,8 +736,10 @@ class {$entity}Table extends Table
 PHP;
     }
 
-    protected function renderJsonResource(string $namespace, string $entity): string
+    protected function renderJsonResource(array $definition, string $namespace, string $entity): string
     {
+        $resourceLines = $this->jsonResourceLines($definition);
+
         return <<<PHP
 <?php
 
@@ -620,16 +753,48 @@ class {$entity}Resource extends JsonResource
     public function toArray(Request \$request): array
     {
         return \$this->withCommonData([
-            'name' => \$this->name,
-            'code' => \$this->code,
-            'description' => \$this->description,
-            'is_active' => (bool) \$this->is_active,
-            'import_id' => \$this->import_id,
-            'media' => \$this->whenLoaded('media'),
+{$resourceLines}
         ], \$request);
     }
 }
 PHP;
+    }
+
+    protected function jsonResourceLines(array $definition): string
+    {
+        $lines = [];
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $name = $field['name'] ?? null;
+
+            if (! is_string($name) || $name === '' || $name === 'id') {
+                continue;
+            }
+
+            $lines[] = '            '.$this->phpString($name).' => '.$this->jsonResourceValueExpression($field).',';
+        }
+
+        if (($definition['capabilities']['importable'] ?? false) === true) {
+            $lines[] = "            'import_id' => \$this->import_id,";
+        }
+
+        if (($definition['capabilities']['mediable'] ?? false) === true) {
+            $lines[] = "            'media' => \$this->whenLoaded('media'),";
+        }
+
+        return implode("\n", $lines);
+    }
+
+    protected function jsonResourceValueExpression(array $field): string
+    {
+        $name = $field['name'];
+
+        return match ($field['type'] ?? 'text') {
+            'boolean' => "(bool) \$this->{$name}",
+            'integer', 'belongsTo' => "\$this->{$name} === null ? null : (int) \$this->{$name}",
+            'decimal' => "\$this->{$name} === null ? null : (float) \$this->{$name}",
+            default => "\$this->{$name}",
+        };
     }
 
     protected function renderPolicy(string $namespace, string $entity): string
@@ -648,8 +813,10 @@ class {$entity}Policy
 PHP;
     }
 
-    protected function renderMigration(string $table): string
+    protected function renderMigration(array $definition, string $table): string
     {
+        $migrationLines = $this->migrationFieldLines($definition);
+
         return <<<PHP
 <?php
 
@@ -662,12 +829,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('{$table}', function (Blueprint \$table) {
-            \$table->id();
-            \$table->string('name');
-            \$table->string('code')->nullable()->unique();
-            \$table->text('description')->nullable();
-            \$table->boolean('is_active')->default(true);
-            \$table->unsignedBigInteger('import_id')->nullable();
+{$migrationLines}
             \$table->timestamps();
         });
     }
@@ -678,6 +840,135 @@ return new class extends Migration
     }
 };
 PHP;
+    }
+
+    protected function migrationFieldLines(array $definition): string
+    {
+        $lines = [];
+        $hasId = false;
+
+        foreach ($definition['fields'] ?? [] as $field) {
+            $name = $field['name'] ?? '';
+            $type = $field['type'] ?? 'text';
+
+            if ($name === 'id' || $type === 'id') {
+                $hasId = true;
+                $lines[] = '            $table->id();';
+                continue;
+            }
+
+            $line = '            '.$this->migrationColumnExpression($field);
+
+            if (! $this->fieldRequired($field) && ! str_contains($line, '->nullable()')) {
+                $line .= '->nullable()';
+            }
+
+            if ($this->fieldUnique($field)) {
+                $line .= '->unique()';
+            }
+
+            if (array_key_exists('default', $field)) {
+                $line .= '->default('.$this->phpLiteral($field['default']).')';
+            }
+
+            $lines[] = $line.';';
+        }
+
+        if (! $hasId) {
+            array_unshift($lines, '            $table->id();');
+        }
+
+        if (($definition['capabilities']['importable'] ?? false) === true
+            && ! in_array('import_id', array_column($definition['fields'] ?? [], 'name'), true)) {
+            $lines[] = '            $table->unsignedBigInteger(\'import_id\')->nullable();';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    protected function migrationColumnExpression(array $field): string
+    {
+        $name = $field['name'];
+        $type = $field['type'] ?? 'text';
+
+        return match ($type) {
+            'textarea' => "\$table->text('{$name}')",
+            'boolean' => "\$table->boolean('{$name}')",
+            'integer' => "\$table->integer('{$name}')",
+            'belongsTo' => "\$table->unsignedBigInteger('{$name}')",
+            'decimal' => "\$table->decimal('{$name}', 15, 2)",
+            'date' => "\$table->date('{$name}')",
+            'datetime' => "\$table->dateTime('{$name}')",
+            default => "\$table->string('{$name}'".$this->migrationStringLengthSuffix($field).')',
+        };
+    }
+
+    protected function migrationStringLengthSuffix(array $field): string
+    {
+        foreach ($this->fieldRules($field) as $rule) {
+            if (preg_match('/^max:(\d+)$/', $rule, $matches) === 1) {
+                return ', '.$matches[1];
+            }
+        }
+
+        return '';
+    }
+
+    protected function fieldRequired(array $field): bool
+    {
+        if (($field['required'] ?? false) === true) {
+            return true;
+        }
+
+        return in_array('required', $this->fieldRules($field), true);
+    }
+
+    protected function fieldUnique(array $field): bool
+    {
+        foreach ($this->fieldRules($field) as $rule) {
+            if (is_string($rule) && str_starts_with($rule, 'unique')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function fieldRules(array $field): array
+    {
+        return array_values(array_filter(array_merge(
+            is_array($field['rules'] ?? null) ? $field['rules'] : [],
+            is_array($field['creationRules'] ?? null) ? $field['creationRules'] : [],
+            is_array($field['updateRules'] ?? null) ? $field['updateRules'] : []
+        ), 'is_string'));
+    }
+
+    protected function arrayLines(array $values, int $spaces): string
+    {
+        $indent = str_repeat(' ', $spaces);
+
+        return implode("\n", array_map(fn (string $value): string => $indent.$this->phpString($value).',', $values));
+    }
+
+    protected function keyValueArrayLines(array $values, int $spaces): string
+    {
+        $indent = str_repeat(' ', $spaces);
+
+        return implode("\n", array_map(
+            fn (string $key, string $value): string => $indent.$this->phpString($key).' => '.$this->phpString($value).',',
+            array_keys($values),
+            $values
+        ));
+    }
+
+    protected function phpString(string $value): string
+    {
+        return var_export($value, true);
+    }
+
+    protected function phpLiteral(mixed $value): string
+    {
+        return var_export($value, true);
     }
 
     protected function renderFrontendApp(string $entity): string
