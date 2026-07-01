@@ -37,14 +37,23 @@
     {
       "name": "BuilderDefinitionView",
       "file": "modules/Builder/resources/js/views/BuilderDefinitionView.vue",
-      "role": "Coordinates visual definition editing, raw JSON synchronization, save, validate, and preview.",
+      "role": "Coordinates visual definition editing, section navigation, raw JSON synchronization, save, validate, and preview.",
       "edits_definition_json": true,
       "calls_api": true,
       "risk_level": "high",
-      "notes": "Owns definitionJson and definitionText synchronization. Must not expose publish."
+      "notes": "Owns definitionJson and definitionText synchronization. Includes demo navigation. Must not expose publish."
     }
   ],
   "components": [
+    {
+      "name": "BuilderDefinitionSummary",
+      "file": "modules/Builder/resources/js/components/BuilderDefinitionSummary.vue",
+      "role": "Sidebar summary for module/entity/resource, field count, relation count, capability count, status, and safety labels.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "low",
+      "notes": "Presentation only. Reinforces Preview-only MVP, No publish, and No runtime writes."
+    },
     {
       "name": "BuilderModuleIdentityForm",
       "file": "modules/Builder/resources/js/components/BuilderModuleIdentityForm.vue",

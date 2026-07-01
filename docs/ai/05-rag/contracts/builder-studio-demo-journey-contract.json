@@ -1,0 +1,93 @@
+{
+  "name": "ERPSMART Builder Studio Demo Journey Contract",
+  "purpose": "Document the UI-first demo journey, manual browser smoke expectations, safety notices, and forbidden effects for Builder Studio.",
+  "route_entrypoints": [
+    "/builder",
+    "/builder/definitions",
+    "/builder/definitions/{id}",
+    "/settings/software-customization"
+  ],
+  "demo_steps": [
+    "create draft",
+    "edit identity",
+    "add fields",
+    "design form layout metadata",
+    "design automation metadata",
+    "toggle capabilities",
+    "add relations",
+    "review raw JSON",
+    "save",
+    "validate",
+    "preview"
+  ],
+  "expected_ui_sections": [
+    "Demo Flow",
+    "Identity",
+    "Fields",
+    "Form Layout",
+    "Automation",
+    "Capabilities",
+    "Relations",
+    "Raw JSON",
+    "Validate & Preview"
+  ],
+  "safety_notices": [
+    "Preview-only MVP",
+    "No publish",
+    "No runtime writes",
+    "Form Layout is metadata-only",
+    "Automation is metadata-only",
+    "No runtime module will be generated from the UI in this MVP"
+  ],
+  "manual_smoke_steps": [
+    "open /builder/definitions",
+    "confirm index counts and create draft CTA",
+    "create a draft",
+    "confirm summary and section navigation",
+    "edit identity, fields, form layout, automation, capabilities, and relations",
+    "confirm raw JSON synchronizes",
+    "save",
+    "validate",
+    "preview",
+    "confirm no publish button exists",
+    "confirm no runtime module was created"
+  ],
+  "expected_backend_effects": [
+    "draft definition can be saved",
+    "validation report can be updated",
+    "preview run can be created",
+    "preview output remains sandboxed"
+  ],
+  "forbidden_backend_effects": [
+    "publish",
+    "runtime module write",
+    "runtime form rendering",
+    "runtime workflow execution",
+    "email sending",
+    "task creation",
+    "approval runtime",
+    "webhook execution",
+    "generated migration execution"
+  ],
+  "build_warnings_known_non_blocking": [
+    "Sass legacy JS API deprecation",
+    "Tailwind content configuration warning",
+    "runtime font path warnings",
+    "large chunk warnings"
+  ],
+  "future_module_lifecycle_roadmap": [
+    "disable module",
+    "hide module from UI",
+    "delete draft definition",
+    "archive definition",
+    "uninstall published module",
+    "rollback published module",
+    "remove wrong capabilities safely",
+    "remove existing modules that should not be available in the app"
+  ],
+  "agent_notes": [
+    "AI Builder Agent may guide the demo journey through read, save, validate, and preview.",
+    "AI Builder Agent must not claim publish exists.",
+    "Module lifecycle/removal requires a separate safety-critical task with dependency checks, data retention rules, rollback rules, and RAG updates."
+  ]
+}

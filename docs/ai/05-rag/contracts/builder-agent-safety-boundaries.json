@@ -8,6 +8,7 @@
     "call validate",
     "call preview",
     "run the end-to-end smoke verifier with temporary DB record cleanup",
+    "guide the Builder Studio demo journey with read, save, validate, and preview only",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -28,6 +29,7 @@
     "create tasks from Builder metadata",
     "create approvals from Builder metadata",
     "send webhooks from Builder metadata",
+    "claim publish exists in Builder Studio MVP",
     "bypass validation",
     "treat preview artifacts as source of truth",
     "treat vector indexes as source of truth"
@@ -81,7 +83,8 @@
     "validate",
     "preview",
     "end_to_end_smoke",
-    "edit_automation_metadata"
+    "edit_automation_metadata",
+    "manual_demo_journey"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

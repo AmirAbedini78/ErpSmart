@@ -51,12 +51,18 @@
 
       <div class="grid gap-6 xl:grid-cols-12">
         <div class="space-y-6 xl:col-span-8">
-          <ICard>
+          <ICard id="demo-flow">
             <ICardHeader>
               <ICardHeading text="Demo flow" />
             </ICardHeader>
 
             <ICardBody>
+              <IAlert class="mb-4" variant="warning">
+                <IAlertBody>
+                  Preview-only MVP. Validate and Preview are available; Publish is intentionally absent. No runtime writes are performed from the UI.
+                </IAlertBody>
+              </IAlert>
+
               <ol class="grid gap-2 text-sm md:grid-cols-2">
                 <li v-for="step in demoFlowSteps" :key="step" class="flex gap-2">
                   <span class="text-neutral-400">•</span>
@@ -67,36 +73,43 @@
           </ICard>
 
           <BuilderModuleIdentityForm
+            id="identity"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderFieldsEditor
+            id="fields"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderFormLayoutEditor
+            id="form-layout"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderAutomationEditor
+            id="automation"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderCapabilitiesEditor
+            id="capabilities"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderRelationsEditor
+            id="relations"
             :definition="definitionJson"
             @changed="handleVisualChange"
           />
 
           <BuilderRawJsonEditor
+            id="raw-json"
             v-model="definitionText"
             :error="jsonError"
             @apply="applyRawJson"
@@ -106,6 +119,30 @@
 
         <div class="xl:col-span-4">
           <div class="space-y-6 xl:sticky xl:top-6">
+            <BuilderDefinitionSummary
+              :definition-json="definitionJson"
+              :status="definition.status"
+            />
+
+            <ICard>
+              <ICardHeader>
+                <ICardHeading text="Section Navigation" />
+              </ICardHeader>
+
+              <ICardBody>
+                <nav class="grid gap-2 text-sm">
+                  <a
+                    v-for="section in sectionNavigation"
+                    :key="section.id"
+                    class="text-primary-600 hover:text-primary-700 dark:text-primary-400"
+                    :href="`#${section.id}`"
+                  >
+                    {{ section.label }}
+                  </a>
+                </nav>
+              </ICardBody>
+            </ICard>
+
             <ICard>
               <ICardHeader>
                 <ICardHeading text="Metadata" />
@@ -132,6 +169,7 @@
             </ICard>
 
             <BuilderValidationPreviewPanel
+              id="validate-preview"
               :saving="saving"
               :validating="validating"
               :previewing="previewing"
@@ -157,6 +195,7 @@ import { usePageTitle } from '@/Core/composables/usePageTitle'
 
 import BuilderAutomationEditor from '../components/BuilderAutomationEditor.vue'
 import BuilderCapabilitiesEditor from '../components/BuilderCapabilitiesEditor.vue'
+import BuilderDefinitionSummary from '../components/BuilderDefinitionSummary.vue'
 import BuilderFieldsEditor from '../components/BuilderFieldsEditor.vue'
 import BuilderFormLayoutEditor from '../components/BuilderFormLayoutEditor.vue'
 import BuilderModuleIdentityForm from '../components/BuilderModuleIdentityForm.vue'
@@ -186,11 +225,24 @@ const apiError = ref(null)
 const demoFlowSteps = [
   'Edit identity',
   'Add fields',
+  'Design Form Layout metadata',
+  'Design Automation metadata',
   'Toggle capabilities',
   'Add relations if needed',
   'Save',
   'Validate',
   'Preview',
+]
+const sectionNavigation = [
+  { id: 'demo-flow', label: 'Demo Flow' },
+  { id: 'identity', label: 'Identity' },
+  { id: 'fields', label: 'Fields' },
+  { id: 'form-layout', label: 'Form Layout' },
+  { id: 'automation', label: 'Automation' },
+  { id: 'capabilities', label: 'Capabilities' },
+  { id: 'relations', label: 'Relations' },
+  { id: 'raw-json', label: 'Raw JSON' },
+  { id: 'validate-preview', label: 'Validate & Preview' },
 ]
 
 usePageTitle('Builder Definition')

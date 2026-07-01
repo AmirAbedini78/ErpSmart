@@ -22,6 +22,10 @@
             class="mt-2 max-w-3xl"
             text="Create a draft, edit visually, validate, and preview. Publish is not available yet."
           />
+          <IText
+            class="mt-1 max-w-3xl"
+            text="Validate and Preview only. No runtime module will be generated from the UI in this MVP."
+          />
         </div>
 
         <IButton
@@ -32,6 +36,33 @@
           :loading="creating"
           @click="createDraft"
         />
+      </div>
+
+      <div class="mb-6 grid gap-4 md:grid-cols-4">
+        <ICard>
+          <ICardBody>
+            <IText text="Total definitions" />
+            <ITextDark class="mt-1 text-2xl font-semibold" :text="String(summary.total)" />
+          </ICardBody>
+        </ICard>
+        <ICard>
+          <ICardBody>
+            <IText text="Draft" />
+            <ITextDark class="mt-1 text-2xl font-semibold" :text="String(summary.draft)" />
+          </ICardBody>
+        </ICard>
+        <ICard>
+          <ICardBody>
+            <IText text="Validated" />
+            <ITextDark class="mt-1 text-2xl font-semibold" :text="String(summary.validated)" />
+          </ICardBody>
+        </ICard>
+        <ICard>
+          <ICardBody>
+            <IText text="Previewed" />
+            <ITextDark class="mt-1 text-2xl font-semibold" :text="String(summary.previewed)" />
+          </ICardBody>
+        </ICard>
       </div>
 
       <ICard>
@@ -107,6 +138,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
@@ -119,6 +151,12 @@ const router = useRouter()
 const loading = ref(false)
 const creating = ref(false)
 const definitions = ref([])
+const summary = computed(() => ({
+  total: definitions.value.length,
+  draft: countByStatus('draft'),
+  validated: countByStatus('validated'),
+  previewed: countByStatus('previewed'),
+}))
 
 usePageTitle('Builder Studio')
 
@@ -151,5 +189,9 @@ async function createDraft() {
   } finally {
     creating.value = false
   }
+}
+
+function countByStatus(status) {
+  return definitions.value.filter(definition => definition.status === status).length
 }
 </script>
