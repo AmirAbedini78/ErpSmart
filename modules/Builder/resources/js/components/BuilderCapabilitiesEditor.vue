@@ -11,6 +11,12 @@
           <IBadge v-if="group.future" text="Preview warning only" variant="warning" />
         </div>
 
+        <IAlert v-if="group.formLayout" class="mb-3" variant="warning">
+          <IAlertBody>
+            Metadata editor available; runtime renderer is future work.
+          </IAlertBody>
+        </IAlert>
+
         <div class="grid gap-3 md:grid-cols-3">
           <IFormCheckboxField v-for="capability in group.items" :key="capability">
             <IFormCheckbox
@@ -84,6 +90,7 @@ const groups = [
   {
     name: 'Form/Layout',
     future: true,
+    formLayout: true,
     items: ['formLayout', 'stepperForm', 'sections', 'conditionalVisibility'],
   },
 ]

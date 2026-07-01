@@ -1,0 +1,74 @@
+{
+  "name": "ERPSMART Builder Form Layout Contract",
+  "purpose": "Define draft form layout metadata edited by Builder Studio and later consumed by a future runtime renderer.",
+  "status": "metadata_editable_runtime_renderer_future",
+  "source_path": "definition_json.formLayout",
+  "safe_for_agent": true,
+  "runtime_renderer_implemented": false,
+  "preview_consumes_metadata": false,
+  "structure": {
+    "enabled": true,
+    "mode": "standard",
+    "sections": [
+      {
+        "id": "section_main",
+        "label": "Main",
+        "description": "",
+        "order": 1,
+        "modes": ["create", "update", "detail"],
+        "columns": 1,
+        "fields": [
+          {
+            "field": "title",
+            "order": 1,
+            "width": "full",
+            "requiredOverride": null,
+            "readonlyOn": ["detail"],
+            "hiddenOn": [],
+            "helpText": ""
+          }
+        ]
+      }
+    ],
+    "stepper": {
+      "enabled": false,
+      "steps": [
+        {
+          "id": "step_basic",
+          "label": "Basic",
+          "sectionIds": ["section_main"],
+          "order": 1
+        }
+      ]
+    },
+    "conditions": [
+      {
+        "id": "condition_1",
+        "targetField": "field_name",
+        "operator": "equals",
+        "value": "",
+        "effect": "show",
+        "appliesTo": ["create", "update"]
+      }
+    ]
+  },
+  "allowed_modes": ["standard", "stepper"],
+  "allowed_section_modes": ["create", "update", "detail"],
+  "allowed_columns": [1, 2, 3],
+  "allowed_field_widths": ["full", "1/2", "1/3"],
+  "allowed_condition_operators": ["equals", "not_equals", "empty", "not_empty"],
+  "allowed_condition_effects": ["show", "hide", "require", "readonly"],
+  "rules": [
+    "fields must reference definition.fields by field name",
+    "section IDs should be stable because stepper steps reference them",
+    "stepper sectionIds must reference formLayout.sections IDs",
+    "conditions targetField must reference a definition field name",
+    "metadata must not imply runtime rendering until the renderer exists",
+    "raw JSON remains available for debugging and recovery"
+  ],
+  "agent_notes": [
+    "AI Builder Agent may propose formLayout metadata changes.",
+    "AI Builder Agent must call validate and preview after proposed changes.",
+    "AI Builder Agent must not implement runtime form rendering or publish from this metadata without a separate approved task."
+  ]
+}

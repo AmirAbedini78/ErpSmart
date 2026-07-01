@@ -73,6 +73,15 @@
       "notes": "Future/warning-only capabilities must be clearly labeled."
     },
     {
+      "name": "BuilderFormLayoutEditor",
+      "file": "modules/Builder/resources/js/components/BuilderFormLayoutEditor.vue",
+      "role": "Visual editor for definition_json.formLayout sections, field placement, stepper metadata, and conditional visibility metadata.",
+      "edits_definition_json": true,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "Metadata editor only. Runtime renderer and publish remain future work."
+    },
+    {
       "name": "BuilderRelationsEditor",
       "file": "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
       "role": "Visual editor for relation declarations.",

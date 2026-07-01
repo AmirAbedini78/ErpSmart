@@ -30,7 +30,11 @@
       "docs/ai/03-architecture/builder-studio-ui-shell.md",
       "docs/ai/03-architecture/builder-studio-visual-definition-editor.md",
       "docs/ai/03-architecture/builder-studio-demo-workflow.md",
-      "docs/ai/03-architecture/builder-studio-end-to-end-smoke.md"
+      "docs/ai/03-architecture/builder-studio-end-to-end-smoke.md",
+      "docs/ai/03-architecture/builder-studio-form-layout-builder.md"
+    ],
+    "form_layout_contracts": [
+      "docs/ai/05-rag/contracts/builder-form-layout-contract.json"
     ],
     "smoke_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-smoke-contract.json"
@@ -63,6 +67,7 @@
     "modules/Builder/resources/js/views/BuilderDefinitionView.vue",
     "modules/Builder/resources/js/components/BuilderModuleIdentityForm.vue",
     "modules/Builder/resources/js/components/BuilderFieldsEditor.vue",
+    "modules/Builder/resources/js/components/BuilderFormLayoutEditor.vue",
     "modules/Builder/resources/js/components/BuilderCapabilitiesEditor.vue",
     "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
     "modules/Builder/resources/js/components/BuilderRawJsonEditor.vue",
@@ -93,7 +98,8 @@
     "render preview into storage/app/module-builder-preview",
     "read validation reports",
     "read preview manifests and output text",
-    "run end-to-end smoke with temporary DB records and cleanup"
+    "run end-to-end smoke with temporary DB records and cleanup",
+    "edit definition_json.formLayout metadata through Builder Studio"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -104,7 +110,8 @@
     "edit SaaS, licensing, updater, package, composer, vendor, node_modules, public/build files",
     "bypass validation before preview",
     "treat preview artifacts or vector indexes as source of truth",
-    "leave smoke DB records or unique smoke preview directories behind"
+    "leave smoke DB records or unique smoke preview directories behind",
+    "treat formLayout metadata as runtime-rendered before the renderer exists"
   ],
   "future_operations": [
     "queued validation",
@@ -120,7 +127,8 @@
     "Respect warning-only capabilities and do not generate unsafe APIs for them.",
     "Never use stale backup, vendor, build, cache, or generated noise as canonical evidence.",
     "The end-to-end smoke path may create temporary DB records, but it must clean them up.",
-    "Preview output must confirm Real runtime writes performed: 0."
+    "Preview output must confirm Real runtime writes performed: 0.",
+    "Form layout metadata is definition data, but runtime form rendering is future work."
   ],
   "notes_for_business_operations_agent_separation": [
     "The Business Operations Agent is separate from the AI Builder Agent.",

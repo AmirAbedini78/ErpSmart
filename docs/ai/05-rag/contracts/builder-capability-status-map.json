@@ -238,34 +238,34 @@
     {
       "name": "formLayout",
       "group": "form_layout",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["formLayout requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires visual form layout builder contract."
+      "preview_behavior": "Metadata-editable in Builder Studio; runtime renderer is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.formLayout metadata"],
+      "warnings": ["formLayout metadata can be edited, but runtime renderer is future work"],
+      "agent_notes": "AI may propose formLayout metadata changes but must not assume runtime rendering."
     },
     {
       "name": "stepperForm",
       "group": "form_layout",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["stepperForm requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires stepper form builder contract."
+      "preview_behavior": "Metadata-editable in Builder Studio; runtime stepper renderer is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.formLayout.stepper metadata"],
+      "warnings": ["stepperForm metadata can be edited, but runtime renderer is future work"],
+      "agent_notes": "Stepper definitions should reference section IDs."
     },
     {
       "name": "sections",
       "group": "form_layout",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["sections requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires section metadata and rendering contract."
+      "preview_behavior": "Metadata-editable in Builder Studio; runtime section renderer is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.formLayout.sections metadata"],
+      "warnings": ["sections metadata can be edited, but runtime renderer is future work"],
+      "agent_notes": "Sections use logical columns and mode visibility."
     },
     {
       "name": "conditionalVisibility",
       "group": "form_layout",
-      "preview_behavior": "Warn only; do not generate unsafe APIs.",
-      "generated_artifacts_if_enabled": [],
-      "warnings": ["conditionalVisibility requested but is future/unsupported in preview; no unsafe APIs are generated"],
-      "agent_notes": "Requires conditional visibility evaluator and safety rules."
+      "preview_behavior": "Metadata-editable in Builder Studio; runtime condition evaluator is warning-only/future.",
+      "generated_artifacts_if_enabled": ["definition_json.formLayout.conditions metadata"],
+      "warnings": ["conditionalVisibility metadata can be edited, but runtime renderer is future work"],
+      "agent_notes": "Conditions should target fields from definition.fields."
     }
   ],
   "future": [

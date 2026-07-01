@@ -76,6 +76,11 @@
             @changed="handleVisualChange"
           />
 
+          <BuilderFormLayoutEditor
+            :definition="definitionJson"
+            @changed="handleVisualChange"
+          />
+
           <BuilderCapabilitiesEditor
             :definition="definitionJson"
             @changed="handleVisualChange"
@@ -147,6 +152,7 @@ import { usePageTitle } from '@/Core/composables/usePageTitle'
 
 import BuilderCapabilitiesEditor from '../components/BuilderCapabilitiesEditor.vue'
 import BuilderFieldsEditor from '../components/BuilderFieldsEditor.vue'
+import BuilderFormLayoutEditor from '../components/BuilderFormLayoutEditor.vue'
 import BuilderModuleIdentityForm from '../components/BuilderModuleIdentityForm.vue'
 import BuilderRawJsonEditor from '../components/BuilderRawJsonEditor.vue'
 import BuilderRelationsEditor from '../components/BuilderRelationsEditor.vue'
@@ -316,6 +322,7 @@ function normalizeDefinition(value) {
   value.verifier ||= { generate: true }
   value.detailPage ||= { panels: [], tabs: [] }
   value.table ||= {}
+  value.formLayout ||= {}
 
   value.resource.hasDetailView = Boolean(value.resource.hasDetailView)
   value.capabilities.hasDetailView = Boolean(
@@ -332,7 +339,54 @@ function normalizeDefinition(value) {
     return field
   })
 
+  normalizeFormLayout(value.formLayout)
+
   return value
+}
+
+function normalizeFormLayout(formLayout) {
+  formLayout.enabled = Boolean(formLayout.enabled ?? false)
+  formLayout.mode ||= 'standard'
+  formLayout.sections ||= []
+  formLayout.stepper ||= {}
+  formLayout.stepper.enabled = Boolean(formLayout.stepper.enabled ?? false)
+  formLayout.stepper.steps ||= []
+  formLayout.conditions ||= []
+
+  formLayout.sections.forEach((section, index) => {
+    section.id ||= `section_${index + 1}`
+    section.label ||= `Section ${index + 1}`
+    section.description ||= ''
+    section.order ||= index + 1
+    section.modes ||= ['create', 'update', 'detail']
+    section.columns ||= 1
+    section.fields ||= []
+
+    section.fields.forEach((field, fieldIndex) => {
+      field.order ||= fieldIndex + 1
+      field.width ||= 'full'
+      field.requiredOverride ??= null
+      field.readonlyOn ||= []
+      field.hiddenOn ||= []
+      field.helpText ||= ''
+    })
+  })
+
+  formLayout.stepper.steps.forEach((step, index) => {
+    step.id ||= `step_${index + 1}`
+    step.label ||= `Step ${index + 1}`
+    step.sectionIds ||= []
+    step.order ||= index + 1
+  })
+
+  formLayout.conditions.forEach((condition, index) => {
+    condition.id ||= `condition_${index + 1}`
+    condition.targetField ||= ''
+    condition.operator ||= 'equals'
+    condition.value ??= ''
+    condition.effect ||= 'show'
+    condition.appliesTo ||= ['create', 'update']
+  })
 }
 
 function stringify(value) {

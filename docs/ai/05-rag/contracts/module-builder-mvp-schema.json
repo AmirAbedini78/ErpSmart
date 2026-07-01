@@ -355,6 +355,222 @@
             "type": "object",
             "additionalProperties": true
         },
+        "formLayout": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "mode": {
+                    "type": "string",
+                    "enum": [
+                        "standard",
+                        "stepper"
+                    ]
+                },
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "id",
+                            "label",
+                            "order",
+                            "modes",
+                            "columns",
+                            "fields"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "order": {
+                                "type": "integer"
+                            },
+                            "modes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "create",
+                                        "update",
+                                        "detail"
+                                    ]
+                                }
+                            },
+                            "columns": {
+                                "type": "integer",
+                                "enum": [
+                                    1,
+                                    2,
+                                    3
+                                ]
+                            },
+                            "fields": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "field",
+                                        "order",
+                                        "width",
+                                        "readonlyOn",
+                                        "hiddenOn"
+                                    ],
+                                    "properties": {
+                                        "field": {
+                                            "type": "string"
+                                        },
+                                        "order": {
+                                            "type": "integer"
+                                        },
+                                        "width": {
+                                            "type": "string",
+                                            "enum": [
+                                                "full",
+                                                "1/2",
+                                                "1/3"
+                                            ]
+                                        },
+                                        "requiredOverride": {
+                                            "type": [
+                                                "boolean",
+                                                "null"
+                                            ]
+                                        },
+                                        "readonlyOn": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "create",
+                                                    "update",
+                                                    "detail"
+                                                ]
+                                            }
+                                        },
+                                        "hiddenOn": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "enum": [
+                                                    "create",
+                                                    "update",
+                                                    "detail"
+                                                ]
+                                            }
+                                        },
+                                        "helpText": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "stepper": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "steps": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                    "id",
+                                    "label",
+                                    "sectionIds",
+                                    "order"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "label": {
+                                        "type": "string"
+                                    },
+                                    "sectionIds": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "order": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "id",
+                            "targetField",
+                            "operator",
+                            "effect",
+                            "appliesTo"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "targetField": {
+                                "type": "string"
+                            },
+                            "operator": {
+                                "type": "string",
+                                "enum": [
+                                    "equals",
+                                    "not_equals",
+                                    "empty",
+                                    "not_empty"
+                                ]
+                            },
+                            "value": {},
+                            "effect": {
+                                "type": "string",
+                                "enum": [
+                                    "show",
+                                    "hide",
+                                    "require",
+                                    "readonly"
+                                ]
+                            },
+                            "appliesTo": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "create",
+                                        "update",
+                                        "detail"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "capabilities": {
             "type": "object",
             "additionalProperties": false,
