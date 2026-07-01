@@ -39,6 +39,7 @@ import '@/Translator/app.js'
 import '@/WebForms/app.js'
 import '@/ThemeStyle/app.js'
 import '@/Warehouse/app.js'
+import '@/Builder/app.js'
 
 import 'unfonts.css'
 import '../css/app.css'
@@ -308,4 +309,3 @@ export default class Application {
     return this.availableTimezones
   }
 }
-
