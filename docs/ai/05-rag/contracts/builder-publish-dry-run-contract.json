@@ -34,6 +34,8 @@
     "files": [],
     "warnings": [],
     "blockers": [],
+    "review": "informational review and approval checklist only",
+    "artifact_summary": "artifact counts and path summary",
     "safety": {
       "sandbox_only": true,
       "runtime_paths_touched": false,
@@ -55,6 +57,13 @@
     "view",
     "manifest"
   ],
+  "review": {
+    "approval_checklist_is_informational_only": true,
+    "no_publish_approval_action": true,
+    "no_approval_persistence": true,
+    "requires_human_approval": true,
+    "approval_status": "not_requested"
+  },
   "safety_flags": {
     "safe_for_agent": true,
     "agent_may_execute_publish": false,

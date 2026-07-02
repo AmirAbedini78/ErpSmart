@@ -18,6 +18,7 @@
     "read publish readiness diagnostic artifact",
     "call publish dry-run generator",
     "read publish dry-run artifacts",
+    "summarize publish dry-run review",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -29,6 +30,7 @@
     "treat publish readiness as actual publish",
     "treat publish readiness diagnostic artifact as a runtime module",
     "copy publish dry-run artifacts into runtime paths",
+    "approve publish",
     "execute uninstall",
     "delete runtime modules",
     "delete runtime files",
@@ -61,6 +63,8 @@
     "ai_builder_agent_may_read_publish_readiness_diagnostic_artifact": true,
     "ai_builder_agent_may_call_publish_dry_run_generator": true,
     "ai_builder_agent_may_read_publish_dry_run_artifacts": true,
+    "ai_builder_agent_may_summarize_publish_dry_run_review": true,
+    "ai_builder_agent_may_approve_publish": false,
     "ai_builder_agent_may_execute_publish": false,
     "ai_builder_agent_may_execute_uninstall": false,
     "ai_builder_agent_may_delete_runtime_modules": false,
@@ -72,6 +76,7 @@
       "Publish readiness analysis is read-only and must not be treated as actual publish.",
       "Publish readiness diagnostic artifact is derived storage and must not be treated as a runtime module or source of truth.",
       "Publish dry-run artifacts are sandbox review artifacts and must not be copied into runtime paths.",
+      "Dry-run review is informational only; AI must not approve publish.",
       "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
     ]
   },

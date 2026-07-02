@@ -48,6 +48,9 @@ class BuilderPublishDryRunGenerator
         $this->writeDryRunFile($dryRunRoot, 'frontend/IndexView.vue.stub', $this->vueStub($definitionJson, 'Index'), 'view', $this->futurePath($definitionJson, 'index_view'), $files);
         $this->writeDryRunFile($dryRunRoot, 'frontend/DetailView.vue.stub', $this->vueStub($definitionJson, 'Detail'), 'view', $this->futurePath($definitionJson, 'detail_view'), $files);
 
+        $artifactSummary = $this->artifactSummary($files);
+        $review = $this->review($validation, $readiness, $files, $warnings, $blockers);
+
         $manifest = [
             'generated_at' => now()->toIso8601String(),
             'definition_id' => $definition->getKey(),
@@ -65,6 +68,8 @@ class BuilderPublishDryRunGenerator
             'files' => $files,
             'warnings' => $warnings,
             'blockers' => $blockers,
+            'review' => $review,
+            'artifact_summary' => $artifactSummary,
             'safety' => [
                 'sandbox_only' => true,
                 'runtime_paths_touched' => false,
@@ -76,6 +81,7 @@ class BuilderPublishDryRunGenerator
         $this->writeDryRunFile($dryRunRoot, 'manifest/publish-dry-run-manifest.json', $this->json($manifest), 'manifest', 'publish-dry-run-manifest.json', $files);
         $manifest['files'] = $files;
         $manifest['dry_run_artifacts_written'] = count($files);
+        $manifest['artifact_summary'] = $this->artifactSummary($files);
 
         File::put(base_path($dryRunRoot.'/manifest/publish-dry-run-manifest.json'), $this->json($manifest));
 
@@ -95,6 +101,72 @@ class BuilderPublishDryRunGenerator
             'dry_run_path' => $root.'/'.$path,
             'status' => 'generated_in_sandbox',
             'runtime_written' => false,
+        ];
+    }
+
+    protected function review(array $validation, array $readiness, array $files, array $warnings, array $blockers): array
+    {
+        $unsupported = $readiness['capability_impact']['unsupported'] ?? [];
+        $formLayoutEnabled = (bool) ($readiness['form_layout_impact']['enabled'] ?? false);
+        $automationEnabled = (bool) ($readiness['automation_impact']['enabled'] ?? false);
+
+        return [
+            'review_ready' => true,
+            'requires_human_approval' => true,
+            'approval_status' => 'not_requested',
+            'approval_checklist' => [
+                $this->checklistItem('validation_passed', 'Definition validation passed', ($validation['valid'] ?? false) ? 'passed' : 'blocked', true),
+                $this->checklistItem('no_runtime_writes', 'Runtime writes are zero', 'passed', true),
+                $this->checklistItem('no_migrations_run', 'No migrations were run', 'passed', true),
+                $this->checklistItem('no_runtime_routes_registered', 'No runtime routes were registered', 'passed', true),
+                $this->checklistItem('readiness_analyzer_completed', 'Publish readiness analyzer completed', isset($readiness['status']) ? 'passed' : 'blocked', true),
+                $this->checklistItem('dry_run_manifest_valid', 'Dry-run manifest was generated', $files !== [] ? 'passed' : 'blocked', true),
+                $this->checklistItem('blockers_empty', 'Blockers are empty', $blockers === [] ? 'passed' : 'blocked', true),
+                $this->checklistItem('unsupported_capabilities_reviewed', 'Unsupported capabilities reviewed', $unsupported === [] ? 'passed' : 'warning', true, implode(', ', $unsupported)),
+                $this->checklistItem('form_layout_metadata_reviewed', 'Form layout metadata reviewed', $formLayoutEnabled ? 'warning' : 'passed', true, $formLayoutEnabled ? 'Metadata only; runtime renderer is future work.' : ''),
+                $this->checklistItem('automation_metadata_reviewed', 'Automation metadata reviewed', $automationEnabled ? 'warning' : 'passed', true, $automationEnabled ? 'Metadata only; runtime execution is forbidden in MVP.' : ''),
+                $this->checklistItem('rollback_requirements_reviewed', 'Rollback requirements reviewed', ($readiness['rollback_requirements'] ?? []) !== [] ? 'warning' : 'not_checked', true),
+                $this->checklistItem('human_approval_required_before_future_publish', 'Human approval required before future publish', 'not_checked', true),
+            ],
+            'safety_checklist' => [
+                $this->checklistItem('runtime_writes_zero', 'Runtime writes are zero', 'passed', true),
+                $this->checklistItem('no_migrations_run', 'No migrations were run', 'passed', true),
+                $this->checklistItem('no_runtime_routes_registered', 'No runtime routes were registered', 'passed', true),
+                $this->checklistItem('sandbox_only', 'Dry-run artifacts are sandbox-only', 'passed', true),
+                $this->checklistItem('publish_not_available', 'Publish is not available in this MVP', 'passed', true),
+            ],
+            'next_allowed_actions' => [
+                'review dry-run artifacts',
+                'regenerate dry-run',
+                'archive definition',
+            ],
+            'forbidden_actions' => [
+                'publish',
+                'copy artifacts into runtime paths',
+                'run migrations',
+                'drop tables',
+            ],
+        ];
+    }
+
+    protected function checklistItem(string $key, string $label, string $status, bool $required, string $notes = ''): array
+    {
+        return compact('key', 'label', 'status', 'required', 'notes');
+    }
+
+    protected function artifactSummary(array $files): array
+    {
+        $byType = [];
+        foreach ($files as $file) {
+            $type = (string) ($file['type'] ?? 'unknown');
+            $byType[$type] = ($byType[$type] ?? 0) + 1;
+        }
+
+        return [
+            'total_files' => count($files),
+            'by_type' => $byType,
+            'future_runtime_paths' => array_values(array_map(fn (array $file): string => (string) $file['future_runtime_path'], $files)),
+            'dry_run_paths' => array_values(array_map(fn (array $file): string => (string) $file['dry_run_path'], $files)),
         ];
     }
 

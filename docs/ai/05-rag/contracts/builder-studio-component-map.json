@@ -120,11 +120,20 @@
     {
       "name": "BuilderValidationPreviewPanel",
       "file": "modules/Builder/resources/js/components/BuilderValidationPreviewPanel.vue",
-      "role": "Displays actions, validation report, warnings, preview status, and output.",
+      "role": "Displays actions, validation report, warnings, preview status, readiness report, and dry-run review entry.",
       "edits_definition_json": false,
       "calls_api": false,
       "risk_level": "medium",
-      "notes": "Emits save, validate, and preview events to the parent view."
+      "notes": "Emits save, validate, preview, readiness, and dry-run events to the parent view. Must not expose publish."
+    },
+    {
+      "name": "BuilderPublishDryRunReview",
+      "file": "modules/Builder/resources/js/components/BuilderPublishDryRunReview.vue",
+      "role": "Read-only review browser for publish dry-run artifacts, safety checklist, informational approval checklist, next allowed actions, and forbidden actions.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "Review only. No approval persistence, publish action, or copy-to-runtime action."
     },
     {
       "name": "BuilderStatusBadge",

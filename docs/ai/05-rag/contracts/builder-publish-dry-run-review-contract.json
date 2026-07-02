@@ -1,0 +1,70 @@
+{
+  "name": "ERPSMART Builder Publish Dry-Run Review Contract",
+  "purpose": "Define the read-only dry-run review browser and informational approval checklist.",
+  "safe_for_agent": true,
+  "agent_may_approve_publish": false,
+  "agent_may_execute_publish": false,
+  "agent_may_copy_artifacts_to_runtime": false,
+  "report_additions": {
+    "review": {
+      "review_ready": true,
+      "requires_human_approval": true,
+      "approval_status": "not_requested",
+      "approval_checklist": [],
+      "safety_checklist": [],
+      "next_allowed_actions": [],
+      "forbidden_actions": []
+    },
+    "artifact_summary": {
+      "total_files": 0,
+      "by_type": {},
+      "future_runtime_paths": [],
+      "dry_run_paths": []
+    }
+  },
+  "approval_checklist_items": [
+    "validation_passed",
+    "no_runtime_writes",
+    "no_migrations_run",
+    "no_runtime_routes_registered",
+    "readiness_analyzer_completed",
+    "dry_run_manifest_valid",
+    "blockers_empty",
+    "unsupported_capabilities_reviewed",
+    "form_layout_metadata_reviewed",
+    "automation_metadata_reviewed",
+    "rollback_requirements_reviewed",
+    "human_approval_required_before_future_publish"
+  ],
+  "safety_checklist_items": [
+    "runtime_writes_zero",
+    "no_migrations_run",
+    "no_runtime_routes_registered",
+    "sandbox_only",
+    "publish_not_available"
+  ],
+  "forbidden_ui_actions": [
+    "Publish",
+    "Approve Publish",
+    "Copy to runtime",
+    "Run migrations",
+    "Drop tables"
+  ],
+  "next_allowed_actions": [
+    "review dry-run artifacts",
+    "regenerate dry-run",
+    "archive definition"
+  ],
+  "artifact_summary_structure": {
+    "total_files": "number",
+    "by_type": "object keyed by artifact type",
+    "future_runtime_paths": [],
+    "dry_run_paths": []
+  },
+  "agent_notes": [
+    "AI Builder Agent may summarize dry-run review.",
+    "AI Builder Agent must not approve publish.",
+    "AI Builder Agent must not copy artifacts into runtime paths.",
+    "AI Builder Agent must not execute publish."
+  ]
+}
