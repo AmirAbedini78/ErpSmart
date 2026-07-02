@@ -7,6 +7,7 @@ use App\Http\Requests\Builder\UpdateBuilderDefinitionRequest;
 use App\Models\BuilderDefinition;
 use App\Services\Builder\BuilderDefinitionValidator;
 use App\Services\Builder\BuilderDefinitionVersionService;
+use App\Services\Builder\BuilderPublishDryRunGenerator;
 use App\Services\Builder\BuilderPublishReadinessAnalyzer;
 use App\Services\Builder\BuilderPreviewService;
 use Illuminate\Http\JsonResponse;
@@ -214,6 +215,13 @@ class BuilderDefinitionController extends ApiController
         BuilderPublishReadinessAnalyzer $analyzer
     ): JsonResponse {
         return $this->response($analyzer->analyze($builderDefinition));
+    }
+
+    public function publishDryRun(
+        BuilderDefinition $builderDefinition,
+        BuilderPublishDryRunGenerator $generator
+    ): JsonResponse {
+        return $this->response($generator->generate($builderDefinition));
     }
 
     protected function definitionAttributes(array $definitionJson): array

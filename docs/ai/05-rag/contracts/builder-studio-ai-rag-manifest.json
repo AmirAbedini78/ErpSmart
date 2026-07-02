@@ -15,7 +15,8 @@
       "app/Services/Builder/BuilderDefinitionValidator.php",
       "app/Services/Builder/BuilderPreviewService.php",
       "app/Services/Builder/BuilderDefinitionVersionService.php",
-      "app/Services/Builder/BuilderPublishReadinessAnalyzer.php"
+      "app/Services/Builder/BuilderPublishReadinessAnalyzer.php",
+      "app/Services/Builder/BuilderPublishDryRunGenerator.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -40,7 +41,8 @@
       "docs/ai/03-architecture/builder-capability-removal-strategy.md",
       "docs/ai/03-architecture/builder-definition-lifecycle-mvp.md",
       "docs/ai/03-architecture/builder-publish-readiness-analyzer.md",
-      "docs/ai/03-architecture/builder-publish-readiness-deep-conflict-analyzer.md"
+      "docs/ai/03-architecture/builder-publish-readiness-deep-conflict-analyzer.md",
+      "docs/ai/03-architecture/builder-publish-dry-run-file-generator.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -62,16 +64,19 @@
       "docs/ai/05-rag/contracts/builder-module-dependency-impact-map.json",
       "docs/ai/05-rag/contracts/builder-definition-lifecycle-api-map.json",
       "docs/ai/05-rag/contracts/builder-publish-readiness-report-contract.json",
-      "docs/ai/05-rag/contracts/builder-publish-readiness-plan-artifact-contract.json"
+      "docs/ai/05-rag/contracts/builder-publish-readiness-plan-artifact-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-dry-run-contract.json"
     ]
   },
   "generated_or_derived_files": {
     "preview_artifacts": "storage/app/module-builder-preview",
     "publish_readiness_diagnostic_artifacts": "storage/app/builder-publish-readiness",
+    "publish_dry_run_artifacts": "storage/app/builder-publish-dry-runs",
     "temporary_definition_files": "storage/app/builder-definitions",
     "vector_indexes": "derived and rebuildable",
     "generated_preview_files_are_source_of_truth": false,
-    "publish_readiness_diagnostic_artifacts_are_source_of_truth": false
+    "publish_readiness_diagnostic_artifacts_are_source_of_truth": false,
+    "publish_dry_run_artifacts_are_source_of_truth": false
   },
   "backend_models": [
     "App\\Models\\BuilderDefinition",
@@ -134,7 +139,8 @@
     "archive unpublished Builder definitions",
     "restore archived Builder definitions",
     "delete unpublished Builder draft/control-plane records",
-    "analyze publish readiness"
+    "analyze publish readiness",
+    "generate publish dry-run artifacts under storage"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -152,6 +158,7 @@
     "execute publish",
     "treat publish readiness as actual publish",
     "treat publish readiness diagnostic artifact as a runtime module",
+    "copy publish dry-run artifacts into runtime paths",
     "delete runtime modules",
     "uninstall modules",
     "drop tables or business data",
@@ -185,6 +192,7 @@
     "Definition lifecycle MVP can archive, restore, and delete unpublished Builder control-plane records only.",
     "Publish readiness analyzer is read-only and reports dependency impact with writes_performed 0.",
     "Publish readiness diagnostic artifact is derived and not source of truth.",
+    "Publish dry-run artifacts are derived review artifacts and not source of truth.",
     "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
     "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],

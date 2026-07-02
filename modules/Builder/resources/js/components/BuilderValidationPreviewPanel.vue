@@ -35,6 +35,13 @@
           :loading="readinessAnalyzing"
           @click="$emit('analyze-readiness')"
         />
+        <IButton
+          class="w-full justify-center"
+          icon="DocumentText"
+          text="Generate Publish Dry Run"
+          :loading="dryRunGenerating"
+          @click="$emit('generate-dry-run')"
+        />
       </ICardBody>
     </ICard>
 
@@ -204,6 +211,74 @@
         <pre class="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedPublishReadinessReport }}</pre>
       </ICardBody>
     </ICard>
+
+    <ICard>
+      <ICardHeader>
+        <ICardHeading text="Publish Dry Run" />
+      </ICardHeader>
+
+      <ICardBody class="space-y-3">
+        <IAlert variant="info">
+          <IAlertBody>
+            Dry-run only. Files are generated under storage/app/builder-publish-dry-runs for review. No runtime modules, migrations, tables, routes, or publish actions are performed.
+          </IAlertBody>
+        </IAlert>
+
+        <div v-if="publishDryRunReport" class="space-y-3">
+          <div class="grid gap-3 text-sm">
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">dry_run_root</span>
+              <span class="break-all text-right font-mono text-xs">{{ publishDryRunReport.dry_run_root }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">dry_run_artifacts_written</span>
+              <span class="font-mono">{{ publishDryRunReport.dry_run_artifacts_written }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">runtime_writes_performed</span>
+              <span class="font-mono">{{ publishDryRunReport.runtime_writes_performed }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">publish_executed</span>
+              <span class="font-mono">{{ String(publishDryRunReport.publish_executed) }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">manifest path</span>
+              <span class="break-all text-right font-mono text-xs">{{ dryRunManifestPath }}</span>
+            </div>
+          </div>
+
+          <IAlert v-if="publishDryRunReport.blockers?.length" variant="danger">
+            <IAlertBody>
+              <div class="mb-1 font-medium">Blockers</div>
+              <ul class="list-disc space-y-1 pl-5">
+                <li v-for="blocker in publishDryRunReport.blockers" :key="blocker">
+                  {{ blocker }}
+                </li>
+              </ul>
+            </IAlertBody>
+          </IAlert>
+
+          <IAlert v-if="publishDryRunReport.warnings?.length" variant="warning">
+            <IAlertBody>
+              <div class="mb-1 font-medium">Warnings</div>
+              <ul class="list-disc space-y-1 pl-5">
+                <li v-for="warning in publishDryRunReport.warnings" :key="warning">
+                  {{ warning }}
+                </li>
+              </ul>
+            </IAlertBody>
+          </IAlert>
+
+          <div>
+            <ITextDark class="font-medium" text="Files" />
+            <pre class="mt-1 max-h-56 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishDryRunReport.files) }}</pre>
+          </div>
+        </div>
+
+        <pre class="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedPublishDryRunReport }}</pre>
+      </ICardBody>
+    </ICard>
   </div>
 </template>
 
@@ -217,13 +292,15 @@ const props = defineProps({
   validating: Boolean,
   previewing: Boolean,
   readinessAnalyzing: Boolean,
+  dryRunGenerating: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
   publishReadinessReport: Object,
+  publishDryRunReport: Object,
 })
 
-defineEmits(['save', 'validate', 'preview', 'analyze-readiness'])
+defineEmits(['save', 'validate', 'preview', 'analyze-readiness', 'generate-dry-run'])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))
 
@@ -252,6 +329,18 @@ const formattedPreviewOutput = computed(() => {
 const formattedPublishReadinessReport = computed(() =>
   formatJson(props.publishReadinessReport)
 )
+
+const formattedPublishDryRunReport = computed(() =>
+  formatJson(props.publishDryRunReport)
+)
+
+const dryRunManifestPath = computed(() => {
+  if (!props.publishDryRunReport?.dry_run_root) {
+    return '-'
+  }
+
+  return `${props.publishDryRunReport.dry_run_root}/manifest/publish-dry-run-manifest.json`
+})
 
 function formatJson(value) {
   if (!value) {

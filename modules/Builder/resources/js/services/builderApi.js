@@ -28,6 +28,10 @@ export function analyzePublishReadiness(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/publish-readiness`)
 }
 
+export function generatePublishDryRun(id) {
+  return Innoclapps.request().post(`${endpoint}/${id}/publish-dry-run`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

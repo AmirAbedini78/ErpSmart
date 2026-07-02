@@ -9,6 +9,7 @@
     "publish readiness analyzer",
     "deep conflict analyzer",
     "diagnostic plan artifact",
+    "publish dry-run file generator",
     "dependency impact analysis",
     "dry-run file plan",
     "DB migration plan",
@@ -22,6 +23,7 @@
     "definition schema valid",
     "publish readiness report generated with writes_performed 0",
     "diagnostic artifact generated under storage/app/builder-publish-readiness only",
+    "publish dry-run generated under storage/app/builder-publish-dry-runs only",
     "capability support status valid",
     "unsupported features acknowledged",
     "file conflicts checked",
@@ -57,6 +59,16 @@
     "implemented": true,
     "writes_performed": 0,
     "diagnostic_artifact_scope": "storage/app/builder-publish-readiness",
+    "runtime_module_effect": "none",
+    "publish_executed": false,
+    "actual_publish_still_forbidden": true
+  },
+  "current_sandbox_dry_run": {
+    "name": "BuilderPublishDryRunGenerator",
+    "implemented": true,
+    "write_scope": "storage/app/builder-publish-dry-runs",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
     "runtime_module_effect": "none",
     "publish_executed": false,
     "actual_publish_still_forbidden": true

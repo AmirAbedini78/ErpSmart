@@ -1,0 +1,71 @@
+{
+  "name": "ERPSMART Builder Publish Dry-Run Contract",
+  "purpose": "Define the sandboxed publish dry-run generator and manifest before real publish exists.",
+  "endpoint": "POST /api/builder/definitions/{id}/publish-dry-run",
+  "allowed_write_scope": [
+    "storage/app/builder-publish-dry-runs/{definition_id}/{run_id}/**"
+  ],
+  "forbidden_write_scopes": [
+    "modules/**",
+    "database/migrations/**",
+    "routes/**",
+    "resources/js/app.js",
+    "public/build/**",
+    "modules/Core/**",
+    "modules/Warehouse/**",
+    "modules/SaaS/**",
+    "vendor/**",
+    "node_modules/**"
+  ],
+  "manifest_structure": {
+    "generated_at": "ISO-8601 timestamp",
+    "definition_id": "Builder definition id",
+    "definition_name": "Builder definition name",
+    "definition_checksum": "Builder definition checksum",
+    "run_id": "unique dry-run id",
+    "dry_run_root": "storage/app/builder-publish-dry-runs/{definition_id}/{run_id}",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "dry_run_artifacts_written": "number",
+    "publish_executed": false,
+    "runtime_module_effect": "none",
+    "validation": "validator report",
+    "readiness": "publish readiness report",
+    "files": [],
+    "warnings": [],
+    "blockers": [],
+    "safety": {
+      "sandbox_only": true,
+      "runtime_paths_touched": false,
+      "migrations_run": false,
+      "publish_executed": false
+    }
+  },
+  "generated_artifact_types": [
+    "readme",
+    "definition",
+    "readiness",
+    "file_plan",
+    "model",
+    "migration",
+    "controller",
+    "resource",
+    "routes",
+    "frontend_route",
+    "view",
+    "manifest"
+  ],
+  "safety_flags": {
+    "safe_for_agent": true,
+    "agent_may_execute_publish": false,
+    "runtime_module_effect": "none",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0
+  },
+  "agent_notes": [
+    "AI Builder Agent may call publish dry-run generation.",
+    "AI Builder Agent may read dry-run artifacts.",
+    "AI Builder Agent must not copy dry-run artifacts into runtime paths.",
+    "AI Builder Agent must not execute publish, migrations, runtime writes, uninstall, rollback, or runtime deletion."
+  ]
+}

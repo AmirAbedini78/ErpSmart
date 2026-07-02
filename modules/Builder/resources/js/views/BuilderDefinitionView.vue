@@ -208,14 +208,17 @@
               :validating="validating"
               :previewing="previewing"
               :readiness-analyzing="readinessAnalyzing"
+              :dry-run-generating="dryRunGenerating"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
               :publish-readiness-report="publishReadinessReport"
+              :publish-dry-run-report="publishDryRunReport"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
               @analyze-readiness="runReadinessAnalysis"
+              @generate-dry-run="runDryRunGeneration"
             />
           </div>
         </div>
@@ -245,6 +248,7 @@ import {
   analyzePublishReadiness,
   archiveDefinition,
   deleteDefinition,
+  generatePublishDryRun,
   getDefinition,
   previewDefinition,
   restoreDefinition,
@@ -259,6 +263,7 @@ const saving = ref(false)
 const validating = ref(false)
 const previewing = ref(false)
 const readinessAnalyzing = ref(false)
+const dryRunGenerating = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -266,6 +271,7 @@ const definitionText = ref('')
 const validationReport = ref(null)
 const previewRun = ref(null)
 const publishReadinessReport = ref(null)
+const publishDryRunReport = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -392,6 +398,21 @@ async function runReadinessAnalysis() {
   }
 }
 
+async function runDryRunGeneration() {
+  dryRunGenerating.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await generatePublishDryRun(definition.value.id)
+    publishDryRunReport.value = data
+    Innoclapps.success('Publish dry run generated under storage. No runtime writes were performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    dryRunGenerating.value = false
+  }
+}
+
 async function archiveCurrentDefinition() {
   lifecycleAction.value = 'archive'
   apiError.value = null
@@ -491,6 +512,7 @@ function setDefinition(value) {
   validationReport.value = value.last_validation_report_json
   previewRun.value = null
   publishReadinessReport.value = null
+  publishDryRunReport.value = null
 }
 
 function normalizeDefinition(value) {

@@ -20,6 +20,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('definitions/{builderDefinition}/publish-readiness', [BuilderDefinitionController::class, 'publishReadiness'])
         ->name('builder.definitions.publish-readiness');
 
+    Route::post('definitions/{builderDefinition}/publish-dry-run', [BuilderDefinitionController::class, 'publishDryRun'])
+        ->name('builder.definitions.publish-dry-run');
+
     Route::post('definitions/{builderDefinition}/archive', [BuilderDefinitionController::class, 'archive'])
         ->name('builder.definitions.archive');
 

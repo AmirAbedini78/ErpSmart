@@ -13,9 +13,10 @@
       "form layout impact",
       "automation impact",
       "capability impact",
-      "diagnostic plan artifact"
+      "diagnostic plan artifact",
+      "publish dry-run sandbox artifacts"
     ],
-    "notes": "Current analyzer is the read-only dependency check implementation. It reports conflicts and planned impact but does not publish, run migrations, or write runtime files. It may write a derived diagnostic artifact under storage/app/builder-publish-readiness."
+    "notes": "Current analyzer is the read-only dependency check implementation. It reports conflicts and planned impact but does not publish, run migrations, or write runtime files. It may write a derived diagnostic artifact under storage/app/builder-publish-readiness. The dry-run generator creates sandbox artifacts under storage/app/builder-publish-dry-runs for dependency review only."
   },
   "dependencies": {
     "routes": {

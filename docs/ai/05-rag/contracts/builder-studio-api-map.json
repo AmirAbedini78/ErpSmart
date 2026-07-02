@@ -109,6 +109,30 @@
     },
     {
       "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-dry-run",
+      "purpose": "Generate sandboxed publish dry-run files under storage for review.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "response_shape": [
+        "dry_run_root",
+        "dry_run_artifacts_written",
+        "runtime_writes_performed",
+        "publish_executed",
+        "runtime_module_effect",
+        "files",
+        "warnings",
+        "blockers",
+        "safety"
+      ],
+      "notes": "Dry-run only. Writes sandbox artifacts under storage/app/builder-publish-dry-runs and does not write runtime modules, migrations, routes, public build assets, preview runs, versions, or publish."
+    },
+    {
+      "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
       "status": "implemented",
