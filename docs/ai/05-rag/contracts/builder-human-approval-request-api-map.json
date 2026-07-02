@@ -1,0 +1,81 @@
+{
+  "name": "ERPSMART Builder Human Approval Request API Map",
+  "purpose": "Document the persisted approval request workflow for Builder publish candidate snapshots.",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}/publish-approval-requests",
+      "purpose": "List approval requests for a Builder definition.",
+      "status": "implemented",
+      "allowed_current_statuses": ["any"],
+      "next_status": null,
+      "writes_control_plane_records": false,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "safe_for_agent": true,
+      "safe_for_ui": true,
+      "notes": "Read-only approval request list with audit events."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-approval-requests",
+      "purpose": "Request approval for a fresh candidate snapshot.",
+      "status": "implemented",
+      "allowed_current_statuses": ["draft", "validated", "validation_failed", "previewed", "preview_failed", "archived"],
+      "next_status": "requested",
+      "writes_control_plane_records": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "safe_for_agent": false,
+      "safe_for_ui": true,
+      "notes": "Creates approval request and approval_requested audit event. Does not publish."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/publish-approval-requests/{id}/approve",
+      "purpose": "Approve a candidate snapshot review state.",
+      "status": "implemented",
+      "allowed_current_statuses": ["requested"],
+      "next_status": "approved or invalidated",
+      "writes_control_plane_records": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "safe_for_agent": false,
+      "safe_for_ui": true,
+      "notes": "Checks definition checksum. If changed, marks request invalidated instead of approved."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/publish-approval-requests/{id}/reject",
+      "purpose": "Reject a candidate snapshot review state.",
+      "status": "implemented",
+      "allowed_current_statuses": ["requested"],
+      "next_status": "rejected",
+      "writes_control_plane_records": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "safe_for_agent": false,
+      "safe_for_ui": true,
+      "notes": "Writes approval_rejected audit event. Does not publish."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/publish-approval-requests/{id}/revoke",
+      "purpose": "Revoke a requested or approved candidate review state.",
+      "status": "implemented",
+      "allowed_current_statuses": ["requested", "approved"],
+      "next_status": "revoked",
+      "writes_control_plane_records": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "safe_for_agent": false,
+      "safe_for_ui": true,
+      "notes": "Writes approval_revoked audit event. Does not publish."
+    }
+  ]
+}

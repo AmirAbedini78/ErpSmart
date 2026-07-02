@@ -36,6 +36,26 @@ export function createPublishCandidateSnapshot(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/publish-candidate-snapshot`)
 }
 
+export function listPublishApprovalRequests(definitionId) {
+  return Innoclapps.request(`${endpoint}/${definitionId}/publish-approval-requests`)
+}
+
+export function requestPublishApproval(definitionId) {
+  return Innoclapps.request().post(`${endpoint}/${definitionId}/publish-approval-requests`)
+}
+
+export function approvePublishApprovalRequest(requestId, note) {
+  return Innoclapps.request().post(`/builder/publish-approval-requests/${requestId}/approve`, { note })
+}
+
+export function rejectPublishApprovalRequest(requestId, note) {
+  return Innoclapps.request().post(`/builder/publish-approval-requests/${requestId}/reject`, { note })
+}
+
+export function revokePublishApprovalRequest(requestId, note) {
+  return Innoclapps.request().post(`/builder/publish-approval-requests/${requestId}/revoke`, { note })
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

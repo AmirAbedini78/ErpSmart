@@ -17,7 +17,8 @@
       "app/Services/Builder/BuilderDefinitionVersionService.php",
       "app/Services/Builder/BuilderPublishReadinessAnalyzer.php",
       "app/Services/Builder/BuilderPublishDryRunGenerator.php",
-      "app/Services/Builder/BuilderPublishCandidateSnapshotService.php"
+      "app/Services/Builder/BuilderPublishCandidateSnapshotService.php",
+      "app/Services/Builder/BuilderPublishApprovalService.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -47,7 +48,8 @@
       "docs/ai/03-architecture/builder-publish-dry-run-review-browser.md",
       "docs/ai/03-architecture/builder-publish-candidate-snapshot.md",
       "docs/ai/03-architecture/builder-human-approval-gate.md",
-      "docs/ai/03-architecture/builder-publish-audit-log-strategy.md"
+      "docs/ai/03-architecture/builder-publish-audit-log-strategy.md",
+      "docs/ai/03-architecture/builder-human-approval-request-mvp.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -74,7 +76,8 @@
       "docs/ai/05-rag/contracts/builder-publish-dry-run-review-contract.json",
       "docs/ai/05-rag/contracts/builder-publish-candidate-snapshot-contract.json",
       "docs/ai/05-rag/contracts/builder-human-approval-gate-contract.json",
-      "docs/ai/05-rag/contracts/builder-publish-audit-log-contract.json"
+      "docs/ai/05-rag/contracts/builder-publish-audit-log-contract.json",
+      "docs/ai/05-rag/contracts/builder-human-approval-request-api-map.json"
     ]
   },
   "generated_or_derived_files": {
@@ -92,10 +95,13 @@
   "backend_models": [
     "App\\Models\\BuilderDefinition",
     "App\\Models\\BuilderDefinitionVersion",
-    "App\\Models\\BuilderPreviewRun"
+    "App\\Models\\BuilderPreviewRun",
+    "App\\Models\\BuilderPublishApprovalRequest",
+    "App\\Models\\BuilderPublishAuditLog"
   ],
   "backend_controllers": [
-    "App\\Http\\Controllers\\Builder\\BuilderDefinitionController"
+    "App\\Http\\Controllers\\Builder\\BuilderDefinitionController",
+    "App\\Http\\Controllers\\Builder\\BuilderPublishApprovalRequestController"
   ],
   "backend_services": [
     "App\\Services\\Builder\\BuilderDefinitionValidator",
@@ -153,7 +159,8 @@
     "analyze publish readiness",
     "generate publish dry-run artifacts under storage",
     "review publish dry-run artifacts",
-    "create publish candidate snapshots under storage"
+    "create publish candidate snapshots under storage",
+    "read approval request review state"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -174,7 +181,7 @@
     "copy publish dry-run artifacts into runtime paths",
     "copy publish candidate snapshots into runtime paths",
     "approve publish from dry-run review",
-    "request publish approval before approval implementation exists",
+    "autonomously request publish approval",
     "approve, reject, or revoke publish approval",
     "delete runtime modules",
     "uninstall modules",
@@ -212,7 +219,8 @@
     "Publish dry-run artifacts are derived review artifacts and not source of truth.",
     "Dry-run review checklist is informational only and does not approve publish.",
     "Publish candidate snapshots are derived review artifacts and not source of truth.",
-    "Human approval gate and publish audit log are planning-only; no approval persistence exists.",
+    "Human approval request persistence and publish audit logs exist for control-plane review state only.",
+    "Approval request persistence stores control-plane review state and audit logs, but approved candidates are not published modules.",
     "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
     "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],

@@ -145,6 +145,15 @@
       "notes": "Snapshot only. No approval persistence, publish action, or copy-to-runtime action."
     },
     {
+      "name": "BuilderPublishApprovalRequests",
+      "file": "modules/Builder/resources/js/components/BuilderPublishApprovalRequests.vue",
+      "role": "Displays persisted candidate approval requests, audit events, and human review actions.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "high",
+      "notes": "Approval does not publish. UI labels must avoid Publish, Deploy, and Copy to runtime actions."
+    },
+    {
       "name": "BuilderStatusBadge",
       "file": "modules/Builder/resources/js/components/BuilderStatusBadge.vue",
       "role": "Consistent status badge rendering.",

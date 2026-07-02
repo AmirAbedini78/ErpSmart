@@ -13,6 +13,7 @@
     "dry-run review checklist",
     "publish candidate snapshot",
     "human approval gate planning",
+    "approval request persistence",
     "dependency impact analysis",
     "dry-run file plan",
     "DB migration plan",
@@ -29,7 +30,8 @@
     "publish dry-run generated under storage/app/builder-publish-dry-runs only",
     "dry-run review checklist inspected without approval persistence",
     "candidate snapshot created under storage/app/builder-publish-candidates only",
-    "human approval gate planning reviewed; actual approval persistence not implemented",
+    "human approval gate reviewed; approval request persistence exists but does not publish",
+    "approval request persisted without publish execution",
     "capability support status valid",
     "unsupported features acknowledged",
     "file conflicts checked",
@@ -87,9 +89,9 @@
     "actual_publish_still_forbidden": true
   },
   "current_human_approval_gate": {
-    "implementation_status": "planning_only",
-    "approval_persistence": false,
-    "approval_apis": false,
+    "implementation_status": "approval_request_persistence_mvp",
+    "approval_persistence": true,
+    "approval_apis": true,
     "approval_does_not_publish": true,
     "actual_publish_still_forbidden": true
   },

@@ -1,7 +1,14 @@
 {
   "name": "ERPSMART Builder Human Approval Gate Contract",
   "purpose": "Plan the future human approval gate for publish candidate snapshots without implementing approval persistence or publish.",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "approval_request_persistence_mvp",
+  "implemented_endpoints": [
+    "GET /api/builder/definitions/{id}/publish-approval-requests",
+    "POST /api/builder/definitions/{id}/publish-approval-requests",
+    "POST /api/builder/publish-approval-requests/{id}/approve",
+    "POST /api/builder/publish-approval-requests/{id}/reject",
+    "POST /api/builder/publish-approval-requests/{id}/revoke"
+  ],
   "future_endpoint_candidates": [
     "POST /api/builder/definitions/{id}/approval-requests",
     "POST /api/builder/approval-requests/{id}/approve",
@@ -54,6 +61,8 @@
   "agent_may_approve_publish": false,
   "agent_may_execute_publish": false,
   "approval_does_not_publish": true,
+  "approval_persistence": true,
+  "publish_execution_implemented": false,
   "notes": [
     "Approval is separate from candidate snapshot creation.",
     "Approval is separate from publish execution.",

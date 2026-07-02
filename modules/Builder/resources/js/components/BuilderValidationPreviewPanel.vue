@@ -222,12 +222,22 @@
     <BuilderPublishDryRunReview :report="publishDryRunReport" />
 
     <BuilderPublishCandidateSnapshot :snapshot="publishCandidateSnapshot" />
+
+    <BuilderPublishApprovalRequests
+      :requests="publishApprovalRequests"
+      :loading="approvalRequestLoading"
+      @request-approval="$emit('request-approval')"
+      @approve-candidate="$emit('approve-candidate', $event)"
+      @reject-candidate="$emit('reject-candidate', $event)"
+      @revoke-approval="$emit('revoke-approval', $event)"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
+import BuilderPublishApprovalRequests from './BuilderPublishApprovalRequests.vue'
 import BuilderPublishCandidateSnapshot from './BuilderPublishCandidateSnapshot.vue'
 import BuilderPublishDryRunReview from './BuilderPublishDryRunReview.vue'
 import BuilderStatusBadge from './BuilderStatusBadge.vue'
@@ -239,15 +249,28 @@ const props = defineProps({
   readinessAnalyzing: Boolean,
   dryRunGenerating: Boolean,
   candidateSnapshotCreating: Boolean,
+  approvalRequestLoading: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
   publishReadinessReport: Object,
   publishDryRunReport: Object,
   publishCandidateSnapshot: Object,
+  publishApprovalRequests: Array,
 })
 
-defineEmits(['save', 'validate', 'preview', 'analyze-readiness', 'generate-dry-run', 'create-candidate-snapshot'])
+defineEmits([
+  'save',
+  'validate',
+  'preview',
+  'analyze-readiness',
+  'generate-dry-run',
+  'create-candidate-snapshot',
+  'request-approval',
+  'approve-candidate',
+  'reject-candidate',
+  'revoke-approval',
+])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))
 

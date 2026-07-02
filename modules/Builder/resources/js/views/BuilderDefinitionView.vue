@@ -210,18 +210,24 @@
               :readiness-analyzing="readinessAnalyzing"
               :dry-run-generating="dryRunGenerating"
               :candidate-snapshot-creating="candidateSnapshotCreating"
+              :approval-request-loading="approvalRequestLoading"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
               :publish-readiness-report="publishReadinessReport"
               :publish-dry-run-report="publishDryRunReport"
               :publish-candidate-snapshot="publishCandidateSnapshot"
+              :publish-approval-requests="publishApprovalRequests"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
               @analyze-readiness="runReadinessAnalysis"
               @generate-dry-run="runDryRunGeneration"
               @create-candidate-snapshot="runCandidateSnapshotCreation"
+              @request-approval="requestApproval"
+              @approve-candidate="approveCandidate"
+              @reject-candidate="rejectCandidate"
+              @revoke-approval="revokeApproval"
             />
           </div>
         </div>
@@ -249,13 +255,18 @@ import BuilderStatusBadge from '../components/BuilderStatusBadge.vue'
 import BuilderValidationPreviewPanel from '../components/BuilderValidationPreviewPanel.vue'
 import {
   analyzePublishReadiness,
+  approvePublishApprovalRequest,
   archiveDefinition,
   createPublishCandidateSnapshot,
   deleteDefinition,
   generatePublishDryRun,
   getDefinition,
+  listPublishApprovalRequests,
   previewDefinition,
+  rejectPublishApprovalRequest,
   restoreDefinition,
+  requestPublishApproval,
+  revokePublishApprovalRequest,
   updateDefinition,
   validateDefinition,
 } from '../services/builderApi'
@@ -269,6 +280,7 @@ const previewing = ref(false)
 const readinessAnalyzing = ref(false)
 const dryRunGenerating = ref(false)
 const candidateSnapshotCreating = ref(false)
+const approvalRequestLoading = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -278,6 +290,7 @@ const previewRun = ref(null)
 const publishReadinessReport = ref(null)
 const publishDryRunReport = ref(null)
 const publishCandidateSnapshot = ref(null)
+const publishApprovalRequests = ref([])
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -323,6 +336,7 @@ async function loadDefinition() {
   try {
     const { data } = await getDefinition(route.params.id)
     setDefinition(data)
+    await loadApprovalRequests()
   } finally {
     loading.value = false
   }
@@ -433,6 +447,79 @@ async function runCandidateSnapshotCreation() {
     apiError.value = errorMessage(error)
   } finally {
     candidateSnapshotCreating.value = false
+  }
+}
+
+async function loadApprovalRequests() {
+  if (!definition.value?.id) {
+    return
+  }
+
+  const { data } = await listPublishApprovalRequests(definition.value.id)
+  publishApprovalRequests.value = Array.isArray(data) ? data : data.data || []
+}
+
+async function requestApproval() {
+  approvalRequestLoading.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await requestPublishApproval(definition.value.id)
+    publishCandidateSnapshot.value = data.approval_request?.snapshot_json || publishCandidateSnapshot.value
+    await loadApprovalRequests()
+    Innoclapps.success('Approval requested. No publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    approvalRequestLoading.value = false
+  }
+}
+
+async function approveCandidate(request) {
+  const note = window.prompt('Decision note for approval') || ''
+  approvalRequestLoading.value = true
+  apiError.value = null
+
+  try {
+    await approvePublishApprovalRequest(request.id, note)
+    await loadApprovalRequests()
+    Innoclapps.success('Candidate approved for review state only. No publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    approvalRequestLoading.value = false
+  }
+}
+
+async function rejectCandidate(request) {
+  const note = window.prompt('Decision note for rejection') || ''
+  approvalRequestLoading.value = true
+  apiError.value = null
+
+  try {
+    await rejectPublishApprovalRequest(request.id, note)
+    await loadApprovalRequests()
+    Innoclapps.success('Candidate rejected. No publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    approvalRequestLoading.value = false
+  }
+}
+
+async function revokeApproval(request) {
+  const note = window.prompt('Decision note for revocation') || ''
+  approvalRequestLoading.value = true
+  apiError.value = null
+
+  try {
+    await revokePublishApprovalRequest(request.id, note)
+    await loadApprovalRequests()
+    Innoclapps.success('Approval revoked. No publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    approvalRequestLoading.value = false
   }
 }
 

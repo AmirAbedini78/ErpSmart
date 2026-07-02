@@ -1,8 +1,15 @@
 {
   "name": "ERPSMART Builder Publish Audit Log Contract",
   "purpose": "Plan future append-only audit events for approval, publish, rollback, and lifecycle operations.",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "persistence_mvp",
   "append_only": true,
+  "implemented_events": [
+    "approval_requested",
+    "approval_approved",
+    "approval_rejected",
+    "approval_revoked",
+    "approval_invalidated"
+  ],
   "future_events": [
     "candidate_snapshot_created",
     "approval_requested",
