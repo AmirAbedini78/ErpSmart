@@ -42,6 +42,13 @@
           :loading="dryRunGenerating"
           @click="$emit('generate-dry-run')"
         />
+        <IButton
+          class="w-full justify-center"
+          icon="DocumentText"
+          text="Create Publish Candidate Snapshot"
+          :loading="candidateSnapshotCreating"
+          @click="$emit('create-candidate-snapshot')"
+        />
       </ICardBody>
     </ICard>
 
@@ -213,12 +220,15 @@
     </ICard>
 
     <BuilderPublishDryRunReview :report="publishDryRunReport" />
+
+    <BuilderPublishCandidateSnapshot :snapshot="publishCandidateSnapshot" />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
+import BuilderPublishCandidateSnapshot from './BuilderPublishCandidateSnapshot.vue'
 import BuilderPublishDryRunReview from './BuilderPublishDryRunReview.vue'
 import BuilderStatusBadge from './BuilderStatusBadge.vue'
 
@@ -228,14 +238,16 @@ const props = defineProps({
   previewing: Boolean,
   readinessAnalyzing: Boolean,
   dryRunGenerating: Boolean,
+  candidateSnapshotCreating: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
   publishReadinessReport: Object,
   publishDryRunReport: Object,
+  publishCandidateSnapshot: Object,
 })
 
-defineEmits(['save', 'validate', 'preview', 'analyze-readiness', 'generate-dry-run'])
+defineEmits(['save', 'validate', 'preview', 'analyze-readiness', 'generate-dry-run', 'create-candidate-snapshot'])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))
 

@@ -209,16 +209,19 @@
               :previewing="previewing"
               :readiness-analyzing="readinessAnalyzing"
               :dry-run-generating="dryRunGenerating"
+              :candidate-snapshot-creating="candidateSnapshotCreating"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
               :publish-readiness-report="publishReadinessReport"
               :publish-dry-run-report="publishDryRunReport"
+              :publish-candidate-snapshot="publishCandidateSnapshot"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
               @analyze-readiness="runReadinessAnalysis"
               @generate-dry-run="runDryRunGeneration"
+              @create-candidate-snapshot="runCandidateSnapshotCreation"
             />
           </div>
         </div>
@@ -247,6 +250,7 @@ import BuilderValidationPreviewPanel from '../components/BuilderValidationPrevie
 import {
   analyzePublishReadiness,
   archiveDefinition,
+  createPublishCandidateSnapshot,
   deleteDefinition,
   generatePublishDryRun,
   getDefinition,
@@ -264,6 +268,7 @@ const validating = ref(false)
 const previewing = ref(false)
 const readinessAnalyzing = ref(false)
 const dryRunGenerating = ref(false)
+const candidateSnapshotCreating = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -272,6 +277,7 @@ const validationReport = ref(null)
 const previewRun = ref(null)
 const publishReadinessReport = ref(null)
 const publishDryRunReport = ref(null)
+const publishCandidateSnapshot = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -413,6 +419,23 @@ async function runDryRunGeneration() {
   }
 }
 
+async function runCandidateSnapshotCreation() {
+  candidateSnapshotCreating.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await createPublishCandidateSnapshot(definition.value.id)
+    publishCandidateSnapshot.value = data
+    publishReadinessReport.value = data.readiness || publishReadinessReport.value
+    publishDryRunReport.value = data.dry_run || publishDryRunReport.value
+    Innoclapps.success('Publish candidate snapshot created under storage. No approval or publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    candidateSnapshotCreating.value = false
+  }
+}
+
 async function archiveCurrentDefinition() {
   lifecycleAction.value = 'archive'
   apiError.value = null
@@ -513,6 +536,7 @@ function setDefinition(value) {
   previewRun.value = null
   publishReadinessReport.value = null
   publishDryRunReport.value = null
+  publishCandidateSnapshot.value = null
 }
 
 function normalizeDefinition(value) {

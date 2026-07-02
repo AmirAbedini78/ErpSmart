@@ -32,6 +32,10 @@ export function generatePublishDryRun(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/publish-dry-run`)
 }
 
+export function createPublishCandidateSnapshot(id) {
+  return Innoclapps.request().post(`${endpoint}/${id}/publish-candidate-snapshot`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

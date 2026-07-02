@@ -136,6 +136,15 @@
       "notes": "Review only. No approval persistence, publish action, or copy-to-runtime action."
     },
     {
+      "name": "BuilderPublishCandidateSnapshot",
+      "file": "modules/Builder/resources/js/components/BuilderPublishCandidateSnapshot.vue",
+      "role": "Read-only browser for control-plane publish candidate snapshots, checklist items, next allowed actions, and forbidden actions.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "Snapshot only. No approval persistence, publish action, or copy-to-runtime action."
+    },
+    {
       "name": "BuilderStatusBadge",
       "file": "modules/Builder/resources/js/components/BuilderStatusBadge.vue",
       "role": "Consistent status badge rendering.",

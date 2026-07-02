@@ -1,0 +1,84 @@
+{
+  "name": "ERPSMART Builder Publish Candidate Snapshot Contract",
+  "purpose": "Define the control-plane-only publish candidate snapshot artifact before approval or publish exists.",
+  "endpoint": "POST /api/builder/definitions/{id}/publish-candidate-snapshot",
+  "path_pattern": "storage/app/builder-publish-candidates/{definition_id}/{candidate_id}/candidate-snapshot.json",
+  "allowed_write_scope": [
+    "storage/app/builder-publish-candidates/{definition_id}/{candidate_id}/**"
+  ],
+  "forbidden_write_scopes": [
+    "modules/**",
+    "database/migrations/**",
+    "routes/**",
+    "resources/js/app.js",
+    "public/build/**",
+    "modules/Core/**",
+    "modules/Warehouse/**",
+    "modules/SaaS/**",
+    "vendor/**",
+    "node_modules/**"
+  ],
+  "snapshot_structure": {
+    "generated_at": "ISO-8601 timestamp",
+    "candidate_id": "unique candidate id",
+    "definition_id": "Builder definition id",
+    "definition_name": "Builder definition name",
+    "definition_checksum": "Builder definition checksum",
+    "candidate_root": "storage/app/builder-publish-candidates/{definition_id}/{candidate_id}",
+    "candidate_snapshot_path": "storage/app/builder-publish-candidates/{definition_id}/{candidate_id}/candidate-snapshot.json",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "candidate_artifacts_written": 1,
+    "publish_executed": false,
+    "approval_requested": false,
+    "approval_granted": false,
+    "runtime_module_effect": "none",
+    "readiness": {},
+    "dry_run": {},
+    "candidate_status": "snapshot_created",
+    "candidate_checklist": [],
+    "forbidden_actions": [],
+    "next_allowed_actions": [],
+    "safety": {}
+  },
+  "candidate_checklist_items": [
+    "readiness_report_available",
+    "dry_run_report_available",
+    "dry_run_review_available",
+    "runtime_writes_zero",
+    "publish_not_executed",
+    "approval_not_requested",
+    "approval_not_granted",
+    "human_review_required_before_future_publish"
+  ],
+  "forbidden_actions": [
+    "publish",
+    "approve publish",
+    "copy artifacts into runtime paths",
+    "run migrations",
+    "drop tables"
+  ],
+  "next_allowed_actions": [
+    "review candidate snapshot",
+    "regenerate candidate snapshot",
+    "archive definition"
+  ],
+  "safety_flags": {
+    "safe_for_agent": true,
+    "agent_may_create_candidate_snapshot": true,
+    "agent_may_approve_publish": false,
+    "agent_may_execute_publish": false,
+    "agent_may_copy_artifacts_to_runtime": false,
+    "runtime_module_effect": "none",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "approval_persistence": false
+  },
+  "agent_notes": [
+    "AI Builder Agent may create and summarize candidate snapshots.",
+    "Candidate snapshots are derived review artifacts and are not runtime source of truth.",
+    "AI Builder Agent must not approve publish.",
+    "AI Builder Agent must not copy candidate or dry-run artifacts into runtime paths.",
+    "AI Builder Agent must not execute publish."
+  ]
+}

@@ -133,6 +133,30 @@
     },
     {
       "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-candidate-snapshot",
+      "purpose": "Create a control-plane-only publish candidate snapshot under storage.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "approval_persistence": false,
+      "runtime_writes_performed": 0,
+      "response_shape": [
+        "candidate_id",
+        "candidate_root",
+        "candidate_snapshot_path",
+        "candidate_status",
+        "candidate_checklist",
+        "forbidden_actions",
+        "next_allowed_actions",
+        "safety"
+      ],
+      "notes": "Snapshot only. Writes derived JSON under storage/app/builder-publish-candidates and does not approve publish, publish, copy artifacts into runtime paths, run migrations, create preview runs, create versions, or write runtime modules."
+    },
+    {
+      "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
       "status": "implemented",

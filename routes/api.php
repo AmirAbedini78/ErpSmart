@@ -23,6 +23,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('definitions/{builderDefinition}/publish-dry-run', [BuilderDefinitionController::class, 'publishDryRun'])
         ->name('builder.definitions.publish-dry-run');
 
+    Route::post('definitions/{builderDefinition}/publish-candidate-snapshot', [BuilderDefinitionController::class, 'publishCandidateSnapshot'])
+        ->name('builder.definitions.publish-candidate-snapshot');
+
     Route::post('definitions/{builderDefinition}/archive', [BuilderDefinitionController::class, 'archive'])
         ->name('builder.definitions.archive');
 
