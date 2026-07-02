@@ -11,6 +11,9 @@
     "guide the Builder Studio demo journey with read, save, validate, and preview only",
     "plan module lifecycle states",
     "propose archive, disable, or delete-draft rules for a future approved lifecycle task",
+    "archive unpublished Builder definitions when explicitly requested",
+    "restore archived Builder definitions when explicitly requested",
+    "delete unpublished Builder draft/control-plane records when explicitly requested",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -21,6 +24,7 @@
     "execute publish",
     "execute uninstall",
     "delete runtime modules",
+    "delete runtime files",
     "drop tables or business data",
     "hide existing modules without an explicitly approved implementation flow",
     "remove runtime capabilities without dependency analysis and approved lifecycle implementation",
@@ -45,6 +49,7 @@
   "lifecycle_planning_boundaries": {
     "ai_builder_agent_may_plan_lifecycle": true,
     "ai_builder_agent_may_propose_disable_archive_delete_draft_rules": true,
+    "ai_builder_agent_may_archive_restore_delete_draft_control_plane_records": true,
     "ai_builder_agent_may_execute_publish": false,
     "ai_builder_agent_may_execute_uninstall": false,
     "ai_builder_agent_may_delete_runtime_modules": false,
@@ -52,6 +57,7 @@
     "ai_builder_agent_may_hide_existing_modules_without_approved_flow": false,
     "notes": [
       "Lifecycle planning is allowed because it produces docs and contracts only.",
+      "Definition lifecycle MVP allows archive, restore, and delete-draft for unpublished Builder control-plane records only when explicitly requested.",
       "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
     ]
   },
@@ -105,7 +111,10 @@
     "preview",
     "end_to_end_smoke",
     "edit_automation_metadata",
-    "manual_demo_journey"
+    "manual_demo_journey",
+    "archive_definition",
+    "restore_archived_definition",
+    "delete_draft_control_plane_records"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

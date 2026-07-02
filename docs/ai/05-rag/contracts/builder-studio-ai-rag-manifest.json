@@ -36,7 +36,8 @@
       "docs/ai/03-architecture/builder-studio-demo-journey-polish.md",
       "docs/ai/03-architecture/builder-safe-publish-and-lifecycle.md",
       "docs/ai/03-architecture/builder-module-removal-strategy.md",
-      "docs/ai/03-architecture/builder-capability-removal-strategy.md"
+      "docs/ai/03-architecture/builder-capability-removal-strategy.md",
+      "docs/ai/03-architecture/builder-definition-lifecycle-mvp.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -55,7 +56,8 @@
       "docs/ai/05-rag/contracts/builder-publish-safety-contract.json",
       "docs/ai/05-rag/contracts/builder-module-removal-safety-contract.json",
       "docs/ai/05-rag/contracts/builder-capability-removal-contract.json",
-      "docs/ai/05-rag/contracts/builder-module-dependency-impact-map.json"
+      "docs/ai/05-rag/contracts/builder-module-dependency-impact-map.json",
+      "docs/ai/05-rag/contracts/builder-definition-lifecycle-api-map.json"
     ]
   },
   "generated_or_derived_files": {
@@ -121,7 +123,10 @@
     "run end-to-end smoke with temporary DB records and cleanup",
     "edit definition_json.formLayout metadata through Builder Studio",
     "edit definition_json.automation metadata through Builder Studio",
-    "follow the manual browser smoke journey with read/save/validate/preview only"
+    "follow the manual browser smoke journey with read/save/validate/preview only",
+    "archive unpublished Builder definitions",
+    "restore archived Builder definitions",
+    "delete unpublished Builder draft/control-plane records"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -167,7 +172,9 @@
     "Automation metadata is definition data, but runtime workflow/email/task/approval/webhook execution is future work.",
     "The demo journey is safe for manual smoke as long as it remains limited to draft, save, validate, and preview.",
     "Module lifecycle/removal is safety-critical planning only until a separate implementation task adds dependency checks, backups, retention rules, rollback, permissions, jobs, and verifier coverage.",
-    "Preview remains the current safe executable operation; publish, delete, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
+    "Definition lifecycle MVP can archive, restore, and delete unpublished Builder control-plane records only.",
+    "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
+    "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],
   "notes_for_business_operations_agent_separation": [
     "The Business Operations Agent is separate from the AI Builder Agent.",

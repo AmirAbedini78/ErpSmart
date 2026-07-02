@@ -22,7 +22,31 @@ class BuilderDefinition extends Model
     public const STATUS_PUBLISHED = 'published';
     public const STATUS_PUBLISH_FAILED = 'publish_failed';
     public const STATUS_ARCHIVED = 'archived';
+    public const STATUS_DISABLED = 'disabled';
+    public const STATUS_UNINSTALL_PLANNED = 'uninstall_planned';
+    public const STATUS_UNINSTALLING = 'uninstalling';
+    public const STATUS_UNINSTALLED = 'uninstalled';
+    public const STATUS_ROLLBACK_PLANNED = 'rollback_planned';
     public const STATUS_ROLLED_BACK = 'rolled_back';
+
+    public const UNPUBLISHED_STATUSES = [
+        self::STATUS_DRAFT,
+        self::STATUS_VALIDATED,
+        self::STATUS_VALIDATION_FAILED,
+        self::STATUS_PREVIEWED,
+        self::STATUS_PREVIEW_FAILED,
+        self::STATUS_ARCHIVED,
+    ];
+
+    public const RUNTIME_STATUSES = [
+        self::STATUS_PUBLISHED,
+        self::STATUS_DISABLED,
+        self::STATUS_UNINSTALL_PLANNED,
+        self::STATUS_UNINSTALLING,
+        self::STATUS_UNINSTALLED,
+        self::STATUS_ROLLBACK_PLANNED,
+        self::STATUS_ROLLED_BACK,
+    ];
 
     protected $fillable = [
         'uuid',
@@ -63,5 +87,25 @@ class BuilderDefinition extends Model
     public function transitionTo(string $status, array $attributes = []): bool
     {
         return $this->fill(array_merge($attributes, ['status' => $status]))->save();
+    }
+
+    public function isUnpublished(): bool
+    {
+        return in_array($this->status, self::UNPUBLISHED_STATUSES, true);
+    }
+
+    public function canBeArchived(): bool
+    {
+        return $this->isUnpublished() && $this->status !== self::STATUS_ARCHIVED;
+    }
+
+    public function canBeRestored(): bool
+    {
+        return $this->status === self::STATUS_ARCHIVED;
+    }
+
+    public function canBeDeletedAsDraft(): bool
+    {
+        return $this->isUnpublished();
     }
 }

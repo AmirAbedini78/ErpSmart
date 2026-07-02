@@ -4,7 +4,7 @@
   "current_mvp_rule": "Current MVP must not execute uninstall or destructive delete.",
   "operations": {
     "delete_draft_definition": {
-      "status": "future_safe_candidate",
+      "status": "current_supported_control_plane_only",
       "risk_level": "low_if_never_published",
       "data_effect": "Removes draft Builder data according to retention policy; no runtime business data should exist.",
       "code_effect": "No runtime code effect.",
@@ -12,9 +12,10 @@
       "requires_backup": false,
       "requires_dependency_analysis": true,
       "reversible": "policy-dependent",
-      "allowed_in_current_mvp": false,
+      "allowed_in_current_mvp": true,
       "agent_may_plan": true,
-      "agent_may_execute": false
+      "agent_may_execute": true,
+      "implementation_notes": "Current implementation deletes only unpublished Builder definition, version, and preview-run records. It does not delete runtime modules, generated files, database tables, migrations, media, business data, or preview artifact directories."
     },
     "archive_definition": {
       "status": "future_safe_candidate",

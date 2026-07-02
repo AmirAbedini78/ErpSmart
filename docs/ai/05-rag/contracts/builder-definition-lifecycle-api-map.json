@@ -1,0 +1,101 @@
+{
+  "name": "ERPSMART Builder Definition Lifecycle API Map",
+  "purpose": "Document the first safe Builder lifecycle endpoints for control-plane-only archive, restore, and delete-draft operations.",
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/archive",
+      "purpose": "Archive an unpublished Builder definition.",
+      "allowed_statuses": [
+        "draft",
+        "validated",
+        "validation_failed",
+        "previewed",
+        "preview_failed"
+      ],
+      "forbidden_statuses": [
+        "published",
+        "disabled",
+        "uninstall_planned",
+        "uninstalling",
+        "uninstalled",
+        "rollback_planned",
+        "rolled_back"
+      ],
+      "runtime_module_effect": "none",
+      "database_effect": "sets builder_definitions.status to archived",
+      "file_effect": "none",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "notes": "Does not delete Builder records, preview files, runtime modules, migrations, tables, routes, or menus."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/restore",
+      "purpose": "Restore an archived Builder definition to draft.",
+      "allowed_statuses": [
+        "archived"
+      ],
+      "forbidden_statuses": [
+        "draft",
+        "validated",
+        "validation_failed",
+        "previewed",
+        "preview_failed",
+        "published",
+        "disabled",
+        "uninstall_planned",
+        "uninstalling",
+        "uninstalled",
+        "rollback_planned",
+        "rolled_back"
+      ],
+      "runtime_module_effect": "none",
+      "database_effect": "sets builder_definitions.status to draft",
+      "file_effect": "none",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "notes": "Does not change runtime modules, migrations, tables, routes, menus, or preview files."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/builder/definitions/{id}",
+      "purpose": "Delete unpublished Builder draft/control-plane records.",
+      "allowed_statuses": [
+        "draft",
+        "validated",
+        "validation_failed",
+        "previewed",
+        "preview_failed",
+        "archived"
+      ],
+      "forbidden_statuses": [
+        "published",
+        "disabled",
+        "uninstall_planned",
+        "uninstalling",
+        "uninstalled",
+        "rollback_planned",
+        "rolled_back"
+      ],
+      "runtime_module_effect": "none",
+      "database_effect": "deletes builder_definition_versions, builder_preview_runs, and builder_definitions rows for the selected unpublished definition",
+      "file_effect": "none; preview files are not removed in this MVP",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "notes": "Control-plane-only deletion. It does not delete runtime modules, generated files, database tables, migrations, media, or business data."
+    }
+  ]
+}

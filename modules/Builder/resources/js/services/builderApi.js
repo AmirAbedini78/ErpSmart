@@ -24,5 +24,17 @@ export function previewDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/preview`)
 }
 
+export function archiveDefinition(id) {
+  return Innoclapps.request().post(`${endpoint}/${id}/archive`)
+}
+
+export function restoreDefinition(id) {
+  return Innoclapps.request().post(`${endpoint}/${id}/restore`)
+}
+
+export function deleteDefinition(id) {
+  return Innoclapps.request().delete(`${endpoint}/${id}`)
+}
+
 export const fetchDefinitions = listDefinitions
 export const fetchDefinition = getDefinition

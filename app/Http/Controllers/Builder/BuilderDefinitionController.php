@@ -10,6 +10,7 @@ use App\Services\Builder\BuilderDefinitionVersionService;
 use App\Services\Builder\BuilderPreviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Modules\Core\Http\Controllers\ApiController;
@@ -154,6 +155,57 @@ class BuilderDefinitionController extends ApiController
             'validation_report' => $report,
             'output_text' => $run->output_text,
         ], $run->status === 'previewed' ? JsonResponse::HTTP_OK : JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function archive(BuilderDefinition $builderDefinition): JsonResponse
+    {
+        if (! $builderDefinition->canBeArchived()) {
+            return $this->response([
+                'message' => 'Only unpublished Builder definitions can be archived.',
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $builderDefinition->transitionTo(BuilderDefinition::STATUS_ARCHIVED);
+
+        return $this->response([
+            'message' => 'Builder definition archived. No runtime modules, files, migrations, or tables were changed.',
+            'definition' => $builderDefinition->fresh(),
+        ]);
+    }
+
+    public function restore(BuilderDefinition $builderDefinition): JsonResponse
+    {
+        if (! $builderDefinition->canBeRestored()) {
+            return $this->response([
+                'message' => 'Only archived Builder definitions can be restored.',
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $builderDefinition->transitionTo(BuilderDefinition::STATUS_DRAFT);
+
+        return $this->response([
+            'message' => 'Builder definition restored to draft. No runtime modules, files, migrations, or tables were changed.',
+            'definition' => $builderDefinition->fresh(),
+        ]);
+    }
+
+    public function destroy(BuilderDefinition $builderDefinition): JsonResponse
+    {
+        if (! $builderDefinition->canBeDeletedAsDraft()) {
+            return $this->response([
+                'message' => 'Only unpublished Builder definitions can be deleted. Runtime module deletion is not implemented.',
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        DB::transaction(function () use ($builderDefinition): void {
+            $builderDefinition->versions()->delete();
+            $builderDefinition->previewRuns()->delete();
+            $builderDefinition->delete();
+        });
+
+        return $this->response([
+            'message' => 'Builder draft/control-plane records deleted. No runtime modules, files, migrations, or tables were changed.',
+        ]);
     }
 
     protected function definitionAttributes(array $definitionJson): array

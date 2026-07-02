@@ -32,12 +32,46 @@
           :loading="previewing"
           @click="runPreview"
         />
+
+        <IButton
+          v-if="definition.status !== 'archived'"
+          basic
+          icon="ArchiveBox"
+          text="Archive"
+          :loading="lifecycleAction === 'archive'"
+          @click="archiveCurrentDefinition"
+        />
+
+        <IButton
+          v-if="definition.status === 'archived'"
+          basic
+          icon="ArrowUturnLeft"
+          text="Restore"
+          :loading="lifecycleAction === 'restore'"
+          @click="restoreCurrentDefinition"
+        />
+
+        <IButton
+          v-if="canDeleteCurrentDefinition"
+          basic
+          variant="danger"
+          icon="Trash"
+          text="Delete draft"
+          :loading="lifecycleAction === 'delete'"
+          @click="deleteCurrentDefinition"
+        />
       </NavbarItems>
     </template>
 
     <div v-if="definition" class="mx-auto max-w-7xl">
       <IAlert v-if="apiError" class="mb-6" variant="danger">
         <IAlertBody>{{ apiError }}</IAlertBody>
+      </IAlert>
+
+      <IAlert v-if="definition.status === 'archived'" class="mb-6" variant="warning">
+        <IAlertBody>
+          This Builder definition is archived. Restore it before continuing active draft work. Archive and restore do not change runtime modules, files, migrations, or database tables.
+        </IAlertBody>
       </IAlert>
 
       <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -189,7 +223,8 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { usePageTitle } from '@/Core/composables/usePageTitle'
 
@@ -204,17 +239,22 @@ import BuilderRelationsEditor from '../components/BuilderRelationsEditor.vue'
 import BuilderStatusBadge from '../components/BuilderStatusBadge.vue'
 import BuilderValidationPreviewPanel from '../components/BuilderValidationPreviewPanel.vue'
 import {
+  archiveDefinition,
+  deleteDefinition,
   getDefinition,
   previewDefinition,
+  restoreDefinition,
   updateDefinition,
   validateDefinition,
 } from '../services/builderApi'
 
 const route = useRoute()
+const router = useRouter()
 const loading = ref(false)
 const saving = ref(false)
 const validating = ref(false)
 const previewing = ref(false)
+const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
 const definitionText = ref('')
@@ -244,6 +284,16 @@ const sectionNavigation = [
   { id: 'raw-json', label: 'Raw JSON' },
   { id: 'validate-preview', label: 'Validate & Preview' },
 ]
+const canDeleteCurrentDefinition = computed(() =>
+  [
+    'draft',
+    'validated',
+    'validation_failed',
+    'previewed',
+    'preview_failed',
+    'archived',
+  ].includes(definition.value?.status)
+)
 
 usePageTitle('Builder Definition')
 
@@ -318,6 +368,59 @@ async function runPreview() {
     apiError.value = response?.message || errorMessage(error)
   } finally {
     previewing.value = false
+  }
+}
+
+async function archiveCurrentDefinition() {
+  lifecycleAction.value = 'archive'
+  apiError.value = null
+
+  try {
+    const { data } = await archiveDefinition(definition.value.id)
+    setDefinition(data.definition)
+    Innoclapps.success('Builder definition archived.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    lifecycleAction.value = null
+  }
+}
+
+async function restoreCurrentDefinition() {
+  lifecycleAction.value = 'restore'
+  apiError.value = null
+
+  try {
+    const { data } = await restoreDefinition(definition.value.id)
+    setDefinition(data.definition)
+    Innoclapps.success('Builder definition restored.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    lifecycleAction.value = null
+  }
+}
+
+async function deleteCurrentDefinition() {
+  const confirmed = window.confirm(
+    'This deletes only the Builder draft/control-plane records. It does not delete runtime modules or database tables.'
+  )
+
+  if (!confirmed) {
+    return
+  }
+
+  lifecycleAction.value = 'delete'
+  apiError.value = null
+
+  try {
+    await deleteDefinition(definition.value.id)
+    Innoclapps.success('Builder draft deleted. No runtime modules or database tables were changed.')
+    await router.push({ name: 'builder-definitions-index' })
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    lifecycleAction.value = null
   }
 }
 

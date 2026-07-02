@@ -4,16 +4,24 @@
   "current_mvp_supported_states": [
     "draft",
     "validated",
-    "previewed"
+    "previewed",
+    "archived"
+  ],
+  "current_mvp_supported_operations": [
+    "validate",
+    "preview",
+    "archive",
+    "restore_archived",
+    "delete_draft_unpublished"
   ],
   "states": [
     "draft",
     "validated",
     "previewed",
+    "archived",
     "publish_ready",
     "published",
     "disabled",
-    "archived",
     "uninstall_planned",
     "uninstalling",
     "uninstalled",
@@ -25,7 +33,6 @@
     "publish_ready",
     "published",
     "disabled",
-    "archived",
     "uninstall_planned",
     "uninstalling",
     "uninstalled",
@@ -62,7 +69,22 @@
     {
       "from": "draft",
       "to": "archived",
-      "current_mvp": false
+      "current_mvp": true
+    },
+    {
+      "from": "validated",
+      "to": "archived",
+      "current_mvp": true
+    },
+    {
+      "from": "previewed",
+      "to": "archived",
+      "current_mvp": true
+    },
+    {
+      "from": "archived",
+      "to": "draft",
+      "current_mvp": true
     },
     {
       "from": "validated",
@@ -135,9 +157,31 @@
     "published -> uninstall_planned",
     "published -> rollback_planned"
   ],
+  "delete_draft_unpublished": {
+    "current_mvp": true,
+    "allowed_statuses": [
+      "draft",
+      "validated",
+      "validation_failed",
+      "previewed",
+      "preview_failed",
+      "archived"
+    ],
+    "forbidden_statuses": [
+      "published",
+      "disabled",
+      "uninstall_planned",
+      "uninstalling",
+      "uninstalled",
+      "rollback_planned",
+      "rolled_back"
+    ],
+    "runtime_module_effect": "none",
+    "notes": "Deletes Builder control-plane database records only; preview files are not removed in this MVP."
+  },
   "agent_notes": [
     "AI Builder Agent may plan lifecycle transitions but may not execute publish, uninstall, rollback, table drops, or runtime file deletion.",
-    "Current MVP execution is limited to draft, validate, and preview behavior.",
+    "Current MVP execution is limited to draft, validate, preview, archive, restore archived, and delete unpublished draft/control-plane records.",
     "Publish, uninstall, and rollback require separate implementation tasks with safety contracts, backups, dependency checks, and verifier coverage."
   ]
 }

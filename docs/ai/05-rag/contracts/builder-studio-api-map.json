@@ -79,6 +79,48 @@
         "does not write real modules"
       ],
       "notes": "Validates first and does not publish, run migrations, or write real modules."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/archive",
+      "purpose": "Archive an unpublished Builder definition.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "response_shape": ["definition", "message"],
+      "notes": "Control-plane-only status change. Does not delete runtime modules, files, migrations, tables, or preview artifacts."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/restore",
+      "purpose": "Restore an archived Builder definition to draft.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "response_shape": ["definition", "message"],
+      "notes": "Control-plane-only status change. Does not change runtime modules, files, migrations, or tables."
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/builder/definitions/{id}",
+      "purpose": "Delete unpublished Builder draft/control-plane records.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "uninstall_related": false,
+      "destructive_runtime_related": false,
+      "response_shape": ["message"],
+      "notes": "Deletes Builder definition/version/preview-run records only. Does not delete runtime modules, generated files, database tables, migrations, media, business data, or preview artifact directories."
     }
   ]
 }
