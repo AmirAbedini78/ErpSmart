@@ -19,18 +19,73 @@
     "writes_performed": "always 0",
     "runtime_module_effect": "always none",
     "publish_executed": "always false",
+    "diagnostic_artifacts_written": "number of diagnostic artifacts written under storage/app/builder-publish-readiness",
+    "diagnostic_artifact_path": "relative path to diagnostic artifact",
     "definition": "id, name, status, module, table, route",
     "validation": "valid/errors/warnings from BuilderDefinitionValidator",
+    "identity_checks": "module/table/route/resource/title/primary field checks",
+    "existing_app_conflicts": "module directory, table, route, menu, permission, and class conflict hints",
+    "field_impact": "field counts, field types, required/primary/select/belongsTo/rule warnings",
     "file_plan": "planned files only, no writes",
     "database_plan": "planned tables/migration requirement only, no migration execution",
     "route_menu_permission_plan": "planned routes, menus, permissions",
     "capability_impact": "preview_safe, metadata_only, warning_only, unsupported",
-    "relation_impact": "declared relation impact and missing metadata",
+    "relation_impact": "relation counts, relation types, missing target/resource/foreign key data",
+    "form_layout_impact": "metadata-only form layout sections, stepper, conditions, and missing field references",
+    "automation_impact": "metadata-only workflows, triggers, actions, missing field references, and runtime execution forbidden flag",
     "conflicts": "detected conflicts",
     "blockers": "blocking issues before publish",
     "warnings": "non-blocking risks",
     "rollback_requirements": "future rollback requirements",
     "dependency_checks": "checks required before publish"
+  },
+  "identity_checks_structure": {
+    "module_name_present": true,
+    "namespace_present": true,
+    "table_name_present": true,
+    "route_name_present": true,
+    "resource_name_present": true,
+    "title_field_exists": true,
+    "primary_field_exists": true,
+    "naming_warnings": []
+  },
+  "existing_app_conflicts_structure": {
+    "module_directory_exists": false,
+    "table_exists": false,
+    "route_name_exists": [],
+    "permission_name_conflicts": [],
+    "menu_entry_possible_conflicts": [],
+    "class_name_possible_conflicts": []
+  },
+  "field_impact_structure": {
+    "total_fields": 0,
+    "fields_by_type": {},
+    "primary_fields": [],
+    "required_fields": [],
+    "select_fields_without_options": [],
+    "belongs_to_fields": [],
+    "validation_rule_warnings": []
+  },
+  "form_layout_impact_structure": {
+    "enabled": false,
+    "sections_count": 0,
+    "stepper_enabled": false,
+    "conditions_count": 0,
+    "missing_field_references": [],
+    "metadata_only_warning": null
+  },
+  "automation_impact_structure": {
+    "enabled": false,
+    "workflows_count": 0,
+    "triggers_by_type": {},
+    "actions_by_type": {},
+    "webhook_actions_count": 0,
+    "email_actions_count": 0,
+    "task_actions_count": 0,
+    "approval_actions_count": 0,
+    "missing_field_references": [],
+    "metadata_only_warning": null,
+    "runtime_execution_forbidden": true
   },
   "file_plan_structure": {
     "would_create": [],
@@ -54,6 +109,13 @@
     "warning_only",
     "unsupported"
   ],
+  "publish_plan_artifact": {
+    "artifact_generated": true,
+    "path": "storage/app/builder-publish-readiness/{definition_id}/publish-readiness-plan.json",
+    "writes_performed": 0,
+    "artifact_write_only": true,
+    "runtime_module_effect": "none"
+  },
   "conflict_types": [
     "module_directory",
     "table",

@@ -7,6 +7,8 @@
   "future_publish_phases": [
     "validate",
     "publish readiness analyzer",
+    "deep conflict analyzer",
+    "diagnostic plan artifact",
     "dependency impact analysis",
     "dry-run file plan",
     "DB migration plan",
@@ -19,6 +21,7 @@
   "required_preflight_checks": [
     "definition schema valid",
     "publish readiness report generated with writes_performed 0",
+    "diagnostic artifact generated under storage/app/builder-publish-readiness only",
     "capability support status valid",
     "unsupported features acknowledged",
     "file conflicts checked",
@@ -53,6 +56,7 @@
     "name": "BuilderPublishReadinessAnalyzer",
     "implemented": true,
     "writes_performed": 0,
+    "diagnostic_artifact_scope": "storage/app/builder-publish-readiness",
     "runtime_module_effect": "none",
     "publish_executed": false,
     "actual_publish_still_forbidden": true

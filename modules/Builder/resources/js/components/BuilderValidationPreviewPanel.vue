@@ -112,6 +112,25 @@
         </div>
 
         <div v-if="publishReadinessReport" class="space-y-3">
+          <div class="grid gap-3 text-sm">
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">writes_performed</span>
+              <span class="font-mono">{{ publishReadinessReport.writes_performed }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">publish_executed</span>
+              <span class="font-mono">{{ String(publishReadinessReport.publish_executed) }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">runtime_module_effect</span>
+              <span class="font-mono">{{ publishReadinessReport.runtime_module_effect }}</span>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span class="text-neutral-500 dark:text-neutral-400">diagnostic_artifact_path</span>
+              <span class="break-all text-right font-mono text-xs">{{ publishReadinessReport.diagnostic_artifact_path || '-' }}</span>
+            </div>
+          </div>
+
           <IAlert v-if="publishReadinessReport.blockers?.length" variant="danger">
             <IAlertBody>
               <div class="mb-1 font-medium">Blockers</div>
@@ -135,6 +154,30 @@
           </IAlert>
 
           <div class="grid gap-3 text-sm">
+            <div>
+              <ITextDark class="font-medium" text="Identity Checks" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.identity_checks) }}</pre>
+            </div>
+            <div>
+              <ITextDark class="font-medium" text="Existing App Conflicts" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.existing_app_conflicts) }}</pre>
+            </div>
+            <div>
+              <ITextDark class="font-medium" text="Field Impact" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.field_impact) }}</pre>
+            </div>
+            <div>
+              <ITextDark class="font-medium" text="Relation Impact" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.relation_impact) }}</pre>
+            </div>
+            <div>
+              <ITextDark class="font-medium" text="Form Layout Impact" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.form_layout_impact) }}</pre>
+            </div>
+            <div>
+              <ITextDark class="font-medium" text="Automation Impact" />
+              <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.automation_impact) }}</pre>
+            </div>
             <div>
               <ITextDark class="font-medium" text="Conflicts" />
               <pre class="mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formatJson(publishReadinessReport.conflicts) }}</pre>
