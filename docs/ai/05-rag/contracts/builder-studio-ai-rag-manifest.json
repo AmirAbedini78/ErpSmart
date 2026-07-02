@@ -5,7 +5,10 @@
     "database": [
       "builder_definitions",
       "builder_definition_versions",
-      "builder_preview_runs"
+      "builder_preview_runs",
+      "builder_publish_executions",
+      "builder_publish_approval_requests",
+      "builder_publish_audit_logs"
     ],
     "schema": [
       "docs/ai/05-rag/contracts/module-builder-mvp-schema.json"
@@ -19,7 +22,8 @@
       "app/Services/Builder/BuilderPublishDryRunGenerator.php",
       "app/Services/Builder/BuilderPublishCandidateSnapshotService.php",
       "app/Services/Builder/BuilderPublishApprovalService.php",
-      "app/Services/Builder/BuilderApprovedCandidatePreflightService.php"
+      "app/Services/Builder/BuilderApprovedCandidatePreflightService.php",
+      "app/Services/Builder/BuilderPublishExecutionPreparationService.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -54,7 +58,12 @@
       "docs/ai/03-architecture/builder-approved-candidate-preflight.md",
       "docs/ai/03-architecture/builder-publish-execution-architecture.md",
       "docs/ai/03-architecture/builder-publish-rollback-manifest-strategy.md",
-      "docs/ai/03-architecture/builder-publish-locking-and-staging-strategy.md"
+      "docs/ai/03-architecture/builder-publish-locking-and-staging-strategy.md",
+      "docs/ai/03-architecture/builder-publish-execution-record-lock-mvp.md",
+      "docs/ai/03-architecture/ai-agent-runtime-flow.md",
+      "docs/ai/03-architecture/ai-tool-registry-strategy.md",
+      "docs/ai/03-architecture/ai-builder-contract.md",
+      "docs/ai/03-architecture/mcp-adapter-future-plan.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -86,7 +95,12 @@
       "docs/ai/05-rag/contracts/builder-approved-candidate-preflight-contract.json",
       "docs/ai/05-rag/contracts/builder-publish-execution-contract.json",
       "docs/ai/05-rag/contracts/builder-publish-rollback-manifest-contract.json",
-      "docs/ai/05-rag/contracts/builder-publish-locking-contract.json"
+      "docs/ai/05-rag/contracts/builder-publish-locking-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-execution-record-api-map.json",
+      "docs/ai/05-rag/contracts/ai-tool-registry-contract.json",
+      "docs/ai/05-rag/contracts/ai-agent-runtime-contract.json",
+      "docs/ai/05-rag/contracts/ai-builder-action-contract.json",
+      "docs/ai/05-rag/contracts/mcp-adapter-future-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -94,6 +108,8 @@
     "publish_readiness_diagnostic_artifacts": "storage/app/builder-publish-readiness",
     "publish_dry_run_artifacts": "storage/app/builder-publish-dry-runs",
     "publish_candidate_snapshots": "storage/app/builder-publish-candidates",
+    "publish_execution_staging_roots": "storage/app/builder-publish-staging",
+    "publish_execution_rollback_manifest_drafts": "storage/app/builder-publish-rollbacks",
     "temporary_definition_files": "storage/app/builder-definitions",
     "vector_indexes": "derived and rebuildable",
     "generated_preview_files_are_source_of_truth": false,
@@ -106,16 +122,19 @@
     "App\\Models\\BuilderDefinitionVersion",
     "App\\Models\\BuilderPreviewRun",
     "App\\Models\\BuilderPublishApprovalRequest",
-    "App\\Models\\BuilderPublishAuditLog"
+    "App\\Models\\BuilderPublishAuditLog",
+    "App\\Models\\BuilderPublishExecution"
   ],
   "backend_controllers": [
     "App\\Http\\Controllers\\Builder\\BuilderDefinitionController",
-    "App\\Http\\Controllers\\Builder\\BuilderPublishApprovalRequestController"
+    "App\\Http\\Controllers\\Builder\\BuilderPublishApprovalRequestController",
+    "App\\Http\\Controllers\\Builder\\BuilderPublishExecutionController"
   ],
   "backend_services": [
     "App\\Services\\Builder\\BuilderDefinitionValidator",
     "App\\Services\\Builder\\BuilderPreviewService",
-    "App\\Services\\Builder\\BuilderDefinitionVersionService"
+    "App\\Services\\Builder\\BuilderDefinitionVersionService",
+    "App\\Services\\Builder\\BuilderPublishExecutionPreparationService"
   ],
   "frontend_module_files": [
     "modules/Builder/resources/js/app.js",
@@ -132,6 +151,7 @@
     "modules/Builder/resources/js/components/BuilderRelationsEditor.vue",
     "modules/Builder/resources/js/components/BuilderRawJsonEditor.vue",
     "modules/Builder/resources/js/components/BuilderValidationPreviewPanel.vue",
+    "modules/Builder/resources/js/components/BuilderPublishExecutionRecords.vue",
     "modules/Builder/resources/js/components/BuilderStatusBadge.vue"
   ],
   "current_lifecycle_states": [
@@ -170,7 +190,8 @@
     "review publish dry-run artifacts",
     "create publish candidate snapshots under storage",
     "read approval request review state",
-    "run approved candidate preflight"
+    "run approved candidate preflight",
+    "create publish execution preparation record with lock, preflight, staging root, rollback manifest draft, and audit events"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -194,6 +215,10 @@
     "autonomously request publish approval",
     "approve, reject, or revoke publish approval",
     "treat eligible_for_future_publish as published module",
+    "treat publish execution record as actual publish",
+    "autonomously create publish execution records",
+    "call forbidden tools",
+    "use MCP to bypass permissions, approval, or audit",
     "delete runtime modules",
     "uninstall modules",
     "drop tables or business data",
@@ -234,7 +259,10 @@
     "Human approval request persistence and publish audit logs exist for control-plane review state only.",
     "Approval request persistence stores control-plane review state and audit logs, but approved candidates are not published modules.",
     "Approved candidate preflight is derived/read-only and is not source of runtime code.",
-    "Publish execution architecture planning is documentation and contracts only; no endpoint, button, runtime write, migration execution, route registration, or rollback execution exists.",
+    "Publish execution record MVP creates a control-plane record, lock, preflight report, staging root, rollback manifest draft, and audit events only.",
+    "Publish execution record MVP does not write runtime files, run generated migrations, register routes, mark published, or create real modules.",
+    "RAG is knowledge layer, Tool Registry is action layer, and MCP is future adapter.",
+    "Tool Registry and MCP contracts are readiness artifacts only; no Tool Registry runtime or MCP server is implemented.",
     "Future publish must require explicit human final confirmation, approved candidate preflight, publish lock, staging, rollback manifest, audit, and post-publish smoke.",
     "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
     "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."

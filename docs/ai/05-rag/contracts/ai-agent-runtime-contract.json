@@ -1,0 +1,28 @@
+{
+  "name": "ERPSMART AI Agent Runtime Contract",
+  "current_implementation_status": "contract_only",
+  "agent_orchestrator_implemented": false,
+  "required_flow": [
+    "user_prompt",
+    "intent_detection",
+    "rag_context_retrieval",
+    "permission_check",
+    "tool_selection",
+    "structured_input_validation",
+    "dry_run_or_preview_if_needed",
+    "approval_gate_if_needed",
+    "execution_through_internal_service_tool_only",
+    "audit_log",
+    "final_response_with_results"
+  ],
+  "permission_required_before_tool_call": true,
+  "structured_output_validation_required": true,
+  "approval_required_for_risky_actions": true,
+  "audit_required_for_tool_execution": true,
+  "direct_db_write_allowed": false,
+  "direct_runtime_file_write_allowed": false,
+  "direct_publish_allowed": false,
+  "agent_may_use_rag": true,
+  "agent_may_use_tool_registry_when_implemented": true,
+  "agent_may_use_mcp_adapter_when_implemented": true
+}

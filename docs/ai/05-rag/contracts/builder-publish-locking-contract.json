@@ -1,7 +1,11 @@
 {
   "name": "ERPSMART Builder Publish Locking Contract",
   "purpose": "Define future lock scopes and staging requirements for safe Builder publish execution.",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "execution_record_lock_mvp",
+  "definition_publish_lock_implemented_for_preparation_phase": true,
+  "runtime_path_lock_implemented": false,
+  "migration_lock_implemented": false,
+  "permission_menu_lock_implemented": false,
   "lock_scopes": [
     "definition_publish_lock",
     "runtime_path_lock",

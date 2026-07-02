@@ -212,6 +212,7 @@
               :candidate-snapshot-creating="candidateSnapshotCreating"
               :approval-request-loading="approvalRequestLoading"
               :approved-candidate-preflight-loading="approvedCandidatePreflightLoading"
+              :publish-execution-creating="publishExecutionCreating"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
@@ -220,6 +221,8 @@
               :publish-candidate-snapshot="publishCandidateSnapshot"
               :publish-approval-requests="publishApprovalRequests"
               :approved-candidate-preflight="approvedCandidatePreflight"
+              :publish-executions="publishExecutions"
+              :publish-execution-report="publishExecutionReport"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
@@ -231,6 +234,7 @@
               @reject-candidate="rejectCandidate"
               @revoke-approval="revokeApproval"
               @check-approved-candidate-preflight="checkApprovedCandidatePreflight"
+              @create-publish-execution-record="createExecutionRecord"
             />
           </div>
         </div>
@@ -260,11 +264,13 @@ import {
   analyzePublishReadiness,
   approvePublishApprovalRequest,
   archiveDefinition,
+  createPublishExecutionRecord,
   createPublishCandidateSnapshot,
   deleteDefinition,
   generatePublishDryRun,
   getDefinition,
   getApprovedCandidatePreflight,
+  listPublishExecutions,
   listPublishApprovalRequests,
   previewDefinition,
   rejectPublishApprovalRequest,
@@ -286,6 +292,7 @@ const dryRunGenerating = ref(false)
 const candidateSnapshotCreating = ref(false)
 const approvalRequestLoading = ref(false)
 const approvedCandidatePreflightLoading = ref(false)
+const publishExecutionCreating = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -297,6 +304,8 @@ const publishDryRunReport = ref(null)
 const publishCandidateSnapshot = ref(null)
 const publishApprovalRequests = ref([])
 const approvedCandidatePreflight = ref(null)
+const publishExecutions = ref([])
+const publishExecutionReport = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -343,6 +352,7 @@ async function loadDefinition() {
     const { data } = await getDefinition(route.params.id)
     setDefinition(data)
     await loadApprovalRequests()
+    await loadPublishExecutions()
   } finally {
     loading.value = false
   }
@@ -465,6 +475,15 @@ async function loadApprovalRequests() {
   publishApprovalRequests.value = Array.isArray(data) ? data : data.data || []
 }
 
+async function loadPublishExecutions() {
+  if (!definition.value?.id) {
+    return
+  }
+
+  const { data } = await listPublishExecutions(definition.value.id)
+  publishExecutions.value = Array.isArray(data) ? data : data.data || []
+}
+
 async function requestApproval() {
   approvalRequestLoading.value = true
   apiError.value = null
@@ -541,6 +560,22 @@ async function checkApprovedCandidatePreflight() {
     apiError.value = errorMessage(error)
   } finally {
     approvedCandidatePreflightLoading.value = false
+  }
+}
+
+async function createExecutionRecord() {
+  publishExecutionCreating.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await createPublishExecutionRecord(definition.value.id)
+    publishExecutionReport.value = data
+    await loadPublishExecutions()
+    Innoclapps.success('Publish execution record prepared. No publish or runtime writes were performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    publishExecutionCreating.value = false
   }
 }
 
@@ -646,6 +681,7 @@ function setDefinition(value) {
   publishDryRunReport.value = null
   publishCandidateSnapshot.value = null
   approvedCandidatePreflight.value = null
+  publishExecutionReport.value = null
 }
 
 function normalizeDefinition(value) {

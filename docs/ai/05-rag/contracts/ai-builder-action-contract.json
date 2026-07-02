@@ -1,0 +1,15 @@
+{
+  "name": "ERPSMART AI Builder Action Contract",
+  "current_implementation_status": "contract_only",
+  "ai_may_generate_definition_drafts": true,
+  "ai_may_generate_field_candidates": true,
+  "ai_may_generate_relation_candidates": true,
+  "ai_may_generate_form_layout_candidates": true,
+  "ai_may_generate_automation_metadata_candidates": true,
+  "ai_may_validate_preview_dry_run": true,
+  "ai_may_publish": false,
+  "ai_may_claim_published": false,
+  "output_must_be_json_schema_valid": true,
+  "human_review_required": true,
+  "maps_to_existing_builder_control_plane": true
+}

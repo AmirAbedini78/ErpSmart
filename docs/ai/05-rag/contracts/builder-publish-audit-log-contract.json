@@ -8,7 +8,14 @@
     "approval_approved",
     "approval_rejected",
     "approval_revoked",
-    "approval_invalidated"
+    "approval_invalidated",
+    "publish_preflight_started",
+    "publish_preflight_failed",
+    "publish_lock_acquired",
+    "publish_lock_failed",
+    "publish_lock_released",
+    "rollback_manifest_created",
+    "publish_staging_created"
   ],
   "future_events": [
     "candidate_snapshot_created",

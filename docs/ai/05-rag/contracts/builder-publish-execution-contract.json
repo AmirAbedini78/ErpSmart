@@ -1,8 +1,10 @@
 {
   "name": "ERPSMART Builder Publish Execution Contract",
-  "purpose": "Define the future real publish execution pipeline while keeping actual publish forbidden in the current MVP.",
-  "current_implementation_status": "planning_only",
+  "purpose": "Define the publish execution preparation record flow while keeping actual publish forbidden in the current MVP.",
+  "current_implementation_status": "execution_record_lock_mvp",
   "future_endpoint_candidate": "POST /api/builder/definitions/{id}/publish-executions",
+  "execution_record_exists": true,
+  "lock_preflight_staging_root_rollback_manifest_draft_implemented": true,
   "explicit_human_command_required": true,
   "final_confirmation_required": true,
   "approved_candidate_preflight_required": true,
@@ -15,6 +17,15 @@
   "agent_may_execute_publish": false,
   "actual_publish_implemented": false,
   "runtime_writes_currently_allowed": false,
+  "implemented_control_plane_flow": [
+    "create builder_publish_executions record",
+    "acquire definition publish preparation lock",
+    "run approved candidate preflight",
+    "write rollback manifest draft under storage/app/builder-publish-rollbacks only",
+    "create staging root under storage/app/builder-publish-staging only",
+    "write audit events",
+    "release lock"
+  ],
   "future_phases": [
     "receive explicit human publish command",
     "verify user permission",
@@ -52,7 +63,8 @@
     "register runtime routes",
     "create real modules",
     "execute rollback",
-    "acquire publish lock for execution"
+    "write runtime files after execution record",
+    "mark BuilderDefinition as published"
   ],
   "agent_notes": [
     "AI Builder Agent may summarize this future execution plan.",

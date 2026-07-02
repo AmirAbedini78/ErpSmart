@@ -60,6 +60,14 @@ export function getApprovedCandidatePreflight(definitionId) {
   return Innoclapps.request(`${endpoint}/${definitionId}/approved-candidate-preflight`)
 }
 
+export function listPublishExecutions(definitionId) {
+  return Innoclapps.request(`${endpoint}/${definitionId}/publish-executions`)
+}
+
+export function createPublishExecutionRecord(definitionId) {
+  return Innoclapps.request().post(`${endpoint}/${definitionId}/publish-executions`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

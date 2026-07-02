@@ -25,7 +25,9 @@
     "summarize approval status",
     "call approved candidate preflight",
     "summarize approved candidate preflight",
+    "summarize publish execution records",
     "summarize publish execution plan",
+    "summarize Tool Registry contracts",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -46,6 +48,9 @@
     "reject publish approval",
     "revoke publish approval",
     "autonomously request publish approval",
+    "autonomously create publish execution records",
+    "call forbidden tools",
+    "use MCP to bypass permissions, approval, or audit",
     "execute uninstall",
     "delete runtime modules",
     "delete runtime files",
@@ -84,7 +89,12 @@
     "ai_builder_agent_may_summarize_approval_requirements": true,
     "ai_builder_agent_may_call_approved_candidate_preflight": true,
     "ai_builder_agent_may_summarize_approved_candidate_preflight": true,
+    "ai_builder_agent_may_summarize_publish_execution_records": true,
     "ai_builder_agent_may_summarize_publish_execution_plan": true,
+    "ai_builder_agent_may_summarize_tool_registry_contracts": true,
+    "ai_builder_agent_may_autonomously_create_publish_execution_records": false,
+    "ai_builder_agent_may_call_forbidden_tools": false,
+    "ai_builder_agent_may_use_mcp_to_bypass_permissions_approval_audit": false,
     "ai_builder_agent_may_autonomously_request_approval": false,
     "ai_builder_agent_may_approve_publish": false,
     "ai_builder_agent_may_reject_publish": false,
@@ -108,7 +118,9 @@
       "Human approval request persistence exists; AI must not autonomously request, approve, reject, or revoke approval.",
       "Approval request persistence exists, but AI must not autonomously approve, reject, revoke, or treat approval as publish.",
       "Approved candidate preflight eligibility is not publish and must not be treated as a published module.",
+      "Publish execution records are control-plane preparation records only; AI may summarize them but must not autonomously create them.",
       "Publish execution architecture is planning only; AI may summarize it but must not execute publish, acquire locks, write runtime files, or execute rollback.",
+      "RAG is the knowledge layer, Tool Registry is the action layer, and MCP is a future adapter that must not bypass permissions, approvals, or audit.",
       "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
     ]
   },
@@ -167,7 +179,8 @@
     "restore_archived_definition",
     "delete_draft_control_plane_records",
     "analyze_publish_readiness",
-    "generate_publish_dry_run"
+    "generate_publish_dry_run",
+    "create_publish_execution_record_when_explicitly_human_initiated"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

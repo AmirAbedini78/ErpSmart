@@ -94,6 +94,11 @@ class BuilderDefinition extends Model
         return $this->hasMany(BuilderPublishAuditLog::class);
     }
 
+    public function publishExecutions(): HasMany
+    {
+        return $this->hasMany(BuilderPublishExecution::class);
+    }
+
     public function transitionTo(string $status, array $attributes = []): bool
     {
         return $this->fill(array_merge($attributes, ['status' => $status]))->save();

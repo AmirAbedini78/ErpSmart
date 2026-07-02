@@ -240,6 +240,33 @@
       "notes": "Checks approved candidate freshness and eligibility flags. Does not mutate approval state, create audit logs, or publish."
     },
     {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}/publish-executions",
+      "purpose": "List control-plane publish execution preparation records.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "notes": "Lists preparation records only. Does not publish."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-executions",
+      "purpose": "Create a control-plane publish execution preparation record with lock, preflight, rollback manifest draft, staging root, and audit events.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "notes": "Execution record only. Does not write runtime files, run migrations, register routes, mark published, or copy artifacts into runtime paths."
+    },
+    {
       "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",

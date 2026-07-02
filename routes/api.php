@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Builder\BuilderDefinitionController;
 use App\Http\Controllers\Builder\BuilderPublishApprovalRequestController;
+use App\Http\Controllers\Builder\BuilderPublishExecutionController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,12 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
 
     Route::get('definitions/{builderDefinition}/approved-candidate-preflight', [BuilderDefinitionController::class, 'approvedCandidatePreflight'])
         ->name('builder.definitions.approved-candidate-preflight');
+
+    Route::get('definitions/{builderDefinition}/publish-executions', [BuilderPublishExecutionController::class, 'index'])
+        ->name('builder.definitions.publish-executions.index');
+
+    Route::post('definitions/{builderDefinition}/publish-executions', [BuilderPublishExecutionController::class, 'store'])
+        ->name('builder.definitions.publish-executions.store');
 
     Route::get('definitions/{builderDefinition}/publish-approval-requests', [BuilderPublishApprovalRequestController::class, 'index'])
         ->name('builder.definitions.publish-approval-requests.index');

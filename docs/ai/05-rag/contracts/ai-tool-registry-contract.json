@@ -1,0 +1,68 @@
+{
+  "name": "ERPSMART AI Tool Registry Contract",
+  "current_implementation_status": "contract_only",
+  "tool_registry_implemented": false,
+  "mcp_server_implemented": false,
+  "tool_schema_required_fields": [
+    "name",
+    "purpose",
+    "input_schema",
+    "output_schema",
+    "permission_required",
+    "safety_class",
+    "approval_required",
+    "audit_required"
+  ],
+  "safety_classes": [
+    "read_only",
+    "draft_write",
+    "control_plane_write",
+    "runtime_write",
+    "dangerous_forbidden"
+  ],
+  "initial_builder_tools": [
+    {
+      "name": "builder.validate_definition",
+      "maps_to": "POST /api/builder/definitions/{id}/validate",
+      "safety_class": "control_plane_write",
+      "approval_required": false,
+      "audit_required": true,
+      "runtime_writes_performed": 0
+    },
+    {
+      "name": "builder.preview_definition",
+      "maps_to": "POST /api/builder/definitions/{id}/preview",
+      "safety_class": "control_plane_write",
+      "approval_required": false,
+      "audit_required": true,
+      "runtime_writes_performed": 0
+    },
+    {
+      "name": "builder.check_approved_candidate_preflight",
+      "maps_to": "GET /api/builder/definitions/{id}/approved-candidate-preflight",
+      "safety_class": "read_only",
+      "approval_required": false,
+      "audit_required": false,
+      "runtime_writes_performed": 0
+    },
+    {
+      "name": "builder.create_publish_execution_record",
+      "maps_to": "POST /api/builder/definitions/{id}/publish-executions",
+      "safety_class": "control_plane_write",
+      "approval_required": true,
+      "audit_required": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false
+    }
+  ],
+  "forbidden_tools": [
+    "run_raw_sql",
+    "execute_shell_command",
+    "drop_table",
+    "write_migration_directly",
+    "execute_publish",
+    "copy_to_runtime",
+    "uninstall_module",
+    "change_permissions_directly"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "ERPSMART MCP Adapter Future Contract",
+  "current_implementation_status": "future_adapter_only",
+  "mcp_server_implemented": false,
+  "erpsmart_core_depends_on_mcp": false,
+  "internal_tool_registry_first": true,
+  "phase_1_read_only_tools": [
+    "list_modules",
+    "get_module_definition",
+    "search_docs",
+    "get_builder_definition",
+    "run_safe_report"
+  ],
+  "phase_2_draft_write_tools": [
+    "create_module_definition_draft",
+    "create_proforma_draft",
+    "create_task_draft"
+  ],
+  "forbidden_mcp_tools": [
+    "raw_sql",
+    "shell",
+    "drop_table",
+    "write_migration",
+    "execute_publish",
+    "uninstall_module",
+    "change_permissions"
+  ],
+  "permission_aware_required": true,
+  "approval_aware_required": true,
+  "audit_required": true,
+  "agent_may_execute_publish_via_mcp": false
+}

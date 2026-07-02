@@ -237,6 +237,13 @@
       :loading="approvedCandidatePreflightLoading"
       @check-preflight="$emit('check-approved-candidate-preflight')"
     />
+
+    <BuilderPublishExecutionRecords
+      :records="publishExecutions"
+      :latest-report="publishExecutionReport"
+      :loading="publishExecutionCreating"
+      @create-execution-record="$emit('create-publish-execution-record')"
+    />
   </div>
 </template>
 
@@ -247,6 +254,7 @@ import BuilderApprovedCandidatePreflight from './BuilderApprovedCandidatePreflig
 import BuilderPublishApprovalRequests from './BuilderPublishApprovalRequests.vue'
 import BuilderPublishCandidateSnapshot from './BuilderPublishCandidateSnapshot.vue'
 import BuilderPublishDryRunReview from './BuilderPublishDryRunReview.vue'
+import BuilderPublishExecutionRecords from './BuilderPublishExecutionRecords.vue'
 import BuilderStatusBadge from './BuilderStatusBadge.vue'
 
 const props = defineProps({
@@ -258,6 +266,7 @@ const props = defineProps({
   candidateSnapshotCreating: Boolean,
   approvalRequestLoading: Boolean,
   approvedCandidatePreflightLoading: Boolean,
+  publishExecutionCreating: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
@@ -266,6 +275,8 @@ const props = defineProps({
   publishCandidateSnapshot: Object,
   publishApprovalRequests: Array,
   approvedCandidatePreflight: Object,
+  publishExecutions: Array,
+  publishExecutionReport: Object,
 })
 
 defineEmits([
@@ -280,6 +291,7 @@ defineEmits([
   'reject-candidate',
   'revoke-approval',
   'check-approved-candidate-preflight',
+  'create-publish-execution-record',
 ])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))

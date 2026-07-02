@@ -1,9 +1,11 @@
 {
   "name": "ERPSMART Builder Publish Rollback Manifest Contract",
   "purpose": "Define the future rollback manifest required before any Builder publish runtime writes.",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "execution_record_lock_mvp",
   "path_pattern": "storage/app/builder-publish-rollbacks/{definition_id}/{publish_id}/rollback-manifest.json",
   "required_before_runtime_writes": true,
+  "rollback_manifest_draft_implemented_under_storage": true,
+  "rollback_execution_implemented": false,
   "required_fields": [
     "publish_id",
     "candidate_id",

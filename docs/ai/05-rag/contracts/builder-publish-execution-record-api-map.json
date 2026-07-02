@@ -1,0 +1,33 @@
+{
+  "name": "ERPSMART Builder Publish Execution Record API Map",
+  "current_implementation_status": "execution_record_lock_mvp",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}/publish-executions",
+      "purpose": "List control-plane publish execution preparation records for a Builder definition.",
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "notes": "Read-only list endpoint."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-executions",
+      "purpose": "Create a control-plane publish execution preparation record, acquire lock, run preflight, and write storage-only staging/rollback draft artifacts.",
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "requires_approved_candidate_preflight": true,
+      "runtime_module_effect": "none",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "notes": "This is not publish and must not be treated as publish."
+    }
+  ],
+  "forbidden_endpoints": [
+    "/api/builder/definitions/{id}/publish",
+    "/api/builder/definitions/{id}/execute-publish",
+    "/api/builder/definitions/{id}/rollback"
+  ]
+}
