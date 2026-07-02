@@ -1,0 +1,50 @@
+{
+  "name": "ERPSMART Builder Publish Rollback Manifest Contract",
+  "purpose": "Define the future rollback manifest required before any Builder publish runtime writes.",
+  "current_implementation_status": "planning_only",
+  "path_pattern": "storage/app/builder-publish-rollbacks/{definition_id}/{publish_id}/rollback-manifest.json",
+  "required_before_runtime_writes": true,
+  "required_fields": [
+    "publish_id",
+    "candidate_id",
+    "definition_checksum",
+    "files_to_create",
+    "files_to_modify",
+    "files_to_delete_if_rollback",
+    "pre_publish_file_hashes",
+    "pre_publish_file_backups",
+    "migration_plan",
+    "migration_status",
+    "created_tables",
+    "modified_tables",
+    "route_menu_permission_changes",
+    "cache_keys_affected",
+    "search_vector_rag_indexes_affected",
+    "smoke_test_results",
+    "audit_log_ids"
+  ],
+  "file_backup_strategy": {
+    "created_files": "Record created paths so rollback can remove generated files when safe.",
+    "modified_files": "Record pre-publish hashes and backups before writing replacements.",
+    "deleted_files": "Record backups and restore instructions before deletion is allowed."
+  },
+  "database_rollback_strategy": {
+    "created_tables": "Record generated tables and down/compensating migration plan.",
+    "modified_tables": "Record schema changes and data retention risks.",
+    "limitations": "Data created after publish may not be safely removable."
+  },
+  "route_menu_permission_rollback_strategy": "Record route names, menu entries, permissions, policies, and cache rebuild requirements affected by publish.",
+  "cache_rollback_strategy": "Prefer targeted cache invalidation or cache rebuild over attempting to restore volatile cache values.",
+  "rag_vector_search_index_rollback_notes": "Record affected search indexes, vector indexes, and RAG manifests; indexes are derived and should be rebuildable.",
+  "limitations": [
+    "Rollback execution is not implemented.",
+    "Database rollback may require explicit down migrations or compensating migrations.",
+    "Media and business data require retention policy.",
+    "Rollback must not be automatic unless a strict future failure mode defines it."
+  ],
+  "agent_may_execute_rollback": false,
+  "agent_notes": [
+    "AI Builder Agent may read and summarize a future rollback manifest.",
+    "AI Builder Agent must not execute rollback or delete runtime data."
+  ]
+}

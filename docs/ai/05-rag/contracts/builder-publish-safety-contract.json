@@ -15,6 +15,9 @@
     "human approval gate planning",
     "approval request persistence",
     "approved candidate preflight",
+    "publish execution architecture planning",
+    "rollback manifest planning",
+    "locking and staging planning",
     "dependency impact analysis",
     "dry-run file plan",
     "DB migration plan",
@@ -34,6 +37,9 @@
     "human approval gate reviewed; approval request persistence exists but does not publish",
     "approval request persisted without publish execution",
     "approved candidate preflight confirms checksum and candidate snapshot freshness without publish",
+    "future publish execution architecture requires explicit human command and final confirmation",
+    "future rollback manifest must be created before runtime writes",
+    "future publish lock and staging plan must exist before runtime writes",
     "capability support status valid",
     "unsupported features acknowledged",
     "file conflicts checked",
@@ -104,6 +110,26 @@
     "writes_performed": 0,
     "runtime_writes_performed": 0,
     "publish_executed": false,
+    "required_input_to_future_publish_execution": true,
+    "actual_publish_still_forbidden": true
+  },
+  "current_publish_execution_architecture_planning": {
+    "implementation_status": "planning_only",
+    "docs": [
+      "docs/ai/03-architecture/builder-publish-execution-architecture.md",
+      "docs/ai/03-architecture/builder-publish-rollback-manifest-strategy.md",
+      "docs/ai/03-architecture/builder-publish-locking-and-staging-strategy.md"
+    ],
+    "contracts": [
+      "docs/ai/05-rag/contracts/builder-publish-execution-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-rollback-manifest-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-locking-contract.json"
+    ],
+    "explicit_human_command_required": true,
+    "final_confirmation_required": true,
+    "rollback_manifest_required_before_runtime_writes": true,
+    "publish_lock_required": true,
+    "staging_required": true,
     "actual_publish_still_forbidden": true
   },
   "current_sandbox_dry_run": {

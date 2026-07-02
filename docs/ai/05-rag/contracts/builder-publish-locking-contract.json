@@ -1,0 +1,40 @@
+{
+  "name": "ERPSMART Builder Publish Locking Contract",
+  "purpose": "Define future lock scopes and staging requirements for safe Builder publish execution.",
+  "current_implementation_status": "planning_only",
+  "lock_scopes": [
+    "definition_publish_lock",
+    "runtime_path_lock",
+    "migration_lock",
+    "permission_menu_lock"
+  ],
+  "lock_backend_candidates": [
+    "Redis/cache lock",
+    "DB lock"
+  ],
+  "staging_path_pattern": "storage/app/builder-publish-staging/{definition_id}/{publish_id}",
+  "timeout_policy": {
+    "default": "Use explicit finite lock timeouts with heartbeat or owner verification before recovery.",
+    "expired_lock_handling": "Do not assume an expired lock is safe; verify process state and audit recovery."
+  },
+  "failure_policy": {
+    "lock_acquisition_failed": "Stop publish before staging or runtime writes.",
+    "staging_failed": "Stop before runtime writes and retain or cleanup staging artifacts according to retention policy.",
+    "runtime_write_failed": "Use pre-created rollback manifest and backups for a human-reviewed recovery path."
+  },
+  "audit_events": [
+    "publish_lock_acquired",
+    "publish_lock_failed",
+    "publish_lock_released",
+    "publish_staging_created",
+    "publish_staging_validated",
+    "publish_runtime_write_started",
+    "publish_runtime_write_failed",
+    "publish_runtime_write_succeeded"
+  ],
+  "agent_may_acquire_publish_lock": false,
+  "agent_notes": [
+    "AI Builder Agent may explain lock requirements.",
+    "AI Builder Agent must not acquire publish locks until a future explicit implementation permits human-controlled publish execution."
+  ]
+}

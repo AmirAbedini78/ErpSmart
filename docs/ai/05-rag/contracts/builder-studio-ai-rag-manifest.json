@@ -51,7 +51,10 @@
       "docs/ai/03-architecture/builder-human-approval-gate.md",
       "docs/ai/03-architecture/builder-publish-audit-log-strategy.md",
       "docs/ai/03-architecture/builder-human-approval-request-mvp.md",
-      "docs/ai/03-architecture/builder-approved-candidate-preflight.md"
+      "docs/ai/03-architecture/builder-approved-candidate-preflight.md",
+      "docs/ai/03-architecture/builder-publish-execution-architecture.md",
+      "docs/ai/03-architecture/builder-publish-rollback-manifest-strategy.md",
+      "docs/ai/03-architecture/builder-publish-locking-and-staging-strategy.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -80,7 +83,10 @@
       "docs/ai/05-rag/contracts/builder-human-approval-gate-contract.json",
       "docs/ai/05-rag/contracts/builder-publish-audit-log-contract.json",
       "docs/ai/05-rag/contracts/builder-human-approval-request-api-map.json",
-      "docs/ai/05-rag/contracts/builder-approved-candidate-preflight-contract.json"
+      "docs/ai/05-rag/contracts/builder-approved-candidate-preflight-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-execution-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-rollback-manifest-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-locking-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -205,7 +211,8 @@
     "disable published modules",
     "hide existing modules through approved gates",
     "uninstall generated modules after dependency analysis, backups, retention rules, and rollback are implemented",
-    "remove capabilities after safety contracts and data dependency checks are implemented"
+    "remove capabilities after safety contracts and data dependency checks are implemented",
+    "publish execution after explicit human command, final confirmation, approved candidate preflight, lock acquisition, staging, rollback manifest, audit, and post-publish smoke are implemented"
   ],
   "notes_for_ai_builder_agent": [
     "Use the backend Builder Control Plane APIs instead of editing runtime module files.",
@@ -227,6 +234,8 @@
     "Human approval request persistence and publish audit logs exist for control-plane review state only.",
     "Approval request persistence stores control-plane review state and audit logs, but approved candidates are not published modules.",
     "Approved candidate preflight is derived/read-only and is not source of runtime code.",
+    "Publish execution architecture planning is documentation and contracts only; no endpoint, button, runtime write, migration execution, route registration, or rollback execution exists.",
+    "Future publish must require explicit human final confirmation, approved candidate preflight, publish lock, staging, rollback manifest, audit, and post-publish smoke.",
     "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
     "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],

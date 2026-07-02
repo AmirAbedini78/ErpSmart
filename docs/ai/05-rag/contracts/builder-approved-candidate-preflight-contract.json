@@ -48,6 +48,15 @@
   "runtime_writes_performed": 0,
   "approval_does_not_publish": true,
   "preflight_does_not_publish": true,
+  "future_publish_execution": {
+    "required_input_to_future_publish_execution": true,
+    "preflight_does_not_publish": true,
+    "actual_publish_still_forbidden": true,
+    "notes": [
+      "Future publish execution must run approved candidate preflight before runtime writes.",
+      "A passing preflight is not publish and does not create runtime modules."
+    ]
+  },
   "agent_notes": [
     "AI Builder Agent may call and summarize approved candidate preflight.",
     "eligible_for_future_publish is not publish.",
