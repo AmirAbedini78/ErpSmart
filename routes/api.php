@@ -17,6 +17,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('definitions/{builderDefinition}/preview', [BuilderDefinitionController::class, 'preview'])
         ->name('builder.definitions.preview');
 
+    Route::post('definitions/{builderDefinition}/publish-readiness', [BuilderDefinitionController::class, 'publishReadiness'])
+        ->name('builder.definitions.publish-readiness');
+
     Route::post('definitions/{builderDefinition}/archive', [BuilderDefinitionController::class, 'archive'])
         ->name('builder.definitions.archive');
 

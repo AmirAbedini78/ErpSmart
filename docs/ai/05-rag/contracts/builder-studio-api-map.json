@@ -82,6 +82,33 @@
     },
     {
       "method": "POST",
+      "path": "/api/builder/definitions/{id}/publish-readiness",
+      "purpose": "Analyze publish readiness and dependency impact without publishing.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "writes_performed": 0,
+      "response_shape": [
+        "safe",
+        "status",
+        "writes_performed",
+        "runtime_module_effect",
+        "publish_executed",
+        "file_plan",
+        "database_plan",
+        "capability_impact",
+        "conflicts",
+        "blockers",
+        "warnings",
+        "rollback_requirements"
+      ],
+      "notes": "Analysis only. Does not write runtime files, create modules, run migrations, create preview runs, create versions, or publish."
+    },
+    {
+      "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
       "status": "implemented",

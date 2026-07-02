@@ -1,0 +1,71 @@
+{
+  "name": "ERPSMART Builder Publish Readiness Report Contract",
+  "purpose": "Define the read-only publish readiness report returned before any actual publish implementation exists.",
+  "safe_for_agent": true,
+  "agent_may_execute_publish": false,
+  "allowed_statuses": [
+    "ready",
+    "blocked",
+    "warning"
+  ],
+  "safe_flags": {
+    "writes_performed": 0,
+    "runtime_module_effect": "none",
+    "publish_executed": false
+  },
+  "report_fields": {
+    "safe": "boolean indicating whether blockers are absent",
+    "status": "ready, blocked, or warning",
+    "writes_performed": "always 0",
+    "runtime_module_effect": "always none",
+    "publish_executed": "always false",
+    "definition": "id, name, status, module, table, route",
+    "validation": "valid/errors/warnings from BuilderDefinitionValidator",
+    "file_plan": "planned files only, no writes",
+    "database_plan": "planned tables/migration requirement only, no migration execution",
+    "route_menu_permission_plan": "planned routes, menus, permissions",
+    "capability_impact": "preview_safe, metadata_only, warning_only, unsupported",
+    "relation_impact": "declared relation impact and missing metadata",
+    "conflicts": "detected conflicts",
+    "blockers": "blocking issues before publish",
+    "warnings": "non-blocking risks",
+    "rollback_requirements": "future rollback requirements",
+    "dependency_checks": "checks required before publish"
+  },
+  "file_plan_structure": {
+    "would_create": [],
+    "would_modify": [],
+    "would_not_touch": []
+  },
+  "database_plan_structure": {
+    "would_create_tables": [],
+    "would_modify_tables": [],
+    "would_run_migrations": false,
+    "migration_required": true
+  },
+  "route_menu_permission_plan_structure": {
+    "routes": [],
+    "menus": [],
+    "permissions": []
+  },
+  "capability_impact_groups": [
+    "preview_safe",
+    "metadata_only",
+    "warning_only",
+    "unsupported"
+  ],
+  "conflict_types": [
+    "module_directory",
+    "table",
+    "route",
+    "menu",
+    "permission",
+    "relation"
+  ],
+  "agent_safety_notes": [
+    "AI Builder Agent may call publish readiness analysis.",
+    "AI Builder Agent may explain blockers and warnings.",
+    "AI Builder Agent must not treat readiness as actual publish.",
+    "AI Builder Agent must not execute publish, migrations, runtime writes, uninstall, rollback, or runtime deletion."
+  ]
+}

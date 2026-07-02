@@ -24,6 +24,10 @@ export function previewDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/preview`)
 }
 
+export function analyzePublishReadiness(id) {
+  return Innoclapps.request().post(`${endpoint}/${id}/publish-readiness`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

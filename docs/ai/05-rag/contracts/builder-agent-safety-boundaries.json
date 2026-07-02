@@ -14,6 +14,7 @@
     "archive unpublished Builder definitions when explicitly requested",
     "restore archived Builder definitions when explicitly requested",
     "delete unpublished Builder draft/control-plane records when explicitly requested",
+    "call publish readiness analyzer",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -22,6 +23,7 @@
   "ai_builder_agent_cannot": [
     "publish",
     "execute publish",
+    "treat publish readiness as actual publish",
     "execute uninstall",
     "delete runtime modules",
     "delete runtime files",
@@ -50,6 +52,7 @@
     "ai_builder_agent_may_plan_lifecycle": true,
     "ai_builder_agent_may_propose_disable_archive_delete_draft_rules": true,
     "ai_builder_agent_may_archive_restore_delete_draft_control_plane_records": true,
+    "ai_builder_agent_may_call_publish_readiness_analyzer": true,
     "ai_builder_agent_may_execute_publish": false,
     "ai_builder_agent_may_execute_uninstall": false,
     "ai_builder_agent_may_delete_runtime_modules": false,
@@ -58,6 +61,7 @@
     "notes": [
       "Lifecycle planning is allowed because it produces docs and contracts only.",
       "Definition lifecycle MVP allows archive, restore, and delete-draft for unpublished Builder control-plane records only when explicitly requested.",
+      "Publish readiness analysis is read-only and must not be treated as actual publish.",
       "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
     ]
   },
@@ -114,7 +118,8 @@
     "manual_demo_journey",
     "archive_definition",
     "restore_archived_definition",
-    "delete_draft_control_plane_records"
+    "delete_draft_control_plane_records",
+    "analyze_publish_readiness"
   ],
   "forbidden_control_plane_operations_in_mvp": [
     "publish",

@@ -7,6 +7,7 @@ use App\Http\Requests\Builder\UpdateBuilderDefinitionRequest;
 use App\Models\BuilderDefinition;
 use App\Services\Builder\BuilderDefinitionValidator;
 use App\Services\Builder\BuilderDefinitionVersionService;
+use App\Services\Builder\BuilderPublishReadinessAnalyzer;
 use App\Services\Builder\BuilderPreviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -206,6 +207,13 @@ class BuilderDefinitionController extends ApiController
         return $this->response([
             'message' => 'Builder draft/control-plane records deleted. No runtime modules, files, migrations, or tables were changed.',
         ]);
+    }
+
+    public function publishReadiness(
+        BuilderDefinition $builderDefinition,
+        BuilderPublishReadinessAnalyzer $analyzer
+    ): JsonResponse {
+        return $this->response($analyzer->analyze($builderDefinition));
     }
 
     protected function definitionAttributes(array $definitionJson): array

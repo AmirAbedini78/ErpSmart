@@ -1,6 +1,12 @@
 {
   "name": "ERPSMART Builder Module Dependency Impact Map",
   "purpose": "List dependencies that future disable, uninstall, delete, rollback, and capability removal flows must inspect.",
+  "current_read_only_implementation": {
+    "service": "App\\Services\\Builder\\BuilderPublishReadinessAnalyzer",
+    "operation": "publish readiness analysis",
+    "writes_performed": 0,
+    "notes": "Current analyzer is the read-only dependency check implementation. It reports conflicts and planned impact but does not publish, run migrations, or write runtime files."
+  },
   "dependencies": {
     "routes": {
       "impact_on_disable": "Gate or hide runtime routes without deleting route files.",
