@@ -17,6 +17,7 @@
     "approved candidate preflight",
     "publish execution record lock MVP",
     "staged file validation MVP",
+    "runtime write plan artifact MVP",
     "runtime write phase planning",
     "publish execution architecture planning",
     "rollback manifest planning",
@@ -42,6 +43,7 @@
     "approved candidate preflight confirms checksum and candidate snapshot freshness without publish",
     "publish execution record creates control-plane record, lock, preflight report, staging root, rollback manifest draft, and audit events without runtime writes",
     "staged file validation checks storage-only artifacts, path safety, checksums, classifications, and rollback manifest JSON without runtime writes",
+    "runtime write plan artifact maps staged files to future runtime paths, applies the allowlist, plans backups, and writes only under storage/app/builder-runtime-write-plans",
     "runtime write phase planning defines allowlists, backups, locks, and rollback manifest updates while actual runtime writes remain forbidden",
     "future publish execution architecture requires explicit human command and final confirmation",
     "future rollback manifest must be created before runtime writes",
@@ -164,7 +166,8 @@
     "actual_runtime_publish_still_forbidden": true
   },
   "current_runtime_write_phase_planning": {
-    "implementation_status": "planning_only",
+    "implementation_status": "runtime_write_plan_artifact_mvp",
+    "runtime_write_plan_artifact_implemented": true,
     "runtime_write_endpoint_implemented": false,
     "runtime_write_ui_action_implemented": false,
     "runtime_writes_currently_allowed": false,
@@ -179,6 +182,15 @@
       "docs/ai/05-rag/contracts/builder-runtime-write-backup-contract.json"
     ],
     "actual_publish_still_forbidden": true
+  },
+  "current_runtime_write_plan_artifact_mvp": {
+    "implemented": true,
+    "service": "BuilderRuntimeWritePlanArtifactService",
+    "write_scope": "storage/app/builder-runtime-write-plans",
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
+    "copy_to_runtime_executed": false,
+    "actual_runtime_write_still_forbidden": true
   },
   "ai_tool_registry_contract_readiness": {
     "tool_registry_implemented": false,

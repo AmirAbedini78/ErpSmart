@@ -242,10 +242,13 @@
       :records="publishExecutions"
       :latest-report="publishExecutionReport"
       :validation-report="stagedFileValidationReport"
+      :runtime-write-plan-report="runtimeWritePlanReport"
       :loading="publishExecutionCreating"
       :validation-loading="stagedFileValidating"
+      :runtime-write-plan-loading="runtimeWritePlanCreating"
       @create-execution-record="$emit('create-publish-execution-record')"
       @validate-staged-files="$emit('validate-staged-files', $event)"
+      @create-runtime-write-plan="$emit('create-runtime-write-plan', $event)"
     />
   </div>
 </template>
@@ -271,6 +274,7 @@ const props = defineProps({
   approvedCandidatePreflightLoading: Boolean,
   publishExecutionCreating: Boolean,
   stagedFileValidating: Boolean,
+  runtimeWritePlanCreating: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
@@ -282,6 +286,7 @@ const props = defineProps({
   publishExecutions: Array,
   publishExecutionReport: Object,
   stagedFileValidationReport: Object,
+  runtimeWritePlanReport: Object,
 })
 
 defineEmits([
@@ -298,6 +303,7 @@ defineEmits([
   'check-approved-candidate-preflight',
   'create-publish-execution-record',
   'validate-staged-files',
+  'create-runtime-write-plan',
 ])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))

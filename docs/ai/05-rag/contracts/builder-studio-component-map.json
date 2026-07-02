@@ -165,11 +165,11 @@
     {
       "name": "BuilderPublishExecutionRecords",
       "file": "modules/Builder/resources/js/components/BuilderPublishExecutionRecords.vue",
-      "role": "Displays control-plane publish execution preparation records and creates new lock/preflight/staging/rollback-manifest draft records.",
+      "role": "Displays control-plane publish execution preparation records, staged file validation, and storage-only runtime write plan artifacts.",
       "edits_definition_json": false,
       "calls_api": false,
       "risk_level": "high",
-      "notes": "Execution record and staged validation only. Must not expose Publish, Execute Publish, Deploy, Rollback, Copy to runtime, or Run migrations actions."
+      "notes": "Execution record, staged validation, and runtime write plan only. Must not expose Publish, Execute Publish, Deploy, Rollback, Copy to runtime, Run migrations, or Execute Runtime Write actions."
     },
     {
       "name": "BuilderStatusBadge",

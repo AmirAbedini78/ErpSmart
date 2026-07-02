@@ -1,6 +1,10 @@
 {
   "name": "ERPSMART Builder Runtime Path Allowlist Contract",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "runtime_write_plan_artifact_mvp",
+  "allowlist_applied_by": [
+    "BuilderRuntimeWritePlanArtifactService"
+  ],
+  "override_still_forbidden": true,
   "allowed_future_runtime_path_families": [
     "modules/{GeneratedModule}/App/Models",
     "modules/{GeneratedModule}/App/Http/Controllers",

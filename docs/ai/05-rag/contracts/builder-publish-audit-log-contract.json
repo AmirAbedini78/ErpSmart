@@ -17,7 +17,9 @@
     "rollback_manifest_created",
     "publish_staging_created",
     "publish_staging_validated",
-    "publish_staging_validation_failed"
+    "publish_staging_validation_failed",
+    "runtime_write_plan_created",
+    "runtime_write_plan_blocked"
   ],
   "future_events": [
     "candidate_snapshot_created",
@@ -38,6 +40,7 @@
     "publish_runtime_write_failed",
     "publish_runtime_write_succeeded",
     "runtime_write_plan_created",
+    "runtime_write_plan_blocked",
     "runtime_write_backup_created",
     "runtime_write_started",
     "runtime_write_succeeded",

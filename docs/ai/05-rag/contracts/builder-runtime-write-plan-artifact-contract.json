@@ -1,0 +1,95 @@
+{
+  "purpose": "Describe the storage-only runtime write plan artifact for staged-validated Builder publish execution records.",
+  "current_implementation_status": "runtime_write_plan_artifact_mvp",
+  "endpoint": "POST /api/builder/publish-executions/{id}/runtime-write-plan",
+  "allowed_execution_statuses": [
+    "staging_validated"
+  ],
+  "resulting_statuses": [
+    "runtime_write_planned",
+    "runtime_write_plan_blocked"
+  ],
+  "allowed_read_scopes": [
+    "storage/app/builder-publish-staging/{definition_id}/{execution_id}",
+    "storage/app/builder-publish-rollbacks/{definition_id}/{execution_id}",
+    "storage/app/builder-publish-staged-validations/{definition_id}/{execution_id}"
+  ],
+  "allowed_write_scope": "storage/app/builder-runtime-write-plans/{definition_id}/{execution_id}",
+  "forbidden_write_scopes": [
+    "modules/",
+    "database/migrations/",
+    "routes/",
+    "resources/js/app.js",
+    "public/build/",
+    "vendor/",
+    "node_modules/",
+    ".env",
+    "composer.json",
+    "package.json"
+  ],
+  "allowed_future_runtime_path_families": [
+    "modules/{GeneratedModule}/App/Models",
+    "modules/{GeneratedModule}/App/Http/Controllers",
+    "modules/{GeneratedModule}/App/Http/Resources",
+    "modules/{GeneratedModule}/database/migrations",
+    "modules/{GeneratedModule}/resources/js",
+    "modules/{GeneratedModule}/routes",
+    "docs/ai/generated-manifests"
+  ],
+  "forbidden_path_families": [
+    "app/Core",
+    "modules/Core",
+    "modules/SaaS",
+    "modules/Updater",
+    "modules/Installer",
+    "modules/Warehouse",
+    "vendor",
+    "node_modules",
+    "public/build",
+    ".env",
+    "composer.json",
+    "package.json",
+    "routes/web.php",
+    "resources/js/app.js",
+    "database/migrations global root"
+  ],
+  "required_checks": [
+    "execution_status_staging_validated",
+    "staged_validation_report_exists",
+    "staged_validation_report_valid_json",
+    "staging_root_under_storage",
+    "rollback_manifest_under_storage",
+    "runtime_path_allowlist_applied",
+    "no_path_traversal",
+    "no_absolute_external_paths",
+    "no_forbidden_paths",
+    "backup_required_for_overwrite",
+    "migrations_are_planned_only",
+    "runtime_writes_zero",
+    "publish_executed_false"
+  ],
+  "report_structure": {
+    "execution_id": "integer",
+    "status": "runtime_write_planned|runtime_write_plan_blocked",
+    "safe": "boolean",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
+    "copy_to_runtime_executed": false,
+    "runtime_module_effect": "none",
+    "runtime_write_plan_path": "string",
+    "planned_writes": "array",
+    "summary": "object",
+    "checks": "array",
+    "blockers": "array",
+    "warnings": "array"
+  },
+  "runtime_writes_performed": 0,
+  "publish_executed": false,
+  "copy_to_runtime_executed": false,
+  "migrations_run": false,
+  "agent_may_call_when_human_initiated": true,
+  "agent_may_execute_runtime_write": false,
+  "agent_may_copy_to_runtime": false,
+  "mcp_may_execute_runtime_write": false
+}

@@ -40,6 +40,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('publish-executions/{execution}/validate-staged-files', [BuilderPublishExecutionController::class, 'validateStagedFiles'])
         ->name('builder.publish-executions.validate-staged-files');
 
+    Route::post('publish-executions/{execution}/runtime-write-plan', [BuilderPublishExecutionController::class, 'runtimeWritePlan'])
+        ->name('builder.publish-executions.runtime-write-plan');
+
     Route::get('definitions/{builderDefinition}/publish-approval-requests', [BuilderPublishApprovalRequestController::class, 'index'])
         ->name('builder.definitions.publish-approval-requests.index');
 

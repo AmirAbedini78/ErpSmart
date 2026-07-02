@@ -6,6 +6,7 @@ use App\Models\BuilderDefinition;
 use App\Models\BuilderPublishExecution;
 use App\Services\Builder\BuilderPublishExecutionPreparationService;
 use App\Services\Builder\BuilderPublishStagedFileValidationService;
+use App\Services\Builder\BuilderRuntimeWritePlanArtifactService;
 use Illuminate\Http\JsonResponse;
 use Modules\Core\Http\Controllers\ApiController;
 
@@ -32,5 +33,12 @@ class BuilderPublishExecutionController extends ApiController
         BuilderPublishStagedFileValidationService $validation
     ): JsonResponse {
         return $this->response($validation->validate($execution));
+    }
+
+    public function runtimeWritePlan(
+        BuilderPublishExecution $execution,
+        BuilderRuntimeWritePlanArtifactService $planner
+    ): JsonResponse {
+        return $this->response($planner->plan($execution));
     }
 }

@@ -34,6 +34,18 @@
       "safe_for_ui": true,
       "safe_for_agent": false,
       "notes": "Staged validation only. Writes validation report under storage/app/builder-publish-staged-validations and does not publish."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/publish-executions/{id}/runtime-write-plan",
+      "purpose": "Create a storage-only runtime write plan artifact from a staged-validated execution record.",
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "copy_to_runtime_executed": false,
+      "runtime_module_effect": "none",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "notes": "Plan only. Writes runtime-write-plan.json under storage/app/builder-runtime-write-plans and does not copy files to runtime."
     }
   ],
   "forbidden_endpoints": [

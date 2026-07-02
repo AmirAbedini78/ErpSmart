@@ -6,6 +6,7 @@
   "required_before_runtime_writes": true,
   "rollback_manifest_draft_implemented_under_storage": true,
   "rollback_manifest_draft_validated_in_staged_validation": true,
+  "runtime_write_plan_may_update_draft_with_planned_entries_only": true,
   "future_rollback_manifest_must_include_runtime_write_backups": true,
   "rollback_execution_implemented": false,
   "required_fields": [

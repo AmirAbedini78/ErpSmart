@@ -72,6 +72,10 @@ export function validatePublishExecutionStagedFiles(executionId) {
   return Innoclapps.request().post(`/builder/publish-executions/${executionId}/validate-staged-files`)
 }
 
+export function createRuntimeWritePlan(executionId) {
+  return Innoclapps.request().post(`/builder/publish-executions/${executionId}/runtime-write-plan`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

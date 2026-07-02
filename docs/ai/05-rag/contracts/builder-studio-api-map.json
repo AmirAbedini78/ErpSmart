@@ -282,6 +282,21 @@
     },
     {
       "method": "POST",
+      "path": "/api/builder/publish-executions/{id}/runtime-write-plan",
+      "purpose": "Create a storage-only runtime write plan artifact from a staged-validated publish execution record.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "copy_to_runtime_executed": false,
+      "notes": "Plan only. Maps staged files to future runtime paths and does not copy files, run migrations, register routes, mark published, or publish."
+    },
+    {
+      "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
       "status": "implemented",

@@ -1,9 +1,11 @@
 {
   "name": "ERPSMART Builder Runtime Write Phase Contract",
-  "current_implementation_status": "planning_only",
+  "current_implementation_status": "runtime_write_plan_artifact_mvp",
+  "runtime_write_plan_artifact_implemented": true,
   "runtime_write_endpoint_implemented": false,
   "runtime_write_ui_action_implemented": false,
   "runtime_writes_currently_allowed": false,
+  "runtime_write_still_forbidden": true,
   "requires_execution_status": "staging_validated",
   "requires_human_final_confirmation": true,
   "requires_runtime_path_lock": true,

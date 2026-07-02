@@ -214,6 +214,7 @@
               :approved-candidate-preflight-loading="approvedCandidatePreflightLoading"
               :publish-execution-creating="publishExecutionCreating"
               :staged-file-validating="stagedFileValidating"
+              :runtime-write-plan-creating="runtimeWritePlanCreating"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
@@ -225,6 +226,7 @@
               :publish-executions="publishExecutions"
               :publish-execution-report="publishExecutionReport"
               :staged-file-validation-report="stagedFileValidationReport"
+              :runtime-write-plan-report="runtimeWritePlanReport"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
@@ -238,6 +240,7 @@
               @check-approved-candidate-preflight="checkApprovedCandidatePreflight"
               @create-publish-execution-record="createExecutionRecord"
               @validate-staged-files="validateStagedFiles"
+              @create-runtime-write-plan="createRuntimeWritePlanArtifact"
             />
           </div>
         </div>
@@ -269,6 +272,7 @@ import {
   archiveDefinition,
   createPublishExecutionRecord,
   createPublishCandidateSnapshot,
+  createRuntimeWritePlan,
   deleteDefinition,
   generatePublishDryRun,
   getDefinition,
@@ -298,6 +302,7 @@ const approvalRequestLoading = ref(false)
 const approvedCandidatePreflightLoading = ref(false)
 const publishExecutionCreating = ref(false)
 const stagedFileValidating = ref(false)
+const runtimeWritePlanCreating = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -312,6 +317,7 @@ const approvedCandidatePreflight = ref(null)
 const publishExecutions = ref([])
 const publishExecutionReport = ref(null)
 const stagedFileValidationReport = ref(null)
+const runtimeWritePlanReport = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -605,6 +611,26 @@ async function validateStagedFiles(executionId) {
   }
 }
 
+async function createRuntimeWritePlanArtifact(executionId) {
+  if (!executionId) {
+    return
+  }
+
+  runtimeWritePlanCreating.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await createRuntimeWritePlan(executionId)
+    runtimeWritePlanReport.value = data
+    await loadPublishExecutions()
+    Innoclapps.success('Runtime write plan created under storage. No publish or runtime writes were performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    runtimeWritePlanCreating.value = false
+  }
+}
+
 async function archiveCurrentDefinition() {
   lifecycleAction.value = 'archive'
   apiError.value = null
@@ -709,6 +735,7 @@ function setDefinition(value) {
   approvedCandidatePreflight.value = null
   publishExecutionReport.value = null
   stagedFileValidationReport.value = null
+  runtimeWritePlanReport.value = null
 }
 
 function normalizeDefinition(value) {

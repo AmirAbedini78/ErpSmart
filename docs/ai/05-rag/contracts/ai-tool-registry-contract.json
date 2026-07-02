@@ -64,6 +64,17 @@
       "requires_explicit_human_initiation": true,
       "runtime_writes_performed": 0,
       "publish_executed": false
+    },
+    {
+      "name": "builder.create_runtime_write_plan",
+      "maps_to": "POST /api/builder/publish-executions/{id}/runtime-write-plan",
+      "safety_class": "control_plane_write",
+      "approval_required": true,
+      "audit_required": true,
+      "requires_explicit_human_initiation": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "copy_to_runtime_executed": false
     }
   ],
   "forbidden_tools": [

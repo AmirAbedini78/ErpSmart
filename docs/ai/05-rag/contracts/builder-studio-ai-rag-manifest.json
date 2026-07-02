@@ -24,7 +24,8 @@
       "app/Services/Builder/BuilderPublishApprovalService.php",
       "app/Services/Builder/BuilderApprovedCandidatePreflightService.php",
       "app/Services/Builder/BuilderPublishExecutionPreparationService.php",
-      "app/Services/Builder/BuilderPublishStagedFileValidationService.php"
+      "app/Services/Builder/BuilderPublishStagedFileValidationService.php",
+      "app/Services/Builder/BuilderRuntimeWritePlanArtifactService.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -68,7 +69,8 @@
       "docs/ai/03-architecture/builder-publish-staged-file-validation-mvp.md",
       "docs/ai/03-architecture/builder-runtime-write-phase-plan.md",
       "docs/ai/03-architecture/builder-runtime-path-allowlist-strategy.md",
-      "docs/ai/03-architecture/builder-runtime-write-backup-strategy.md"
+      "docs/ai/03-architecture/builder-runtime-write-backup-strategy.md",
+      "docs/ai/03-architecture/builder-runtime-write-plan-artifact-mvp.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -109,7 +111,8 @@
       "docs/ai/05-rag/contracts/builder-publish-staged-file-validation-contract.json",
       "docs/ai/05-rag/contracts/builder-runtime-write-phase-contract.json",
       "docs/ai/05-rag/contracts/builder-runtime-path-allowlist-contract.json",
-      "docs/ai/05-rag/contracts/builder-runtime-write-backup-contract.json"
+      "docs/ai/05-rag/contracts/builder-runtime-write-backup-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-write-plan-artifact-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -120,12 +123,14 @@
     "publish_execution_staging_roots": "storage/app/builder-publish-staging",
     "publish_execution_rollback_manifest_drafts": "storage/app/builder-publish-rollbacks",
     "publish_staged_file_validation_reports": "storage/app/builder-publish-staged-validations",
+    "runtime_write_plan_artifacts": "storage/app/builder-runtime-write-plans",
     "temporary_definition_files": "storage/app/builder-definitions",
     "vector_indexes": "derived and rebuildable",
     "generated_preview_files_are_source_of_truth": false,
     "publish_readiness_diagnostic_artifacts_are_source_of_truth": false,
     "publish_dry_run_artifacts_are_source_of_truth": false,
-    "publish_candidate_snapshots_are_source_of_truth": false
+    "publish_candidate_snapshots_are_source_of_truth": false,
+    "runtime_write_plan_artifacts_are_source_of_truth": false
   },
   "backend_models": [
     "App\\Models\\BuilderDefinition",
@@ -145,7 +150,8 @@
     "App\\Services\\Builder\\BuilderPreviewService",
     "App\\Services\\Builder\\BuilderDefinitionVersionService",
     "App\\Services\\Builder\\BuilderPublishExecutionPreparationService",
-    "App\\Services\\Builder\\BuilderPublishStagedFileValidationService"
+    "App\\Services\\Builder\\BuilderPublishStagedFileValidationService",
+    "App\\Services\\Builder\\BuilderRuntimeWritePlanArtifactService"
   ],
   "frontend_module_files": [
     "modules/Builder/resources/js/app.js",
@@ -203,7 +209,8 @@
     "read approval request review state",
     "run approved candidate preflight",
     "create publish execution preparation record with lock, preflight, staging root, rollback manifest draft, and audit events",
-    "validate staged storage artifacts and write staged file validation report under storage"
+    "validate staged storage artifacts and write staged file validation report under storage",
+    "create runtime write plan artifact under storage when explicitly human initiated"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -231,6 +238,7 @@
     "treat staged file validation as actual publish",
     "autonomously create publish execution records",
     "autonomously validate staged files",
+    "autonomously create runtime write plan artifacts",
     "copy staged files to runtime",
     "call forbidden tools",
     "use MCP to bypass permissions, approval, or audit",
@@ -278,7 +286,9 @@
     "Publish execution record MVP does not write runtime files, run generated migrations, register routes, mark published, or create real modules.",
     "Staged file validation reads storage-only staging/rollback artifacts, records checksums and classifications, and writes validation reports under storage/app/builder-publish-staged-validations.",
     "Staged file validation does not copy files to runtime, run migrations, register routes, mark published, or publish.",
-    "Runtime write phase planning is documentation and contracts only; no runtime write endpoint, copy-to-runtime endpoint, publish endpoint, or UI action exists.",
+    "Runtime write plan artifact maps staged files to future runtime paths, applies the allowlist, plans backups, and writes only under storage/app/builder-runtime-write-plans.",
+    "Runtime write plan artifact is storage-only and is not execution.",
+    "Runtime write phase planning remains non-executable; no runtime write endpoint, copy-to-runtime endpoint, publish endpoint, or runtime write UI action exists.",
     "Future runtime write must require staging_validated execution status, human final confirmation, runtime path allowlist, backups before overwrite, rollback manifest updates, and runtime path lock.",
     "RAG is knowledge layer, Tool Registry is action layer, and MCP is future adapter.",
     "Tool Registry and MCP contracts are readiness artifacts only; no Tool Registry runtime or MCP server is implemented.",
