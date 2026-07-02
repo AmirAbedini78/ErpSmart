@@ -17,6 +17,7 @@
     "approved candidate preflight",
     "publish execution record lock MVP",
     "staged file validation MVP",
+    "runtime write phase planning",
     "publish execution architecture planning",
     "rollback manifest planning",
     "locking and staging planning",
@@ -41,6 +42,7 @@
     "approved candidate preflight confirms checksum and candidate snapshot freshness without publish",
     "publish execution record creates control-plane record, lock, preflight report, staging root, rollback manifest draft, and audit events without runtime writes",
     "staged file validation checks storage-only artifacts, path safety, checksums, classifications, and rollback manifest JSON without runtime writes",
+    "runtime write phase planning defines allowlists, backups, locks, and rollback manifest updates while actual runtime writes remain forbidden",
     "future publish execution architecture requires explicit human command and final confirmation",
     "future rollback manifest must be created before runtime writes",
     "future publish lock and staging plan must exist before runtime writes",
@@ -160,6 +162,23 @@
     "runtime_writes_performed": 0,
     "publish_executed": false,
     "actual_runtime_publish_still_forbidden": true
+  },
+  "current_runtime_write_phase_planning": {
+    "implementation_status": "planning_only",
+    "runtime_write_endpoint_implemented": false,
+    "runtime_write_ui_action_implemented": false,
+    "runtime_writes_currently_allowed": false,
+    "docs": [
+      "docs/ai/03-architecture/builder-runtime-write-phase-plan.md",
+      "docs/ai/03-architecture/builder-runtime-path-allowlist-strategy.md",
+      "docs/ai/03-architecture/builder-runtime-write-backup-strategy.md"
+    ],
+    "contracts": [
+      "docs/ai/05-rag/contracts/builder-runtime-write-phase-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-path-allowlist-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-write-backup-contract.json"
+    ],
+    "actual_publish_still_forbidden": true
   },
   "ai_tool_registry_contract_readiness": {
     "tool_registry_implemented": false,

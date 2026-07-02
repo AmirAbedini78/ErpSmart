@@ -1,0 +1,35 @@
+{
+  "name": "ERPSMART Builder Runtime Path Allowlist Contract",
+  "current_implementation_status": "planning_only",
+  "allowed_future_runtime_path_families": [
+    "modules/{GeneratedModule}/App/Models",
+    "modules/{GeneratedModule}/App/Http/Controllers",
+    "modules/{GeneratedModule}/App/Http/Resources",
+    "modules/{GeneratedModule}/database/migrations",
+    "modules/{GeneratedModule}/resources/js",
+    "modules/{GeneratedModule}/routes",
+    "docs/ai/generated-manifests"
+  ],
+  "forbidden_path_families": [
+    "app/Core",
+    "modules/Core",
+    "modules/SaaS",
+    "modules/Updater",
+    "modules/Installer",
+    "modules/Warehouse unless explicitly approved target module",
+    "vendor",
+    "node_modules",
+    "public/build",
+    ".env",
+    "composer.json",
+    "package.json",
+    "routes/web.php",
+    "resources/js/app.js",
+    "database/migrations global root unless explicitly approved future strategy"
+  ],
+  "path_traversal_forbidden": true,
+  "absolute_external_paths_forbidden": true,
+  "requires_module_slug_validation": true,
+  "requires_definition_checksum_match": true,
+  "agent_may_override_allowlist": false
+}

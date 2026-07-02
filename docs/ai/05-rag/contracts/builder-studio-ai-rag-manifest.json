@@ -65,7 +65,10 @@
       "docs/ai/03-architecture/ai-tool-registry-strategy.md",
       "docs/ai/03-architecture/ai-builder-contract.md",
       "docs/ai/03-architecture/mcp-adapter-future-plan.md",
-      "docs/ai/03-architecture/builder-publish-staged-file-validation-mvp.md"
+      "docs/ai/03-architecture/builder-publish-staged-file-validation-mvp.md",
+      "docs/ai/03-architecture/builder-runtime-write-phase-plan.md",
+      "docs/ai/03-architecture/builder-runtime-path-allowlist-strategy.md",
+      "docs/ai/03-architecture/builder-runtime-write-backup-strategy.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -103,7 +106,10 @@
       "docs/ai/05-rag/contracts/ai-agent-runtime-contract.json",
       "docs/ai/05-rag/contracts/ai-builder-action-contract.json",
       "docs/ai/05-rag/contracts/mcp-adapter-future-contract.json",
-      "docs/ai/05-rag/contracts/builder-publish-staged-file-validation-contract.json"
+      "docs/ai/05-rag/contracts/builder-publish-staged-file-validation-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-write-phase-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-path-allowlist-contract.json",
+      "docs/ai/05-rag/contracts/builder-runtime-write-backup-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -272,6 +278,8 @@
     "Publish execution record MVP does not write runtime files, run generated migrations, register routes, mark published, or create real modules.",
     "Staged file validation reads storage-only staging/rollback artifacts, records checksums and classifications, and writes validation reports under storage/app/builder-publish-staged-validations.",
     "Staged file validation does not copy files to runtime, run migrations, register routes, mark published, or publish.",
+    "Runtime write phase planning is documentation and contracts only; no runtime write endpoint, copy-to-runtime endpoint, publish endpoint, or UI action exists.",
+    "Future runtime write must require staging_validated execution status, human final confirmation, runtime path allowlist, backups before overwrite, rollback manifest updates, and runtime path lock.",
     "RAG is knowledge layer, Tool Registry is action layer, and MCP is future adapter.",
     "Tool Registry and MCP contracts are readiness artifacts only; no Tool Registry runtime or MCP server is implemented.",
     "Future publish must require explicit human final confirmation, approved candidate preflight, publish lock, staging, rollback manifest, audit, and post-publish smoke.",

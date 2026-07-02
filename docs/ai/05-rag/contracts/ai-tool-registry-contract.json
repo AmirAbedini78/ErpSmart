@@ -3,6 +3,7 @@
   "current_implementation_status": "contract_only",
   "tool_registry_implemented": false,
   "mcp_server_implemented": false,
+  "runtime_write_tool_implemented": false,
   "tool_schema_required_fields": [
     "name",
     "purpose",
@@ -71,6 +72,8 @@
     "drop_table",
     "write_migration_directly",
     "execute_publish",
+    "execute_runtime_write",
+    "copy_staged_artifacts_to_runtime",
     "copy_to_runtime",
     "uninstall_module",
     "change_permissions_directly"

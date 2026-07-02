@@ -1,0 +1,23 @@
+{
+  "name": "ERPSMART Builder Runtime Write Backup Contract",
+  "current_implementation_status": "planning_only",
+  "backup_required_before_overwrite": true,
+  "backup_root_pattern": "storage/app/builder-publish-backups/{definition_id}/{execution_id}",
+  "backup_manifest_required": true,
+  "rollback_manifest_must_reference_backups": true,
+  "backup_manifest_fields": [
+    "original_path",
+    "backup_path",
+    "pre_write_sha256",
+    "post_write_sha256",
+    "existed_before",
+    "write_action"
+  ],
+  "agent_may_skip_backup": false,
+  "backup_limitations": [
+    "Backups do not replace database rollback planning.",
+    "Business data created after publish may not be reversible.",
+    "Media and uploaded file retention rules are future work.",
+    "Compensating migrations may be required for schema changes."
+  ]
+}

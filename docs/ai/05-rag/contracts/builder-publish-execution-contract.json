@@ -6,6 +6,8 @@
   "execution_record_exists": true,
   "lock_preflight_staging_root_rollback_manifest_draft_implemented": true,
   "staged_file_validation_implemented": true,
+  "runtime_write_phase_planning": true,
+  "runtime_write_endpoint_implemented": false,
   "explicit_human_command_required": true,
   "final_confirmation_required": true,
   "approved_candidate_preflight_required": true,
@@ -67,7 +69,9 @@
     "create real modules",
     "execute rollback",
     "write runtime files after execution record",
-    "mark BuilderDefinition as published"
+    "mark BuilderDefinition as published",
+    "add runtime write endpoint",
+    "add copy-to-runtime endpoint"
   ],
   "agent_notes": [
     "AI Builder Agent may summarize this future execution plan.",

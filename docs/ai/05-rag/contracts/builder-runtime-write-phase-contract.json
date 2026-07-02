@@ -1,0 +1,29 @@
+{
+  "name": "ERPSMART Builder Runtime Write Phase Contract",
+  "current_implementation_status": "planning_only",
+  "runtime_write_endpoint_implemented": false,
+  "runtime_write_ui_action_implemented": false,
+  "runtime_writes_currently_allowed": false,
+  "requires_execution_status": "staging_validated",
+  "requires_human_final_confirmation": true,
+  "requires_runtime_path_lock": true,
+  "requires_backup_before_overwrite": true,
+  "requires_rollback_manifest_update": true,
+  "migrations_run_in_this_phase": false,
+  "route_registration_in_this_phase": false,
+  "publish_status_set_in_this_phase": false,
+  "agent_may_execute_runtime_write": false,
+  "mcp_may_execute_runtime_write": false,
+  "forbidden_current_operations": [
+    "add runtime write endpoint",
+    "add copy-to-runtime endpoint",
+    "add publish endpoint",
+    "add runtime write UI action",
+    "write runtime module files",
+    "copy staged artifacts into runtime paths",
+    "run generated migrations",
+    "register runtime routes",
+    "mark module published",
+    "execute rollback"
+  ]
+}

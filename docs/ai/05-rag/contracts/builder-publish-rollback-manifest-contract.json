@@ -6,6 +6,7 @@
   "required_before_runtime_writes": true,
   "rollback_manifest_draft_implemented_under_storage": true,
   "rollback_manifest_draft_validated_in_staged_validation": true,
+  "future_rollback_manifest_must_include_runtime_write_backups": true,
   "rollback_execution_implemented": false,
   "required_fields": [
     "publish_id",
@@ -16,6 +17,7 @@
     "files_to_delete_if_rollback",
     "pre_publish_file_hashes",
     "pre_publish_file_backups",
+    "runtime_write_backups",
     "migration_plan",
     "migration_status",
     "created_tables",
