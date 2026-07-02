@@ -56,6 +56,10 @@ export function revokePublishApprovalRequest(requestId, note) {
   return Innoclapps.request().post(`/builder/publish-approval-requests/${requestId}/revoke`, { note })
 }
 
+export function getApprovedCandidatePreflight(definitionId) {
+  return Innoclapps.request(`${endpoint}/${definitionId}/approved-candidate-preflight`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

@@ -27,6 +27,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('definitions/{builderDefinition}/publish-candidate-snapshot', [BuilderDefinitionController::class, 'publishCandidateSnapshot'])
         ->name('builder.definitions.publish-candidate-snapshot');
 
+    Route::get('definitions/{builderDefinition}/approved-candidate-preflight', [BuilderDefinitionController::class, 'approvedCandidatePreflight'])
+        ->name('builder.definitions.approved-candidate-preflight');
+
     Route::get('definitions/{builderDefinition}/publish-approval-requests', [BuilderPublishApprovalRequestController::class, 'index'])
         ->name('builder.definitions.publish-approval-requests.index');
 

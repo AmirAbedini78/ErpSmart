@@ -76,6 +76,22 @@
       "safe_for_agent": false,
       "safe_for_ui": true,
       "notes": "Writes approval_revoked audit event. Does not publish."
+    },
+    {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}/approved-candidate-preflight",
+      "purpose": "Read-only approved candidate preflight check.",
+      "status": "implemented",
+      "allowed_current_statuses": ["any"],
+      "next_status": null,
+      "writes_control_plane_records": false,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "approval_does_not_publish": true,
+      "preflight_does_not_publish": true,
+      "safe_for_agent": true,
+      "safe_for_ui": true,
+      "notes": "Checks whether the current approved candidate is fresh enough for future publish consideration. Does not publish."
     }
   ]
 }

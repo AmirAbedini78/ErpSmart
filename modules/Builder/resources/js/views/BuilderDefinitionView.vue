@@ -211,6 +211,7 @@
               :dry-run-generating="dryRunGenerating"
               :candidate-snapshot-creating="candidateSnapshotCreating"
               :approval-request-loading="approvalRequestLoading"
+              :approved-candidate-preflight-loading="approvedCandidatePreflightLoading"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
@@ -218,6 +219,7 @@
               :publish-dry-run-report="publishDryRunReport"
               :publish-candidate-snapshot="publishCandidateSnapshot"
               :publish-approval-requests="publishApprovalRequests"
+              :approved-candidate-preflight="approvedCandidatePreflight"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
@@ -228,6 +230,7 @@
               @approve-candidate="approveCandidate"
               @reject-candidate="rejectCandidate"
               @revoke-approval="revokeApproval"
+              @check-approved-candidate-preflight="checkApprovedCandidatePreflight"
             />
           </div>
         </div>
@@ -261,6 +264,7 @@ import {
   deleteDefinition,
   generatePublishDryRun,
   getDefinition,
+  getApprovedCandidatePreflight,
   listPublishApprovalRequests,
   previewDefinition,
   rejectPublishApprovalRequest,
@@ -281,6 +285,7 @@ const readinessAnalyzing = ref(false)
 const dryRunGenerating = ref(false)
 const candidateSnapshotCreating = ref(false)
 const approvalRequestLoading = ref(false)
+const approvedCandidatePreflightLoading = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -291,6 +296,7 @@ const publishReadinessReport = ref(null)
 const publishDryRunReport = ref(null)
 const publishCandidateSnapshot = ref(null)
 const publishApprovalRequests = ref([])
+const approvedCandidatePreflight = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -523,6 +529,21 @@ async function revokeApproval(request) {
   }
 }
 
+async function checkApprovedCandidatePreflight() {
+  approvedCandidatePreflightLoading.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await getApprovedCandidatePreflight(definition.value.id)
+    approvedCandidatePreflight.value = data
+    Innoclapps.success('Approved candidate preflight completed. No publish was performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    approvedCandidatePreflightLoading.value = false
+  }
+}
+
 async function archiveCurrentDefinition() {
   lifecycleAction.value = 'archive'
   apiError.value = null
@@ -624,6 +645,7 @@ function setDefinition(value) {
   publishReadinessReport.value = null
   publishDryRunReport.value = null
   publishCandidateSnapshot.value = null
+  approvedCandidatePreflight.value = null
 }
 
 function normalizeDefinition(value) {

@@ -18,7 +18,8 @@
       "app/Services/Builder/BuilderPublishReadinessAnalyzer.php",
       "app/Services/Builder/BuilderPublishDryRunGenerator.php",
       "app/Services/Builder/BuilderPublishCandidateSnapshotService.php",
-      "app/Services/Builder/BuilderPublishApprovalService.php"
+      "app/Services/Builder/BuilderPublishApprovalService.php",
+      "app/Services/Builder/BuilderApprovedCandidatePreflightService.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -49,7 +50,8 @@
       "docs/ai/03-architecture/builder-publish-candidate-snapshot.md",
       "docs/ai/03-architecture/builder-human-approval-gate.md",
       "docs/ai/03-architecture/builder-publish-audit-log-strategy.md",
-      "docs/ai/03-architecture/builder-human-approval-request-mvp.md"
+      "docs/ai/03-architecture/builder-human-approval-request-mvp.md",
+      "docs/ai/03-architecture/builder-approved-candidate-preflight.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -77,7 +79,8 @@
       "docs/ai/05-rag/contracts/builder-publish-candidate-snapshot-contract.json",
       "docs/ai/05-rag/contracts/builder-human-approval-gate-contract.json",
       "docs/ai/05-rag/contracts/builder-publish-audit-log-contract.json",
-      "docs/ai/05-rag/contracts/builder-human-approval-request-api-map.json"
+      "docs/ai/05-rag/contracts/builder-human-approval-request-api-map.json",
+      "docs/ai/05-rag/contracts/builder-approved-candidate-preflight-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -160,7 +163,8 @@
     "generate publish dry-run artifacts under storage",
     "review publish dry-run artifacts",
     "create publish candidate snapshots under storage",
-    "read approval request review state"
+    "read approval request review state",
+    "run approved candidate preflight"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -183,6 +187,7 @@
     "approve publish from dry-run review",
     "autonomously request publish approval",
     "approve, reject, or revoke publish approval",
+    "treat eligible_for_future_publish as published module",
     "delete runtime modules",
     "uninstall modules",
     "drop tables or business data",
@@ -221,6 +226,7 @@
     "Publish candidate snapshots are derived review artifacts and not source of truth.",
     "Human approval request persistence and publish audit logs exist for control-plane review state only.",
     "Approval request persistence stores control-plane review state and audit logs, but approved candidates are not published modules.",
+    "Approved candidate preflight is derived/read-only and is not source of runtime code.",
     "Control-plane-only delete does not delete runtime modules, generated files, preview artifact directories, migrations, database tables, media, or business data.",
     "Preview remains a safe executable generation operation; publish, uninstall, rollback, table drops, and runtime module removal remain forbidden execution operations."
   ],

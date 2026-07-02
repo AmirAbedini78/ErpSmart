@@ -23,6 +23,8 @@
     "summarize publish candidate snapshot",
     "summarize approval requirements",
     "summarize approval status",
+    "call approved candidate preflight",
+    "summarize approved candidate preflight",
     "explain validation errors",
     "explain preview warnings",
     "summarize generated preview manifests",
@@ -36,6 +38,7 @@
     "copy publish dry-run artifacts into runtime paths",
     "copy publish candidate snapshots into runtime paths",
     "approve publish",
+    "treat eligible_for_future_publish as published module",
     "reject publish approval",
     "revoke publish approval",
     "autonomously request publish approval",
@@ -75,6 +78,8 @@
     "ai_builder_agent_may_create_publish_candidate_snapshot": true,
     "ai_builder_agent_may_summarize_publish_candidate_snapshot": true,
     "ai_builder_agent_may_summarize_approval_requirements": true,
+    "ai_builder_agent_may_call_approved_candidate_preflight": true,
+    "ai_builder_agent_may_summarize_approved_candidate_preflight": true,
     "ai_builder_agent_may_autonomously_request_approval": false,
     "ai_builder_agent_may_approve_publish": false,
     "ai_builder_agent_may_reject_publish": false,
@@ -94,6 +99,7 @@
       "Publish candidate snapshots are derived storage artifacts and must not be copied into runtime paths.",
       "Human approval request persistence exists; AI must not autonomously request, approve, reject, or revoke approval.",
       "Approval request persistence exists, but AI must not autonomously approve, reject, revoke, or treat approval as publish.",
+      "Approved candidate preflight eligibility is not publish and must not be treated as a published module.",
       "Lifecycle execution requires a separate implementation task with dependency checks, backups, data retention rules, rollback rules, permissions, and verifier coverage."
     ]
   },

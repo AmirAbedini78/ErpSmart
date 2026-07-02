@@ -14,6 +14,7 @@
     "publish candidate snapshot",
     "human approval gate planning",
     "approval request persistence",
+    "approved candidate preflight",
     "dependency impact analysis",
     "dry-run file plan",
     "DB migration plan",
@@ -32,6 +33,7 @@
     "candidate snapshot created under storage/app/builder-publish-candidates only",
     "human approval gate reviewed; approval request persistence exists but does not publish",
     "approval request persisted without publish execution",
+    "approved candidate preflight confirms checksum and candidate snapshot freshness without publish",
     "capability support status valid",
     "unsupported features acknowledged",
     "file conflicts checked",
@@ -93,6 +95,15 @@
     "approval_persistence": true,
     "approval_apis": true,
     "approval_does_not_publish": true,
+    "actual_publish_still_forbidden": true
+  },
+  "current_approved_candidate_preflight": {
+    "name": "BuilderApprovedCandidatePreflightService",
+    "implemented": true,
+    "read_only": true,
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
     "actual_publish_still_forbidden": true
   },
   "current_sandbox_dry_run": {

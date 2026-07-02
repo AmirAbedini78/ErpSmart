@@ -1,0 +1,56 @@
+{
+  "name": "ERPSMART Builder Approved Candidate Preflight Contract",
+  "purpose": "Define the read-only approved candidate preflight report before future publish execution exists.",
+  "endpoint": "GET /api/builder/definitions/{id}/approved-candidate-preflight",
+  "statuses": [
+    "eligible",
+    "blocked",
+    "warning",
+    "not_approved"
+  ],
+  "report_structure": {
+    "safe": true,
+    "eligible_for_future_publish": false,
+    "status": "eligible|blocked|warning|not_approved",
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
+    "runtime_module_effect": "none",
+    "definition_id": 123,
+    "definition_checksum": "checksum",
+    "approval_request": {},
+    "checks": [],
+    "blockers": [],
+    "warnings": [],
+    "forbidden_actions": [],
+    "next_allowed_actions": []
+  },
+  "required_checks": [
+    "approved_request_exists",
+    "approval_status_is_approved",
+    "approval_not_revoked",
+    "approval_not_rejected",
+    "approval_not_invalidated",
+    "approval_not_expired",
+    "definition_checksum_matches",
+    "candidate_id_exists",
+    "candidate_snapshot_path_exists",
+    "candidate_snapshot_json_valid",
+    "candidate_snapshot_publish_executed_false",
+    "candidate_snapshot_runtime_writes_zero",
+    "dry_run_runtime_writes_zero",
+    "readiness_publish_executed_false",
+    "approval_does_not_publish",
+    "future_publish_still_forbidden"
+  ],
+  "safe_for_agent": true,
+  "agent_may_execute_publish": false,
+  "runtime_writes_performed": 0,
+  "approval_does_not_publish": true,
+  "preflight_does_not_publish": true,
+  "agent_notes": [
+    "AI Builder Agent may call and summarize approved candidate preflight.",
+    "eligible_for_future_publish is not publish.",
+    "AI Builder Agent must not treat eligibility as a published module."
+  ]
+}

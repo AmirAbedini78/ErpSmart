@@ -154,6 +154,15 @@
       "notes": "Approval does not publish. UI labels must avoid Publish, Deploy, and Copy to runtime actions."
     },
     {
+      "name": "BuilderApprovedCandidatePreflight",
+      "file": "modules/Builder/resources/js/components/BuilderApprovedCandidatePreflight.vue",
+      "role": "Displays the read-only approved candidate preflight report, blockers, warnings, checks, and safety flags.",
+      "edits_definition_json": false,
+      "calls_api": false,
+      "risk_level": "medium",
+      "notes": "Preflight does not publish and must not expose runtime write actions."
+    },
+    {
       "name": "BuilderStatusBadge",
       "file": "modules/Builder/resources/js/components/BuilderStatusBadge.vue",
       "role": "Consistent status badge rendering.",

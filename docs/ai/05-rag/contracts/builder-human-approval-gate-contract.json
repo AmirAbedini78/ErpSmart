@@ -63,6 +63,12 @@
   "approval_does_not_publish": true,
   "approval_persistence": true,
   "publish_execution_implemented": false,
+  "approved_candidate_preflight": {
+    "implemented": true,
+    "read_only": true,
+    "approval_does_not_publish": true,
+    "preflight_does_not_publish": true
+  },
   "notes": [
     "Approval is separate from candidate snapshot creation.",
     "Approval is separate from publish execution.",

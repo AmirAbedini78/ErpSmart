@@ -231,12 +231,19 @@
       @reject-candidate="$emit('reject-candidate', $event)"
       @revoke-approval="$emit('revoke-approval', $event)"
     />
+
+    <BuilderApprovedCandidatePreflight
+      :report="approvedCandidatePreflight"
+      :loading="approvedCandidatePreflightLoading"
+      @check-preflight="$emit('check-approved-candidate-preflight')"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 
+import BuilderApprovedCandidatePreflight from './BuilderApprovedCandidatePreflight.vue'
 import BuilderPublishApprovalRequests from './BuilderPublishApprovalRequests.vue'
 import BuilderPublishCandidateSnapshot from './BuilderPublishCandidateSnapshot.vue'
 import BuilderPublishDryRunReview from './BuilderPublishDryRunReview.vue'
@@ -250,6 +257,7 @@ const props = defineProps({
   dryRunGenerating: Boolean,
   candidateSnapshotCreating: Boolean,
   approvalRequestLoading: Boolean,
+  approvedCandidatePreflightLoading: Boolean,
   validationReport: Object,
   previewRun: Object,
   previewManifest: Object,
@@ -257,6 +265,7 @@ const props = defineProps({
   publishDryRunReport: Object,
   publishCandidateSnapshot: Object,
   publishApprovalRequests: Array,
+  approvedCandidatePreflight: Object,
 })
 
 defineEmits([
@@ -270,6 +279,7 @@ defineEmits([
   'approve-candidate',
   'reject-candidate',
   'revoke-approval',
+  'check-approved-candidate-preflight',
 ])
 
 const formattedValidationReport = computed(() => formatJson(props.validationReport))

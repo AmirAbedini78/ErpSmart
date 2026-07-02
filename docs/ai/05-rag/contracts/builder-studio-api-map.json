@@ -225,6 +225,21 @@
       "notes": "Revokes review state only. Does not publish."
     },
     {
+      "method": "GET",
+      "path": "/api/builder/definitions/{id}/approved-candidate-preflight",
+      "purpose": "Read-only approved candidate preflight check.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": true,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "approval_does_not_publish": true,
+      "preflight_does_not_publish": true,
+      "notes": "Checks approved candidate freshness and eligibility flags. Does not mutate approval state, create audit logs, or publish."
+    },
+    {
       "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
