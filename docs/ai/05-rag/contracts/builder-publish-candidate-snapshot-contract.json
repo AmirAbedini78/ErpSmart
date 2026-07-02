@@ -1,6 +1,8 @@
 {
   "name": "ERPSMART Builder Publish Candidate Snapshot Contract",
   "purpose": "Define the control-plane-only publish candidate snapshot artifact before approval or publish exists.",
+  "future_approval_input": true,
+  "approval_implementation_status": "not_implemented",
   "endpoint": "POST /api/builder/definitions/{id}/publish-candidate-snapshot",
   "path_pattern": "storage/app/builder-publish-candidates/{definition_id}/{candidate_id}/candidate-snapshot.json",
   "allowed_write_scope": [
@@ -74,6 +76,12 @@
     "runtime_writes_performed": 0,
     "approval_persistence": false
   },
+  "approval_notes": [
+    "Candidate snapshot is the input to a future approval request.",
+    "Approval is not implemented in the current MVP.",
+    "approval_requested remains false in current candidate snapshot output.",
+    "approval_granted remains false in current candidate snapshot output."
+  ],
   "agent_notes": [
     "AI Builder Agent may create and summarize candidate snapshots.",
     "Candidate snapshots are derived review artifacts and are not runtime source of truth.",

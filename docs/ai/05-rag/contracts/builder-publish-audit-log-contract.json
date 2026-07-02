@@ -1,0 +1,59 @@
+{
+  "name": "ERPSMART Builder Publish Audit Log Contract",
+  "purpose": "Plan future append-only audit events for approval, publish, rollback, and lifecycle operations.",
+  "current_implementation_status": "planning_only",
+  "append_only": true,
+  "future_events": [
+    "candidate_snapshot_created",
+    "approval_requested",
+    "approval_approved",
+    "approval_rejected",
+    "approval_revoked",
+    "approval_invalidated",
+    "publish_preflight_started",
+    "publish_preflight_failed",
+    "publish_started",
+    "publish_failed",
+    "publish_succeeded",
+    "rollback_started",
+    "rollback_failed",
+    "rollback_succeeded",
+    "lifecycle_archived",
+    "lifecycle_restored",
+    "lifecycle_deleted_draft"
+  ],
+  "event_shape": {
+    "id": "future audit event id",
+    "actor_id": "required user id",
+    "timestamp": "ISO-8601 timestamp",
+    "event_type": "one future_events value",
+    "payload_json": {},
+    "builder_definition_id": "required",
+    "candidate_id": "nullable",
+    "definition_checksum": "required when available",
+    "candidate_snapshot_checksum": "required for candidate/approval/publish events",
+    "correlation_id": "request/job correlation id"
+  },
+  "retention_policy_notes": [
+    "Audit events should be retained longer than preview/candidate artifacts.",
+    "Audit rows should be immutable and append-only.",
+    "Corrections should be represented as new events, not updates."
+  ],
+  "actor_requirements": [
+    "Every event must have an actor or system actor.",
+    "Approval decisions must record the deciding user.",
+    "Future self-approval rules must be explicit policy, not implicit behavior."
+  ],
+  "checksum_requirements": [
+    "Approval and publish events must record definition checksum.",
+    "Approval and publish events should record candidate snapshot checksum.",
+    "Checksum mismatch invalidates approval."
+  ],
+  "source_of_truth_notes": [
+    "Audit logs are evidence and traceability records.",
+    "Audit logs are not source of truth for generated runtime code.",
+    "Generated runtime files and publish manifests become runtime truth only after future publish exists."
+  ],
+  "safe_for_agent_read": true,
+  "safe_for_agent_write": false
+}

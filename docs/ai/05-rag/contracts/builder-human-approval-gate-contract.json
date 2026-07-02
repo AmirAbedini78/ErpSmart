@@ -1,0 +1,63 @@
+{
+  "name": "ERPSMART Builder Human Approval Gate Contract",
+  "purpose": "Plan the future human approval gate for publish candidate snapshots without implementing approval persistence or publish.",
+  "current_implementation_status": "planning_only",
+  "future_endpoint_candidates": [
+    "POST /api/builder/definitions/{id}/approval-requests",
+    "POST /api/builder/approval-requests/{id}/approve",
+    "POST /api/builder/approval-requests/{id}/reject",
+    "POST /api/builder/approval-requests/{id}/revoke"
+  ],
+  "future_statuses": [
+    "not_requested",
+    "requested",
+    "approved",
+    "rejected",
+    "revoked",
+    "expired",
+    "invalidated"
+  ],
+  "approval_binds_to": [
+    "builder_definition_id",
+    "candidate_id",
+    "definition_checksum",
+    "candidate_snapshot_path",
+    "dry_run_root",
+    "readiness_report_checksum",
+    "requested_by",
+    "approved_by",
+    "rejected_by",
+    "revoked_by",
+    "requested_at",
+    "decided_at",
+    "expires_at"
+  ],
+  "invalidation_rules": [
+    "definition_json_changed",
+    "definition_checksum_changed",
+    "candidate_snapshot_regenerated",
+    "dry_run_regenerated_after_request",
+    "blocker_appears",
+    "unsupported_capability_appears",
+    "approval_expired"
+  ],
+  "required_permissions": [
+    "builder.approval.request",
+    "builder.approval.approve",
+    "builder.approval.reject",
+    "builder.approval.revoke",
+    "builder.publish.execute"
+  ],
+  "safe_for_agent": false,
+  "agent_may_summarize": true,
+  "agent_may_request_approval": false,
+  "agent_may_approve_publish": false,
+  "agent_may_execute_publish": false,
+  "approval_does_not_publish": true,
+  "notes": [
+    "Approval is separate from candidate snapshot creation.",
+    "Approval is separate from publish execution.",
+    "Future publish must require fresh approval and still run preflight checks.",
+    "No approval persistence exists in the current MVP."
+  ]
+}
