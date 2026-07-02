@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Builder;
 
 use App\Models\BuilderDefinition;
+use App\Models\BuilderPublishExecution;
 use App\Services\Builder\BuilderPublishExecutionPreparationService;
+use App\Services\Builder\BuilderPublishStagedFileValidationService;
 use Illuminate\Http\JsonResponse;
 use Modules\Core\Http\Controllers\ApiController;
 
@@ -23,5 +25,12 @@ class BuilderPublishExecutionController extends ApiController
         BuilderPublishExecutionPreparationService $preparation
     ): JsonResponse {
         return $this->response($preparation->prepare($builderDefinition), JsonResponse::HTTP_CREATED);
+    }
+
+    public function validateStagedFiles(
+        BuilderPublishExecution $execution,
+        BuilderPublishStagedFileValidationService $validation
+    ): JsonResponse {
+        return $this->response($validation->validate($execution));
     }
 }

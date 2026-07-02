@@ -16,6 +16,7 @@
     "approval request persistence",
     "approved candidate preflight",
     "publish execution record lock MVP",
+    "staged file validation MVP",
     "publish execution architecture planning",
     "rollback manifest planning",
     "locking and staging planning",
@@ -39,6 +40,7 @@
     "approval request persisted without publish execution",
     "approved candidate preflight confirms checksum and candidate snapshot freshness without publish",
     "publish execution record creates control-plane record, lock, preflight report, staging root, rollback manifest draft, and audit events without runtime writes",
+    "staged file validation checks storage-only artifacts, path safety, checksums, classifications, and rollback manifest JSON without runtime writes",
     "future publish execution architecture requires explicit human command and final confirmation",
     "future rollback manifest must be created before runtime writes",
     "future publish lock and staging plan must exist before runtime writes",
@@ -140,6 +142,18 @@
     "write_scope": [
       "builder_publish_executions control-plane rows",
       "builder_publish_audit_logs control-plane rows",
+      "storage/app/builder-publish-staging",
+      "storage/app/builder-publish-rollbacks"
+    ],
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
+    "actual_runtime_publish_still_forbidden": true
+  },
+  "current_staged_file_validation_mvp": {
+    "implemented": true,
+    "service": "BuilderPublishStagedFileValidationService",
+    "write_scope": "storage/app/builder-publish-staged-validations",
+    "allowed_read_scopes": [
       "storage/app/builder-publish-staging",
       "storage/app/builder-publish-rollbacks"
     ],

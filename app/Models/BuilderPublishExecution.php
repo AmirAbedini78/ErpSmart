@@ -14,6 +14,8 @@ class BuilderPublishExecution extends Model
     public const STATUS_LOCK_ACQUIRED = 'lock_acquired';
     public const STATUS_PREFLIGHT_FAILED = 'preflight_failed';
     public const STATUS_PREFLIGHT_PASSED = 'preflight_passed';
+    public const STATUS_STAGING_VALIDATED = 'staging_validated';
+    public const STATUS_STAGING_VALIDATION_FAILED = 'staging_validation_failed';
     public const STATUS_FAILED = 'failed';
     public const STATUS_CANCELLED = 'cancelled';
 
@@ -68,6 +70,8 @@ class BuilderPublishExecution extends Model
         return in_array($this->status, [
             self::STATUS_PREFLIGHT_FAILED,
             self::STATUS_PREFLIGHT_PASSED,
+            self::STATUS_STAGING_VALIDATED,
+            self::STATUS_STAGING_VALIDATION_FAILED,
             self::STATUS_FAILED,
             self::STATUS_CANCELLED,
         ], true);

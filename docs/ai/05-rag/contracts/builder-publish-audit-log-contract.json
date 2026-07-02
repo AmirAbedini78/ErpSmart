@@ -15,7 +15,9 @@
     "publish_lock_failed",
     "publish_lock_released",
     "rollback_manifest_created",
-    "publish_staging_created"
+    "publish_staging_created",
+    "publish_staging_validated",
+    "publish_staging_validation_failed"
   ],
   "future_events": [
     "candidate_snapshot_created",

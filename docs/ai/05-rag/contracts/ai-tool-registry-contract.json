@@ -53,6 +53,16 @@
       "audit_required": true,
       "runtime_writes_performed": 0,
       "publish_executed": false
+    },
+    {
+      "name": "builder.validate_staged_files",
+      "maps_to": "POST /api/builder/publish-executions/{id}/validate-staged-files",
+      "safety_class": "control_plane_write",
+      "approval_required": true,
+      "audit_required": true,
+      "requires_explicit_human_initiation": true,
+      "runtime_writes_performed": 0,
+      "publish_executed": false
     }
   ],
   "forbidden_tools": [

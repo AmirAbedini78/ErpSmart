@@ -169,7 +169,7 @@
       "edits_definition_json": false,
       "calls_api": false,
       "risk_level": "high",
-      "notes": "Execution record only. Must not expose Publish, Execute Publish, Deploy, Rollback, Copy to runtime, or Run migrations actions."
+      "notes": "Execution record and staged validation only. Must not expose Publish, Execute Publish, Deploy, Rollback, Copy to runtime, or Run migrations actions."
     },
     {
       "name": "BuilderStatusBadge",

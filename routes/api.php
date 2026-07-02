@@ -37,6 +37,9 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('builder')->group(function 
     Route::post('definitions/{builderDefinition}/publish-executions', [BuilderPublishExecutionController::class, 'store'])
         ->name('builder.definitions.publish-executions.store');
 
+    Route::post('publish-executions/{execution}/validate-staged-files', [BuilderPublishExecutionController::class, 'validateStagedFiles'])
+        ->name('builder.publish-executions.validate-staged-files');
+
     Route::get('definitions/{builderDefinition}/publish-approval-requests', [BuilderPublishApprovalRequestController::class, 'index'])
         ->name('builder.definitions.publish-approval-requests.index');
 

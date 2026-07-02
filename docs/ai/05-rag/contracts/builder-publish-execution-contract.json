@@ -1,10 +1,11 @@
 {
   "name": "ERPSMART Builder Publish Execution Contract",
   "purpose": "Define the publish execution preparation record flow while keeping actual publish forbidden in the current MVP.",
-  "current_implementation_status": "execution_record_lock_mvp",
+  "current_implementation_status": "staged_file_validation_mvp",
   "future_endpoint_candidate": "POST /api/builder/definitions/{id}/publish-executions",
   "execution_record_exists": true,
   "lock_preflight_staging_root_rollback_manifest_draft_implemented": true,
+  "staged_file_validation_implemented": true,
   "explicit_human_command_required": true,
   "final_confirmation_required": true,
   "approved_candidate_preflight_required": true,
@@ -24,7 +25,9 @@
     "write rollback manifest draft under storage/app/builder-publish-rollbacks only",
     "create staging root under storage/app/builder-publish-staging only",
     "write audit events",
-    "release lock"
+    "release lock",
+    "validate staged storage artifacts",
+    "write staged file validation report under storage/app/builder-publish-staged-validations only"
   ],
   "future_phases": [
     "receive explicit human publish command",

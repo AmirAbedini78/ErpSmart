@@ -19,6 +19,21 @@
         @click="$emit('create-execution-record')"
       />
 
+      <IAlert variant="info">
+        <IAlertBody>
+          Staged validation only. This checks storage artifacts and does not copy files to runtime, run migrations, register routes, or publish.
+        </IAlertBody>
+      </IAlert>
+
+      <IButton
+        class="w-full justify-center"
+        icon="CheckCircle"
+        text="Validate Staged Files"
+        :disabled="!latestExecutionId"
+        :loading="validationLoading"
+        @click="$emit('validate-staged-files', latestExecutionId)"
+      />
+
       <div v-if="latestReport" class="space-y-3">
         <div class="grid gap-2 text-sm">
           <div class="flex justify-between gap-4">
@@ -68,6 +83,70 @@
         <pre class="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedLatestReport }}</pre>
       </div>
 
+      <div v-if="validationReport" class="space-y-3">
+        <ITextDark class="font-medium" text="Staged file validation" />
+        <div class="grid gap-2 text-sm">
+          <div class="flex justify-between gap-4">
+            <span class="text-neutral-500 dark:text-neutral-400">status</span>
+            <span class="font-mono">{{ validationReport.status }}</span>
+          </div>
+          <div class="flex justify-between gap-4">
+            <span class="text-neutral-500 dark:text-neutral-400">safe</span>
+            <span class="font-mono">{{ String(validationReport.safe) }}</span>
+          </div>
+          <div class="flex justify-between gap-4">
+            <span class="text-neutral-500 dark:text-neutral-400">validation_report_path</span>
+            <span class="break-all text-right font-mono text-xs">{{ validationReport.validation_report_path || '-' }}</span>
+          </div>
+          <div class="flex justify-between gap-4">
+            <span class="text-neutral-500 dark:text-neutral-400">files</span>
+            <span class="font-mono">{{ validationReport.summary?.total_files || 0 }}</span>
+          </div>
+        </div>
+
+        <IAlert v-if="validationReport.blockers?.length" variant="danger">
+          <IAlertBody>
+            <div class="mb-1 font-medium">Blockers</div>
+            <ul class="list-disc space-y-1 pl-5">
+              <li v-for="blocker in validationReport.blockers" :key="blocker">
+                {{ blocker }}
+              </li>
+            </ul>
+          </IAlertBody>
+        </IAlert>
+
+        <IAlert v-if="validationReport.warnings?.length" variant="warning">
+          <IAlertBody>
+            <div class="mb-1 font-medium">Warnings</div>
+            <ul class="list-disc space-y-1 pl-5">
+              <li v-for="warning in validationReport.warnings" :key="warning">
+                {{ warning }}
+              </li>
+            </ul>
+          </IAlertBody>
+        </IAlert>
+
+        <div v-if="validationReport.checks?.length">
+          <ITextDark class="font-medium" text="Checks" />
+          <ul class="mt-1 space-y-1 text-sm">
+            <li v-for="check in validationReport.checks" :key="check.key">
+              <span class="font-mono">{{ check.status }}</span> {{ check.key }} - {{ check.message }}
+            </li>
+          </ul>
+        </div>
+
+        <div v-if="validationReport.forbidden_actions?.length">
+          <ITextDark class="font-medium" text="Forbidden actions" />
+          <ul class="mt-1 list-disc space-y-1 pl-5 text-sm">
+            <li v-for="action in validationReport.forbidden_actions" :key="action">
+              {{ action }}
+            </li>
+          </ul>
+        </div>
+
+        <pre class="max-h-96 overflow-auto whitespace-pre-wrap rounded-md bg-neutral-50 p-3 text-xs dark:bg-neutral-900">{{ formattedValidationReport }}</pre>
+      </div>
+
       <div v-if="records.length" class="space-y-2">
         <ITextDark class="font-medium" text="Execution records" />
         <div
@@ -99,12 +178,22 @@ const props = defineProps({
     default: () => [],
   },
   latestReport: Object,
+  validationReport: Object,
   loading: Boolean,
+  validationLoading: Boolean,
 })
 
-defineEmits(['create-execution-record'])
+defineEmits(['create-execution-record', 'validate-staged-files'])
+
+const latestExecutionId = computed(() =>
+  props.latestReport?.execution_id || props.records?.[0]?.id || null
+)
 
 const formattedLatestReport = computed(() =>
   props.latestReport ? JSON.stringify(props.latestReport, null, 2) : 'Not run yet.'
+)
+
+const formattedValidationReport = computed(() =>
+  props.validationReport ? JSON.stringify(props.validationReport, null, 2) : 'Not run yet.'
 )
 </script>

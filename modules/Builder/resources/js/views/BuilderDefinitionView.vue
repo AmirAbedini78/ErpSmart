@@ -213,6 +213,7 @@
               :approval-request-loading="approvalRequestLoading"
               :approved-candidate-preflight-loading="approvedCandidatePreflightLoading"
               :publish-execution-creating="publishExecutionCreating"
+              :staged-file-validating="stagedFileValidating"
               :validation-report="validationReport || definition.last_validation_report_json"
               :preview-run="previewRun"
               :preview-manifest="definition.last_preview_manifest_json"
@@ -223,6 +224,7 @@
               :approved-candidate-preflight="approvedCandidatePreflight"
               :publish-executions="publishExecutions"
               :publish-execution-report="publishExecutionReport"
+              :staged-file-validation-report="stagedFileValidationReport"
               @save="saveDefinition"
               @validate="runValidation"
               @preview="runPreview"
@@ -235,6 +237,7 @@
               @revoke-approval="revokeApproval"
               @check-approved-candidate-preflight="checkApprovedCandidatePreflight"
               @create-publish-execution-record="createExecutionRecord"
+              @validate-staged-files="validateStagedFiles"
             />
           </div>
         </div>
@@ -278,6 +281,7 @@ import {
   requestPublishApproval,
   revokePublishApprovalRequest,
   updateDefinition,
+  validatePublishExecutionStagedFiles,
   validateDefinition,
 } from '../services/builderApi'
 
@@ -293,6 +297,7 @@ const candidateSnapshotCreating = ref(false)
 const approvalRequestLoading = ref(false)
 const approvedCandidatePreflightLoading = ref(false)
 const publishExecutionCreating = ref(false)
+const stagedFileValidating = ref(false)
 const lifecycleAction = ref(null)
 const definition = ref(null)
 const definitionJson = ref(null)
@@ -306,6 +311,7 @@ const publishApprovalRequests = ref([])
 const approvedCandidatePreflight = ref(null)
 const publishExecutions = ref([])
 const publishExecutionReport = ref(null)
+const stagedFileValidationReport = ref(null)
 const jsonError = ref(null)
 const apiError = ref(null)
 const demoFlowSteps = [
@@ -579,6 +585,26 @@ async function createExecutionRecord() {
   }
 }
 
+async function validateStagedFiles(executionId) {
+  if (!executionId) {
+    return
+  }
+
+  stagedFileValidating.value = true
+  apiError.value = null
+
+  try {
+    const { data } = await validatePublishExecutionStagedFiles(executionId)
+    stagedFileValidationReport.value = data
+    await loadPublishExecutions()
+    Innoclapps.success('Staged files validated under storage. No publish or runtime writes were performed.')
+  } catch (error) {
+    apiError.value = errorMessage(error)
+  } finally {
+    stagedFileValidating.value = false
+  }
+}
+
 async function archiveCurrentDefinition() {
   lifecycleAction.value = 'archive'
   apiError.value = null
@@ -682,6 +708,7 @@ function setDefinition(value) {
   publishCandidateSnapshot.value = null
   approvedCandidatePreflight.value = null
   publishExecutionReport.value = null
+  stagedFileValidationReport.value = null
 }
 
 function normalizeDefinition(value) {

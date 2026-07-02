@@ -68,6 +68,10 @@ export function createPublishExecutionRecord(definitionId) {
   return Innoclapps.request().post(`${endpoint}/${definitionId}/publish-executions`)
 }
 
+export function validatePublishExecutionStagedFiles(executionId) {
+  return Innoclapps.request().post(`/builder/publish-executions/${executionId}/validate-staged-files`)
+}
+
 export function archiveDefinition(id) {
   return Innoclapps.request().post(`${endpoint}/${id}/archive`)
 }

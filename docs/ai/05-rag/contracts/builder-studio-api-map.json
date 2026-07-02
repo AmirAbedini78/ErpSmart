@@ -268,6 +268,20 @@
     },
     {
       "method": "POST",
+      "path": "/api/builder/publish-executions/{id}/validate-staged-files",
+      "purpose": "Validate storage-only staged artifacts for a publish execution record.",
+      "status": "implemented",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "requires_admin": true,
+      "publish_related": false,
+      "actual_publish": false,
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "notes": "Staged validation only. Does not copy files to runtime, run migrations, register routes, mark published, or publish."
+    },
+    {
+      "method": "POST",
       "path": "/api/builder/definitions/{id}/archive",
       "purpose": "Archive an unpublished Builder definition.",
       "status": "implemented",

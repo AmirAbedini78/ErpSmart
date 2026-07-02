@@ -23,6 +23,17 @@
       "safe_for_ui": true,
       "safe_for_agent": false,
       "notes": "This is not publish and must not be treated as publish."
+    },
+    {
+      "method": "POST",
+      "path": "/api/builder/publish-executions/{id}/validate-staged-files",
+      "purpose": "Validate storage-only staged and rollback artifacts for a publish execution record.",
+      "runtime_writes_performed": 0,
+      "publish_executed": false,
+      "runtime_module_effect": "none",
+      "safe_for_ui": true,
+      "safe_for_agent": false,
+      "notes": "Staged validation only. Writes validation report under storage/app/builder-publish-staged-validations and does not publish."
     }
   ],
   "forbidden_endpoints": [

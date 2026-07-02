@@ -1,0 +1,67 @@
+{
+  "name": "ERPSMART Builder Publish Staged File Validation Contract",
+  "purpose": "Define the control-plane-only staged artifact validation phase for Builder publish execution records.",
+  "current_implementation_status": "staged_file_validation_mvp",
+  "endpoint": "POST /api/builder/publish-executions/{id}/validate-staged-files",
+  "allowed_execution_statuses": [
+    "preflight_passed"
+  ],
+  "resulting_statuses": [
+    "staging_validated",
+    "staging_validation_failed"
+  ],
+  "allowed_read_scopes": [
+    "storage/app/builder-publish-staging/{definition_id}/{execution_id}",
+    "storage/app/builder-publish-rollbacks/{definition_id}/{execution_id}"
+  ],
+  "allowed_write_scope": "storage/app/builder-publish-staged-validations/{definition_id}/{execution_id}/staged-file-validation.json",
+  "forbidden_write_scopes": [
+    "modules/",
+    "database/migrations/",
+    "routes/",
+    "resources/js/app.js",
+    "public/build/",
+    "vendor/",
+    "node_modules/",
+    ".env"
+  ],
+  "required_checks": [
+    "execution_status_preflight_passed",
+    "staging_root_present",
+    "staging_root_under_storage",
+    "rollback_manifest_path_present",
+    "rollback_manifest_under_storage",
+    "rollback_manifest_json_valid",
+    "no_path_traversal",
+    "no_runtime_paths_written",
+    "no_forbidden_paths",
+    "files_have_checksums",
+    "validation_report_under_storage",
+    "publish_executed_false",
+    "runtime_writes_zero"
+  ],
+  "report_structure": {
+    "execution_id": 1,
+    "status": "staging_validated|staging_validation_failed",
+    "safe": true,
+    "writes_performed": 0,
+    "runtime_writes_performed": 0,
+    "publish_executed": false,
+    "runtime_module_effect": "none",
+    "validation_report_path": "storage/app/builder-publish-staged-validations/...",
+    "staging_root": "storage/app/builder-publish-staging/...",
+    "rollback_manifest_path": "storage/app/builder-publish-rollbacks/...",
+    "files": [],
+    "summary": {},
+    "checks": [],
+    "blockers": [],
+    "warnings": [],
+    "forbidden_actions": [],
+    "next_allowed_actions": []
+  },
+  "runtime_writes_performed": 0,
+  "publish_executed": false,
+  "agent_may_call_when_human_initiated": true,
+  "agent_may_execute_publish": false,
+  "agent_may_copy_to_runtime": false
+}

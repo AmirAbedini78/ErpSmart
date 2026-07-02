@@ -23,7 +23,8 @@
       "app/Services/Builder/BuilderPublishCandidateSnapshotService.php",
       "app/Services/Builder/BuilderPublishApprovalService.php",
       "app/Services/Builder/BuilderApprovedCandidatePreflightService.php",
-      "app/Services/Builder/BuilderPublishExecutionPreparationService.php"
+      "app/Services/Builder/BuilderPublishExecutionPreparationService.php",
+      "app/Services/Builder/BuilderPublishStagedFileValidationService.php"
     ],
     "frontend": [
       "modules/Builder/resources/js/app.js",
@@ -63,7 +64,8 @@
       "docs/ai/03-architecture/ai-agent-runtime-flow.md",
       "docs/ai/03-architecture/ai-tool-registry-strategy.md",
       "docs/ai/03-architecture/ai-builder-contract.md",
-      "docs/ai/03-architecture/mcp-adapter-future-plan.md"
+      "docs/ai/03-architecture/mcp-adapter-future-plan.md",
+      "docs/ai/03-architecture/builder-publish-staged-file-validation-mvp.md"
     ],
     "demo_journey_contracts": [
       "docs/ai/05-rag/contracts/builder-studio-demo-journey-contract.json"
@@ -100,7 +102,8 @@
       "docs/ai/05-rag/contracts/ai-tool-registry-contract.json",
       "docs/ai/05-rag/contracts/ai-agent-runtime-contract.json",
       "docs/ai/05-rag/contracts/ai-builder-action-contract.json",
-      "docs/ai/05-rag/contracts/mcp-adapter-future-contract.json"
+      "docs/ai/05-rag/contracts/mcp-adapter-future-contract.json",
+      "docs/ai/05-rag/contracts/builder-publish-staged-file-validation-contract.json"
     ]
   },
   "generated_or_derived_files": {
@@ -110,6 +113,7 @@
     "publish_candidate_snapshots": "storage/app/builder-publish-candidates",
     "publish_execution_staging_roots": "storage/app/builder-publish-staging",
     "publish_execution_rollback_manifest_drafts": "storage/app/builder-publish-rollbacks",
+    "publish_staged_file_validation_reports": "storage/app/builder-publish-staged-validations",
     "temporary_definition_files": "storage/app/builder-definitions",
     "vector_indexes": "derived and rebuildable",
     "generated_preview_files_are_source_of_truth": false,
@@ -134,7 +138,8 @@
     "App\\Services\\Builder\\BuilderDefinitionValidator",
     "App\\Services\\Builder\\BuilderPreviewService",
     "App\\Services\\Builder\\BuilderDefinitionVersionService",
-    "App\\Services\\Builder\\BuilderPublishExecutionPreparationService"
+    "App\\Services\\Builder\\BuilderPublishExecutionPreparationService",
+    "App\\Services\\Builder\\BuilderPublishStagedFileValidationService"
   ],
   "frontend_module_files": [
     "modules/Builder/resources/js/app.js",
@@ -191,7 +196,8 @@
     "create publish candidate snapshots under storage",
     "read approval request review state",
     "run approved candidate preflight",
-    "create publish execution preparation record with lock, preflight, staging root, rollback manifest draft, and audit events"
+    "create publish execution preparation record with lock, preflight, staging root, rollback manifest draft, and audit events",
+    "validate staged storage artifacts and write staged file validation report under storage"
   ],
   "forbidden_operations": [
     "publish from Builder Studio MVP",
@@ -216,7 +222,10 @@
     "approve, reject, or revoke publish approval",
     "treat eligible_for_future_publish as published module",
     "treat publish execution record as actual publish",
+    "treat staged file validation as actual publish",
     "autonomously create publish execution records",
+    "autonomously validate staged files",
+    "copy staged files to runtime",
     "call forbidden tools",
     "use MCP to bypass permissions, approval, or audit",
     "delete runtime modules",
@@ -261,6 +270,8 @@
     "Approved candidate preflight is derived/read-only and is not source of runtime code.",
     "Publish execution record MVP creates a control-plane record, lock, preflight report, staging root, rollback manifest draft, and audit events only.",
     "Publish execution record MVP does not write runtime files, run generated migrations, register routes, mark published, or create real modules.",
+    "Staged file validation reads storage-only staging/rollback artifacts, records checksums and classifications, and writes validation reports under storage/app/builder-publish-staged-validations.",
+    "Staged file validation does not copy files to runtime, run migrations, register routes, mark published, or publish.",
     "RAG is knowledge layer, Tool Registry is action layer, and MCP is future adapter.",
     "Tool Registry and MCP contracts are readiness artifacts only; no Tool Registry runtime or MCP server is implemented.",
     "Future publish must require explicit human final confirmation, approved candidate preflight, publish lock, staging, rollback manifest, audit, and post-publish smoke.",
